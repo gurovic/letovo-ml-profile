@@ -14,6 +14,7 @@
 | Нагрузка 8–9 | 5 ч/нед |
 | Нагрузка 10–11 | 6 ч/нед |
 | Итоговая работа модуля | до 2 пар (см. Unit Planner) |
+| Сюжет модуля | свой контекст; не «продолжение» предыдущего модуля |
 
 Подробности нагрузки — Foundation §7.
 
@@ -32,9 +33,11 @@
 
 ## Связь с модулями
 
-Строка КТП → `modules/<grade>_<slug>/` (Unit Planner), когда модуль уже спроектирован.
+Строка КТП → `modules/<grade>_<nn>_<slug>/` (Unit Planner).
 
-Пример: пары 1–14 года 8 класса → [modules/08_functions_recursion/](../modules/08_functions_recursion/).
+**8 класс:** 11 модулей, 85 пар — индекс в [README.md](../README.md#модули-8-класса); КТП с ссылками на папки: [ktp/08.md](ktp/08.md).
+
+Пример: пары 1–10 → [modules/08_01_functions_recursion/](../modules/08_01_functions_recursion/) (демо с уроками); пары 11–20 → [modules/08_02_carsharing_pandas_lr/](../modules/08_02_carsharing_pandas_lr/) (план).
 
 ---
 

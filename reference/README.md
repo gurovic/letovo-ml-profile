@@ -9,6 +9,8 @@
 | Файл | Описание |
 |---|---|
 | `COURSE_PROGRAM_DRAFT.md` | Программа 7–11 (экспорт, может устаревать) |
+| `SCHOOL_UNIT_PLANNER.md` | Поля школьного unit planner (MYP); маппинг на наш UP |
+| `school_unit_planner_schema.json` | JSON-схема для автозаполнения школьной формы |
 | `program_data.json` | Структурированные данные из HTML |
 | `program.html` | Исходник ([aguschin/ai-school-program](https://github.com/aguschin/ai-school-program)) |
 | `extract_program.py` | HTML → JSON + Markdown (обновление **внешнего** снимка) |

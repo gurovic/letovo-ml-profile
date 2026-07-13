@@ -9,7 +9,21 @@
 | [integrate-ml-context](integrate-ml-context/SKILL.md) | усилить data/ML в существующем модуле |
 | [canvas-lms](canvas-lms/SKILL.md) | данные из Canvas LMS (canvas.letovo.ru) |
 | [review-edu-material](review-edu-material/SKILL.md) | ревью перед публикацией или после демо |
+| [refine-md-fragment](refine-md-fragment/SKILL.md) | доработка выделенного фрагмента `.md` |
+| [expert-edu-editor](expert-edu-editor/SKILL.md) | итеративная доводка материалов до качества (редактор-эксперт) |
 
 В чате: «используй skill design-module» или опишите задачу — агент подберёт по description.
 
-Эталон: `modules/08_functions_recursion/`.
+## Доработка фрагмента в preview
+
+1. Выделить текст в preview **в Agent-окне** (или в исходнике `.md` в обычном окне).
+2. **Ctrl+L** → добавить в чат.
+3. **`/refine-md`** → агент пояснит и поправит исходный файл.
+
+Подробнее: `.cursor/rules/06_Доработка_md.mdc`, команда `.cursor/commands/refine-md.md`.
+
+## Редактор-эксперт (полная доводка)
+
+`/polish-material` или skill **expert-edu-editor** — правки в цикле до ворот: педагогика, наука, инженерия, ясность для учителя, без воды, без забегания вперёд, уровень одарённых; халтура → перепроектировать.
+
+Эталон: `modules/08_01_functions_recursion/`.

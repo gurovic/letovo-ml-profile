@@ -30,7 +30,7 @@ description: >-
 | `modules/.../UNIT.md` | цель, scope, результаты |
 | skill `design-module` | структура папок |
 
-Эталон агрессивной интеграции: `modules/08_functions_recursion/`.
+Эталон агрессивной интеграции: `modules/08_01_functions_recursion/`.
 
 ## Три сквозные линии
 

@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "School Unit Planner (Letovo / MYP-oriented)",
+  "description": "Внешний формат для автозаполнения. Канон проектирования — docs/03_UNIT_PLANNER.md",
+  "type": "object",
+  "properties": {
+    "conceptual_framework": {
+      "type": "object",
+      "properties": {
+        "key_concept": { "type": "string" },
+        "related_concepts": { "type": "array", "items": { "type": "string" } },
+        "global_context": {
+          "type": "string",
+          "enum": [
+            "Личности и взаимоотношения",
+            "Ориентация в пространстве и времени",
+            "Личное и культурное самовыражение",
+            "Научные и технические инновации",
+            "Глобализация и устойчивость",
+            "Справедливость и развитие"
+          ]
+        },
+        "key_idea": { "type": "string" },
+        "inquiry_questions": {
+          "type": "object",
+          "properties": {
+            "factual": { "type": "array", "items": { "type": "string" } },
+            "conceptual": { "type": "array", "items": { "type": "string" } },
+            "debatable": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "summative_assessment": {
+          "type": "object",
+          "properties": {
+            "task": { "type": "string" },
+            "link_to_key_idea": { "type": "string" }
+          }
+        },
+        "approaches_to_learning": {
+          "type": "object",
+          "properties": {
+            "skill_groups": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Коммуникация",
+                  "Самоорганизация",
+                  "Сотрудничество",
+                  "Исследование",
+                  "Мышление"
+                ]
+              }
+            },
+            "selected_skills": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "skill_development_process": { "type": "string" }
+          }
+        }
+      }
+    },
+    "content": {
+      "type": "object",
+      "properties": {
+        "lessons": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": { "type": "string" },
+              "hours": { "type": "number" },
+              "teaching_strategies": { "type": "string" },
+              "formative_assessment": { "type": "string" },
+              "differentiation": {
+                "type": "object",
+                "properties": {
+                  "general": { "type": "string" },
+                  "content": { "type": "string" },
+                  "process": { "type": "string" },
+                  "product": { "type": "string" }
+                }
+              },
+              "canvas": { "type": "string" }
+            },
+            "required": ["title"]
+          }
+        },
+        "interdisciplinary_and_social": { "type": "string" },
+        "learner_profile_traits": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "Любознательный",
+              "Знающий",
+              "Думающий",
+              "Общительный",
+              "Принципиальный",
+              "Широко мыслящий",
+              "Заботливый",
+              "Решительный",
+              "Гармонично развитый",
+              "Анализирующий"
+            ]
+          }
+        },
+        "social_action_opportunities": { "type": "string" },
+        "interdisciplinary_links": { "type": "string" },
+        "materials_and_resources": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "reflection": {
+      "type": "object",
+      "properties": {
+        "before": { "type": "string" },
+        "during": { "type": "string" },
+        "after": { "type": "string" }
+      }
+    },
+    "glossary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "term": { "type": "string" },
+          "definition": { "type": "string" }
+        },
+        "required": ["term", "definition"]
+      }
+    }
+  },
+  "atl_skills_catalog": {
+    "critical_thinking": [
+      "Постановка вопросов и выявление проблем: формулировать различные виды вопросов",
+      "Постановка вопросов и выявление проблем: выявлять и формулировать проблему",
+      "Анализ и оценка: делать разумные выводы и обобщения",
+      "Анализ и оценка: распознавать подразумеваемые предположения и предвзятость",
+      "Анализ и оценка: устанавливать причинно-следственные связи",
+      "Анализ и оценка: распознавать и оценивать факты, мнения, интерпретации, аргументы",
+      "Исследование и решение комплексных проблем: предлагать и оценивать разнообразные решения",
+      "Исследование и решение комплексных проблем: определять препятствия и вызовы",
+      "Исследование и решение комплексных проблем: тестировать обобщения и выводы",
+      "Исследование и решение комплексных проблем: анализировать и синтезировать сложные концепции",
+      "Исследование и решение комплексных проблем: использовать модели",
+      "Аргументация: устанавливать истинность тезиса",
+      "Аргументация: развивать аргументы возражения",
+      "Аргументация: собирать информацию для аргумента",
+      "Анализ и оценка: рассматривать идеи с разных точек зрения"
+    ],
+    "creative_thinking": [
+      "Генерирование идей",
+      "Оригинальность: создавать новые решения проблем",
+      "Оригинальность: гипотезы «что если»",
+      "Оригинальность: гибкость мышления",
+      "Оригинальность: метафоры и сравнения",
+      "Модификация: применять знания для новых идей",
+      "Модификация: адаптировать и улучшать решения",
+      "Модификация: отлаживать системы и приложения"
+    ],
+    "transdisciplinary": [
+      "Исследования в различных контекстах",
+      "Сравнение концептуального понимания в дисциплинах",
+      "Применение знаний для изучения новых технологий"
+    ]
+  }
+}
