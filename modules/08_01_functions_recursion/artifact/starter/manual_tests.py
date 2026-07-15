@@ -1,6 +1,18 @@
-"""Ручные тесты text_stats — те же 10 assert, что в solution/.
+"""Ручные тесты text_stats — 10 проверок (те же, что в solution/).
 
-Запуск из папки starter: python manual_tests.py
+Запуск только из этой папки:
+  python manual_tests.py
+
+Соответствие тест → функция:
+  test_tokenize              → tokenize
+  test_count_char_recursive  → count_char_recursive
+  test_word_frequencies      → word_frequencies
+  test_filter_tokens         → filter_tokens
+  test_top_n                 → top_n
+  test_apply_pipeline        → apply_pipeline
+  test_analyze_text          → analyze_text (+ опционально count_words)
+  test_compare_class_frequencies → aggregate_frequencies + compare_class_frequencies
+  test_naive_classify_*      → naive_classify
 """
 
 import sys

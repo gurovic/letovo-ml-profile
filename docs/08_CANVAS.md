@@ -282,11 +282,13 @@ python scripts/canvas_api.py raw courses --param enrollment_type=teacher --param
 
 | Элемент | Название в Canvas |
 |---|---|
-| План пары (wiki) | `Пара K — план урока (для преподавателя)` |
+| План пары (элемент модуля) | **`План урока (для преподавателя)`** — без «Пара K» в названии; номер пары уже в SubHeader |
 | Ноутбук урока | `Ноутбук урока` |
 | Домашнее задание | `Домашнее задание` |
 
-Для Page-элемента заголовок берётся из **названия wiki-страницы**: задавать человеческое имя в `wiki_page[title]`, не в имени файла.
+Номер пары — только в SubHeader (`Пара K. …`). У остальных элементов списка **не** дублировать «Пара K».
+
+Для Page-элемента: `module_item[title]` задавать явно (`План урока (для преподавателя)`). Заголовок wiki (`wiki_page[title]`) можно оставить длиннее; **не** переименовывать wiki после публикации без необходимости — slug привязан к названию страницы.
 
 ### 11.2. Видимость материалов
 
@@ -372,7 +374,8 @@ python scripts/canvas_api.py raw courses --param enrollment_type=teacher --param
 1. Установить зависимость (один раз): `pip install -r scripts/requirements.txt`
 2. Конвертация: `scripts/lesson_md_html.py` (библиотека `markdown`, расширения `tables`, `fenced_code`)
 3. Таблицы — с **видимой разлиновкой**: бордюры задаются **инлайн** на `<table>/<th>/<td>` (Canvas вырезает `<style>`), заголовок с фоном
-4. Тело wiki — HTML в обёртке `<div class="user_content lesson-md-content">…</div>`
+4. Относительные ссылки `[…](lesson.ipynb)` / `[…](homework.ipynb)` в `LESSON.md` при публикации **переписываются** на Colab-URL (в репозитории оставлять относительные — для работы в git)
+5. Тело wiki — HTML в обёртке `<div class="user_content lesson-md-content">…</div>`
 
 **Slug и название страницы**
 
@@ -383,8 +386,12 @@ python scripts/canvas_api.py raw courses --param enrollment_type=teacher --param
 **Обновить страницу пары 2** (без дублирования элементов модуля):
 
 ```bash
+python scripts/publish_canvas_lesson.py --update-page-only
+# или явно:
 python scripts/publish_canvas_lesson.py --update-page-only --page-url para-2-plan-uroka-dlia-priepodavatielia
 ```
+
+При смене gist передавать `--lesson-nb-url` / `--homework-nb-url` — они же подставляются в тело wiki вместо относительных `.ipynb`.
 
 Полная публикация новой пары — `publish_canvas_lesson.py` без `--update-page-only` (создаёт wiki + элементы).
 
@@ -406,7 +413,7 @@ python scripts/publish_canvas_lesson.py --update-page-only --page-url para-2-pla
 | # | Элемент Canvas | Тип | Опубликован |
 |---|---|---|---|
 | 1 | Пара 2. Функция-предсказатель… | SubHeader | — |
-| 2 | Пара 2 — план урока (для преподавателя) | Page (wiki, MD→HTML) | **Нет** |
+| 2 | План урока (для преподавателя) | Page (wiki, MD→HTML) | **Нет** |
 | 3 | Ноутбук урока | ExternalUrl → Colab, `new_tab` | **Да** |
 | 4 | Домашнее задание | ExternalUrl → Colab, `new_tab` | **Да** |
 
@@ -414,9 +421,9 @@ Canvas ID / slug — зафиксировано (2026-07-15):
 
 | Сущность | ID / slug |
 |---|---|
-| Wiki «Пара 2 — план урока…» | page_id **312663**, slug `para-2-plan-uroka-dlia-priepodavatielia` |
+| Wiki (тело плана) | page_id **312663**, slug `para-2-plan-uroka-dlia-priepodavatielia` |
 | SubHeader «Пара 2…» | **485999** |
-| План пары (Page) | **486003** (не опубликован) |
+| План урока (для преподавателя) | **486003** (не опубликован; title в модуле без «Пара 2») |
 | Ноутбук урока | **486001**, `new_tab=true` |
 | Домашнее задание | **486002**, `new_tab=true` |
 | Gist урока | [gist](https://gist.github.com/gurovic/cfc377717ba193c512a9e88593405ab8) → [Colab](https://colab.research.google.com/gist/gurovic/cfc377717ba193c512a9e88593405ab8/lesson.ipynb) |

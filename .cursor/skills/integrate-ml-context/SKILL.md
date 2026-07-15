@@ -99,7 +99,7 @@ description: >-
 | `data/module_datasets.py` | константы датасетов |
 | `data/README.md` | таблица: датасет → урок → ML-смысл |
 | `UNIT.md` | §3 мотивация, §5 результаты, §9 уроки |
-| `lessons/*/LESSON.md` | §5, §8, data в активностях |
+| `lessons/*/LESSON.md` | зона D (ML-контекст, данные); задачи в зоне B |
 | `lessons/*/slides.md` | data-контекст на слайде 1 |
 | `generate_notebooks.py` | импорт data, ML-примеры |
 | `artifact/PROJECT.md` | ML-смысл артефакта |

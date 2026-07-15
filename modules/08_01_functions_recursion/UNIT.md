@@ -2,9 +2,29 @@
 
 **Класс:** 8  
 **Статус:** демоверсия (уроки, ноутбуки, артефакт); остальные модули 8 класса — план `UNIT.md`  
-**Длительность:** 10 пар по КТП (20 академических часов ≈ 4 недели при 5 ч/нед); демо-материалы: 6 уроков
+**Длительность:** 11 пар по КТП (22 академических часа ≈ 4–5 недель при 5 ч/нед); в т.ч. 1 вводная пара
 
-**Сквозная линия модуля:** описание данных → преобразование → предсказание (на списках, без pandas/sklearn).
+**Сквозная линия модуля:** ориентация в профиле → описание данных → преобразование → предсказание (на списках, без pandas/sklearn).
+
+### Для преподавателя: календарь пар
+
+Подробная таблица «пара → файлы» — в [README.md](README.md). Ниже — только роли.
+
+| Пара | Роль | План |
+|---|---|---|
+| 1 | ориентация | [01_intro_profile](lessons/01_intro_profile/LESSON.md) |
+| 2 | введение | [02_function_as_mapping](lessons/02_function_as_mapping/LESSON.md) |
+| 3 | отработка | [03_practice_predict](lessons/03_practice_predict/LESSON.md) |
+| 4 | введение | [04_parameters_and_return](lessons/04_parameters_and_return/LESSON.md) |
+| 5 | отработка | [05_practice_transform](lessons/05_practice_transform/LESSON.md) |
+| 6 | введение | [06_scope_and_debugging](lessons/06_scope_and_debugging/LESSON.md) |
+| 7 | отработка | [07_practice_metrics](lessons/07_practice_metrics/LESSON.md) |
+| 8 | введение | [08_recursion](lessons/08_recursion/LESSON.md) |
+| 9 | отработка | [09_practice_pipeline](lessons/09_practice_pipeline/LESSON.md) |
+| 10 | интеграция | [10_artifact_build](lessons/10_artifact_build/LESSON.md) |
+| 11 | интеграция | [11_artifact_submit](lessons/11_artifact_submit/LESSON.md) |
+
+**Отработка** — отдельная пара: ученики решают **не меньше трёх** задач на навык, введённый на предыдущей паре (см. Pedagogy §2 в `docs/`). Один `LESSON.md` = одна пара КТП (2 ч).
 
 ---
 
@@ -14,7 +34,7 @@
 |---|---|
 | Название | Функции и рекурсия в Python |
 | Класс | 8 |
-| Длительность (оценка) | 20 академических часов (10 пар КТП) |
+| Длительность (оценка) | 22 академических часа (11 пар КТП: 1 вводная + 10 содержания) |
 | Сюжет модуля | Стажёры агентства недвижимости создают прототип оценщика квартир и модуля `text_stats` |
 | Место в траектории 8–11 | Первый модуль программирования 8 класса; **мост к EDA и табличному ML** через абстракцию «функция = transform / predict» |
 
@@ -35,8 +55,8 @@
 | Регрессия | `predict_price(area)` — линейная модель вручную |
 | Классификация | `predict_pass`, `accuracy`, `confusion_counts` (tp, fp, fn, tn) |
 | EDA | `describe_numbers`, `grade_stats`, частоты слов |
-| Preprocessing | `min_max_scale`, `clip`, pipeline шагов |
-| NLP (задел) | `text_stats`, bag-of-words, сравнение классов |
+| Преобразование данных | `min_max_scale`, `clip`, цепочка шагов |
+| NLP (задел) | `text_stats`, частоты слов (bag-of-words — см. §18), сравнение классов |
 | Структуры данных | `flatten`, дерево категорий |
 
 ---
@@ -56,14 +76,15 @@
 
 После модуля учащийся может:
 
-1. **Объяснить** модель ML как функцию «признаки → предсказание» и реализовать простой `predict_*` с `return`.
-2. **Вычислить** proto-EDA: mean, min, max, долю класса по порогу.
-3. **Масштабировать** список признаков min-max (задел под kNN).
-4. **Отладить** функцию метрики (`accuracy`) и предсказания.
-5. **Реализовать** рекурсию на вложенных данных и дереве категорий.
-6. **Применить** `map`/`filter`/`sorted(key=)` к данным и метрикам моделей.
-7. **Собрать** inference pipeline из функций (аналог sklearn Pipeline).
-8. **Создать** модуль `text_stats` со сравнением частот двух классов текстов.
+1. **Ориентироваться** в целях профиля 8–11, роли модулей и артефактов, правилах организации года (вводная пара).
+2. **Объяснить** модель ML как функцию «признаки → предсказание» и реализовать простой `predict_*` с `return`.
+3. **Вычислить** описание выборки вручную (среднее, min, max по списку; см. глоссарий «proto-EDA»).
+4. **Масштабировать** список признаков min-max (задел под kNN).
+5. **Отладить** функцию метрики (`accuracy`) и предсказания.
+6. **Реализовать** рекурсию на вложенных данных и дереве категорий.
+7. **Применить** `map`/`filter`/`sorted(key=)` к данным и метрикам моделей.
+8. **Собрать** inference pipeline из функций (аналог sklearn Pipeline).
+9. **Создать** модуль `text_stats` со сравнением частот двух классов текстов.
 
 ---
 
@@ -129,23 +150,27 @@
 | Исследование | Применять знания для изучения новых технологий (задел под sklearn Pipeline) |
 | Самоорганизация | Документирование и воспроизводимость (`module_datasets.py`, README артефакта) |
 
-**Процесс формирования:** уроки 1–3 — критический анализ контракта функции и метрик; уроки 4–6 — синтез pipeline и применение HOF; артефакт — самостоятельная сборка модуля с тестами.
+**Процесс формирования:** вводная — ориентация; пары введения — контракт навыка; пары практики — серия задач на тот же навык (≥3); артефакт — интеграция уже отработанного. Планы: `lessons/*/LESSON.md` (сценарий A–C по Lesson Design Draft 5; эталон — пара 2).
 
 ---
 
 ## 11. Последовательность уроков
 
-| # | Урок | Часы | LESSON | Data/ML-фокус | Артефакт |
-|---|---|---|---|---|---|
-| 1 | Функция как отображение | 2 | [01](lessons/01_function_as_mapping/LESSON.md) | `predict_price`, MAE, batch predict | функции-предикторы |
-| 2 | Параметры и return | 2 | [02](lessons/02_parameters_and_return/LESSON.md) | describe, min_max_scale, grade_stats | proto-EDA |
-| 3 | Scope и отладка | 2 | [03](lessons/03_scope_and_debugging/LESSON.md) | accuracy, confusion, баги метрик | журнал отладки |
-| 4 | Рекурсия | 2 | [04](lessons/04_recursion/LESSON.md) | flatten API, дерево категорий | рекурсия на данных |
-| 5 | Lambda | 2 | [05](lessons/05_lambda/LESSON.md) | map/filter, ранжирование моделей | lambda на данных |
-| 6 | HOF | 2 | [06](lessons/06_higher_order/LESSON.md) | ML inference pipeline | pipeline |
-| — | Артефакт | 8 | [artifact](artifact/PROJECT.md) | naive text classification по частотам | `text_stats` |
+| # | Урок | Роль | Часы | Пара КТП | LESSON | Data/ML-фокус |
+|---|---|---|---|---|---|---|
+| 1 | Вводная: ИИ, ML, профиль | ориентация | 2 | 1 | [01](lessons/01_intro_profile/LESSON.md) | карта года, договорённости |
+| 2 | Функция как отображение | введение | 2 | 2 | [02](lessons/02_function_as_mapping/LESSON.md) | `predict_price`, return |
+| 3 | Практика: predict | отработка | 2 | 3 | [03](lessons/03_practice_predict/LESSON.md) | `predict_*`, MAE, batch |
+| 4 | Параметры и return | введение | 2 | 4 | [04](lessons/04_parameters_and_return/LESSON.md) | describe, scale |
+| 5 | Практика: transform | отработка | 2 | 5 | [05](lessons/05_practice_transform/LESSON.md) | proto-EDA, grade_stats |
+| 6 | Scope и отладка | введение | 2 | 6 | [06](lessons/06_scope_and_debugging/LESSON.md) | accuracy, баги |
+| 7 | Практика: метрики | отработка | 2 | 7 | [07](lessons/07_practice_metrics/LESSON.md) | confusion_counts, журнал |
+| 8 | Рекурсия | введение | 2 | 8 | [08](lessons/08_recursion/LESSON.md) | flatten, дерево категорий |
+| 9 | Практика: рекурсия; lambda / HOF / pipeline | отработка | 2 | 9 | [09](lessons/09_practice_pipeline/LESSON.md) | серия + apply_pipeline |
+| 10 | Артефакт text_stats — реализация | интеграция | 2 | 10 | [10](lessons/10_artifact_build/LESSON.md) | starter шаги 1–5 |
+| 11 | Сдача артефакта | интеграция | 2 | 11 | [11](lessons/11_artifact_submit/LESSON.md) | compare, classify, README |
 
-Демо: 6 уроков по 2 ч + 8 ч на итоговую работу = 20 ч (10 пар КТП). Карточка урока — `LESSON.md` §13.
+Итого: 11 пар КТП (22 ч). Карточка §13 (зона E) — в каждом `LESSON.md`. Миграция на шаблон Draft 5 — очередь в [Lesson Design § Миграция](../../docs/04_LESSON_DESIGN.md#миграция-существующих-lessonmd); пилот — пара 2. Материалы артефакта: [artifact/PROJECT.md](artifact/PROJECT.md).
 
 ---
 
@@ -155,7 +180,7 @@
 |---|---|
 | Тип | Python-модуль + README |
 | Описание | `text_stats`: частоты, pipeline, **compare_class_frequencies** для positive/negative текстов |
-| ML-смысл | bag-of-words, задел под NLP |
+| ML-смысл | Частоты слов без порядка (bag-of-words — §18); задел под NLP |
 | Итоговое оценивание | Сдача модуля: проходит `artifact/starter/manual_tests.py` (10 assert); README описывает pipeline |
 | Проверка эталона | [artifact/solution/](artifact/solution/) — для учителя |
 | Связь с ключевой идеей | Артефакт демонстрирует композицию функций describe → transform → predict на текстах |
@@ -170,7 +195,7 @@
 |---|---|---|
 | ML | «fit и predict — не функции» | урок 1: predict вручную |
 | ML | Путают metric и predict | урок 3: accuracy отдельной функцией |
-| Data | Scaling до/после extract | урок 6: порядок в pipeline |
+| Data | Scaling до/после extract | пара 9: порядок шагов в `apply_pipeline` |
 
 ---
 
@@ -180,6 +205,9 @@
 - sklearn fit (только концепт Pipeline)
 - train/test split, cross-validation
 - TF-IDF, embeddings
+- **dict** в учебных ноутбуках модуля 1 — до модуля «структуры данных» (КТП ~65); табличные микроданные — **параллельные списки** или кортежи; `data/module_datasets.py` может хранить dict для канона и артефакта
+
+Карта инструментов 8 класса: [docs/ktp/08.md § Карта инструментов](../../docs/ktp/08.md#карта-инструментов).
 
 ---
 
@@ -225,22 +253,30 @@
 | Термин | Определение в контексте модуля |
 |---|---|
 | Отображение (функция) | Правило: каждому допустимому входу сопоставляется ровно один выход |
-| `return` | Возврат значения вызывающему коду; основа composable-функций |
+| Контракт функции | Явно: какие параметры на входе, что возвращает `return`, какого типа |
+| `return` | Возврат значения вызывающему коду; без него нельзя посчитать метрику или собрать цепочку |
+| EDA (разведочный анализ) | Первичное описание данных числами (среднее, min, max) до модели |
+| Proto-EDA | То же на списках вручную (`describe_numbers`), до pandas |
+| Transform (преобразование) | Шаг, который меняет данные (масштаб, обрезка), но не предсказывает класс |
+| Preprocessing | Цепочка transform-шагов до предсказания |
 | MAE | Средняя абсолютная ошибка предсказания: среднее \|y − ŷ\| |
 | Accuracy | Доля верных предсказаний среди всех объектов |
+| confusion_counts | Четыре числа: tp, fp, fn, tn — сколько угадали/ошиблись по типам (см. урок 03) |
 | Min-max scaling | Линейное приведение признака к диапазону [0, 1] |
 | Scope | Область видимости имён; влияет на отладку метрик |
 | Рекурсия | Вызов функцией самой себя; базовый случай обязателен |
-| Lambda | Анонимная функция для коротких transform в `map`/`filter`/`sorted` |
-| HOF | Функция, принимающая или возвращающая другую функцию |
-| Pipeline | Последовательность шагов transform → predict над одним объектом данных |
+| Lambda | Короткая анонимная функция в одну строку для `map` / `filter` / `sorted` |
+| HOF (функция высшего порядка) | Функция, которая принимает другую функцию (например `apply_pipeline`) |
+| Pipeline (цепочка шагов) | Последовательность функций: выход шага 1 → вход шага 2 → … → предсказание |
+| Inference pipeline | Цепочка от сырых данных до предсказания (без обучения `fit` в этом модуле) |
+| Отработка | Пара практики: серия задач на навык, уже введённый на предыдущей паре |
 | Bag-of-words | Представление текста частотами слов без учёта порядка |
 
 ---
 
 ## 19. Чек-лист модуля
 
-- [x] у каждого урока — полный `LESSON.md` (§1–§11, §13) и карточка §13
+- [x] у каждой пары КТП — карточка §13 (`LESSON.md` или [artifact/PROJECT.md](artifact/PROJECT.md) для 10–11)
 - [x] рефлексия автора (§17), глоссарий модуля (§18)
 - [x] концептуальная рамка согласована с уроками
 - [x] метапредметные навыки привязаны к урокам
@@ -254,21 +290,21 @@
 
 ## 20. Экспорт в школьный unit planner
 
-Маппинг полей: [reference/SCHOOL_UNIT_PLANNER.md](../../reference/SCHOOL_UNIT_PLANNER.md). Карточки уроков — `LESSON.md` §13.
+Маппинг полей: [reference/SCHOOL_UNIT_PLANNER.md](../../reference/SCHOOL_UNIT_PLANNER.md). Карточки уроков — `LESSON.md` §13; пары 10–11 — [artifact/PROJECT.md](artifact/PROJECT.md) §13.
 
 ---
 
 ## 21. Согласование с Canvas IT-8
 
-Модуль Canvas «ФУНКЦИИ и РЕКУРСИИ» (47970) — 10+ занятий общего IT. Наш модуль — **6 уроков с ML-фокусом**.
+Модуль Canvas «ФУНКЦИИ и РЕКУРСИИ» (47970) — 10+ занятий общего IT. Наш модуль — **11 пар КТП** (вводная + содержание + артефакт).
 
 | Canvas | Наш модуль |
 |---|---|
-| Функции, pre-assessment | Уроки 1–2 |
-| Lambda-контест | Урок 5 + `lessons/05_lambda/canvas_practice.md` |
-| Рекурсия-контест | Урок 4 + `lessons/04_recursion/canvas_practice.md` (binary_search — модуль 7 КТП) |
+| Функции, pre-assessment | Пары 2–5 |
+| Lambda-контест | Пара 9 + `lessons/09_practice_pipeline/canvas_practice.md` |
+| Рекурсия-контест | Пара 8 + `lessons/08_recursion/canvas_practice.md` (binary_search — модуль 7 КТП) |
 | mergesort, itertools, binary_search, декораторы, фракталы | Модули 4 и 7 по КТП; в демо — вне scope |
 
 Подробная таблица: [reference/CANVAS_MAPPING.md](reference/CANVAS_MAPPING.md)
 
-Годовой КТП (модуль 1 = пары 1–10): [docs/ktp/08.md](../../docs/ktp/08.md)
+Годовой КТП (модуль 1 = пары 1–11): [docs/ktp/08.md](../../docs/ktp/08.md)

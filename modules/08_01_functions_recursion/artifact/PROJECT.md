@@ -1,8 +1,10 @@
 # Артефакт модуля: библиотека `text_stats`
 
 **Тип:** Python-модуль + README учащегося  
-**Срок:** 1–2 недели после урока 6 (до 8 ч по UNIT.md)  
-**ML-смысл:** bag-of-words, naive classification, inference pipeline
+**Срок:** пары КТП **10–11** (по **2** академических часа на пару, **4 ч** всего + доработка дома при необходимости)  
+**Для учителя:** это **итоговая сдача** модуля; минимум — `manual_tests.py` без ошибок (10 проверок)
+
+**Смысл для класса:** частоты слов в текстах двух классов отзывов; простой классификатор «позитив / негатив» без pandas и sklearn.
 
 Данные: `TEXTS_POSITIVE`, `TEXTS_NEGATIVE` в [data/module_datasets.py](../data/module_datasets.py).
 
@@ -12,34 +14,38 @@
 
 Собрать модуль анализа текста **без pandas/sklearn**:
 
-1. preprocessing и частоты (bag-of-words);
-2. сравнение двух классов коротких отзывов;
-3. naive-классификатор по «маркерным» словам.
+1. разбить текст на слова и посчитать частоты;
+2. сравнить два класса коротких отзывов (позитивные / негативные);
+3. по «маркерным» словам угадать класс нового текста.
 
-Итог — работающий `text_stats.py`, README и прохождение `manual_tests.py`.
+Итог — работающий `text_stats.py`, README ученика и прохождение `manual_tests.py`.
 
 ---
 
 ## Обязательные функции
 
-| Функция | Контракт | Data/ML |
+Справочник контрактов. **Порядок кода на парах** — в [starter/README.md](starter/README.md) (шаги 1–8); не обязан совпадать с порядком строк ниже.
+
+| Функция | Контракт | Зачем |
 |---|---|---|
-| `tokenize(text)` | `str` → список слов в lower | preprocessing |
-| `word_frequencies(tokens)` | список → `{слово: частота}` | bag-of-words |
-| `filter_tokens(tokens, min_len=3)` | оставить токены длиной ≥ `min_len` | отбор признаков |
-| `top_n(freq, n=5)` | top-n пар `(слово, count)` по убыванию частоты | топ признаков |
-| `count_char_recursive(s, ch)` | рекурсивный подсчёт `ch` в `s` | рекурсия |
-| `analyze_text(text)` | `{"word_count", "unique_words", "top3"}` | mini-EDA документа |
-| `apply_pipeline(data, steps)` | последовательно применить функции из `steps` | pipeline |
-| `aggregate_frequencies(texts)` | суммарные частоты по списку текстов класса | агрегат класса |
-| `compare_class_frequencies(texts_a, texts_b, ratio=2.0)` | `{слово: "positive"\|"negative"}` при перевесе ≥ `ratio` | маркеры классов |
-| `naive_classify(text, texts_a, texts_b)` | `"positive"` / `"negative"` / `"unknown"` | predict |
+| `tokenize(text)` | `str` → список слов в lower | разбить текст на слова |
+| `word_frequencies(tokens)` | список → `{слово: частота}` | частоты слов |
+| `filter_tokens(tokens, min_len=3)` | оставить токены длиной ≥ `min_len` | убрать короткие слова |
+| `top_n(freq, n=5)` | top-n пар `(слово, count)` по убыванию частоты | самые частые слова |
+| `count_char_recursive(s, ch)` | рекурсивный подсчёт `ch` в `s` | рекурсия (пара 8) |
+| `analyze_text(text)` | `{"word_count", "unique_words", "top3"}` | краткое описание одного текста |
+| `apply_pipeline(data, steps)` | последовательно применить функции из `steps` | цепочка шагов (пара 9) |
+| `aggregate_frequencies(texts)` | суммарные частоты по списку текстов класса | нужна для сравнения классов; **отдельного теста нет** — проверяется через `compare_class_frequencies` |
+| `compare_class_frequencies(texts_a, texts_b, ratio=2.0)` | `{слово: "positive"\|"negative"}` при перевесе ≥ `ratio` | маркерные слова класса |
+| `naive_classify(text, texts_a, texts_b)` | `"positive"` / `"negative"` / `"unknown"` | предсказание класса текста |
 
 Вспомогательная `count_words(tokens)` — по желанию; в эталоне используется в `analyze_text`.
 
 ---
 
 ## Пример использования
+
+Запускать из папки `artifact/starter/` (как `manual_tests.py` — он сам добавляет путь к `data/`):
 
 ```python
 from text_stats import apply_pipeline, tokenize, filter_tokens, word_frequencies, naive_classify
@@ -49,8 +55,10 @@ pipeline = [tokenize, lambda t: filter_tokens(t, 3), word_frequencies]
 freq_one = apply_pipeline("отличный фильм", pipeline)
 
 naive_classify("отличный фильм рекомендую", TEXTS_POSITIVE, TEXTS_NEGATIVE)
-# → "positive"
+# ожидается: "positive"
 ```
+
+Демо-тексты отзывов — в [data/module_datasets.py](../data/module_datasets.py) (`TEXTS_POSITIVE`, `TEXTS_NEGATIVE`).
 
 ---
 
@@ -61,7 +69,7 @@ naive_classify("отличный фильм рекомендую", TEXTS_POSITIV
 | 1 | `manual_tests.py` в `starter/` — все 10 тестов без ошибок |
 | 2 | `compare_class_frequencies` на demo-данных — ≥2 маркера (в т.ч. `отличный`, `скучный`) |
 | 3 | `naive_classify` — ≥4/5 верных на **своих** тестовых фразах (перечислить в README) |
-| 4 | `analyze_text("one two two")` → `word_count==3`, `unique_words==2`, `top3[0]==("two", 2)` |
+| 4 | `analyze_text("one two two three")` → `word_count==4`, `unique_words==3`, `top3[0]==("two", 2)` (как в `manual_tests.py`) |
 | 5 | `count_char_recursive("banana", "a") == 3` |
 | 6 | README: порядок pipeline, tie-break в `naive_classify`, 1 абзац про связь с будущим NLP |
 
@@ -72,19 +80,20 @@ naive_classify("отличный фильм рекомендую", TEXTS_POSITIV
 1. Агрегация частот по списку текстов (`aggregate_frequencies`).
 2. Порог маркера (`ratio`, по умолчанию 2.0).
 3. Tie-break при равных score в `naive_classify` (эталон: `"unknown"`).
-4. Обработка пунктуации в `tokenize` (эталон: `\w+` после lower).
+4. Обработка пунктуации в `tokenize`: регулярное выражение `\w+` с флагом Unicode (кириллица — отдельные токены; запятые и кавычки отбрасываются).
+
+Шаблон README для ученика — [starter/README.md](starter/README.md#шаблон-readme-ученика).
 
 ---
 
-## Связь с уроками
+## Связь с парами модуля
 
-| Урок | В артефакте |
+| Пары | В артефакте |
 |---|---|
-| 1–2 | `def`, `return`, docstring |
-| 3 | отладка `naive_classify` |
-| 4 | `count_char_recursive` |
-| 5 | `lambda` в pipeline |
-| 6 | `apply_pipeline` |
+| 2–3 | `def`, `return`, docstring |
+| 6–7 | отладка `naive_classify` |
+| 8 | `count_char_recursive` |
+| 9 | `lambda` в pipeline, `apply_pipeline` |
 
 ---
 
@@ -96,3 +105,39 @@ naive_classify("отличный фильм рекомендую", TEXTS_POSITIV
 | [solution/](solution/) | эталон и ответы для учителя |
 
 Эталон: `cd artifact/solution && python manual_tests.py` → 10 passed.
+
+---
+
+## Для учителя (пары 10–11)
+
+Планы пар и карточки §13: [10_artifact_build/LESSON.md](../lessons/10_artifact_build/LESSON.md), [11_artifact_submit/LESSON.md](../lessons/11_artifact_submit/LESSON.md).
+
+| | |
+|---|---|
+| **Выдать** | папку [starter/](starter/) целиком; ученики **не** трогают `solution/` |
+| **Инструкция ученику** | [starter/README.md](starter/README.md) — порядок функций и шаблон README |
+| **Пара 10** | разбор PROJECT; шаги 1–5 из [starter/README](starter/README.md) |
+| **Пара 11** | шаги 6–8; сдача `text_stats.py` + README + 10 тестов |
+| **Проверка** | из `artifact/starter/`: `python manual_tests.py` → `All 10 manual tests passed.` |
+| **Зачёт** | 10 тестов + README ученика (5 своих фраз для `naive_classify`, из них ≥4 верных) |
+| **Эталон (не раздавать)** | [solution/](solution/) — ответы и разбор маркеров |
+| **Первая фраза** | «Вы собираете библиотеку из функций, которые мы тренировали 9 пар — тесты скажут, что готово» |
+
+### Если тест упал
+
+| Симптом | Что проверить |
+|---|---|
+| `ModuleNotFoundError: data` | запускать из `artifact/starter/`, не из корня репозитория |
+| `NotImplementedError` | функция ещё не реализована — нормально в начале |
+| `compare_class_frequencies` | нужны рабочие `tokenize`, `word_frequencies`, `aggregate_frequencies` |
+| `naive_classify` → всегда `unknown` | сначала проверить `compare_class_frequencies`; при равном счёте маркеров — `"unknown"` |
+| тест `analyze_text` не сходится | вход `"one two two three"` — 4 слова, 3 уникальных, `two` встречается 2 раза |
+
+---
+
+## Карточки урока (§13)
+
+Перенесены в LESSON пар 10–11 (одна пара = один LESSON.md):
+
+- [§13 пара 10](../lessons/10_artifact_build/LESSON.md#13-карточка-урока)
+- [§13 пара 11](../lessons/11_artifact_submit/LESSON.md#13-карточка-урока)

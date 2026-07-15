@@ -459,4 +459,4 @@ https://colab.research.google.com/gist/{user}/{gist_id}/{filename}.ipynb
 
 ### План пары в Canvas
 
-Wiki — отрендеренный MD ([08_CANVAS §11.4](08_CANVAS.md)). Ноутбуки — ExternalUrl + Colab ([§11.3.1](08_CANVAS.md)).
+Wiki — отрендеренный MD ([08_CANVAS §11.4](08_CANVAS.md)). Относительные `[lesson.ipynb](…)` / `[homework.ipynb](…)` при публикации → Colab. Ноутбуки в модуле — ExternalUrl + Colab ([§11.3.1](08_CANVAS.md)).

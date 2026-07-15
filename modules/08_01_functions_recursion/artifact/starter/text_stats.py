@@ -1,10 +1,16 @@
-"""Библиотека text_stats — bag-of-words и naive classification."""
+"""Библиотека text_stats — частоты слов и простой классификатор отзывов.
 
-# TODO: реализовать по PROJECT.md
+Реализовать функции по artifact/PROJECT.md. Тесты: manual_tests.py
+"""
+
+import re  # нужен для tokenize
 
 
 def tokenize(text: str) -> list:
-    """Разбить текст на слова: lower, токены из букв/цифр (см. PROJECT.md)."""
+    """Разбить текст на слова: lower; токены — подряд идущие буквы/цифры (regex \\w+, Unicode).
+
+    Пример: "Hello, мир!" → ["hello", "мир"]
+    """
     raise NotImplementedError
 
 

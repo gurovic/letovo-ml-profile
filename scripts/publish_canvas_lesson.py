@@ -17,9 +17,17 @@ from lesson_md_html import lesson_md_to_canvas_html  # noqa: E402
 
 PAGE_TITLE = "Пара 2 — план урока (для преподавателя)"
 SUBHEADER = "Пара 2. Функция-предсказатель: от правила к выбору модели"
-PLAN_ITEM_TITLE = "Пара 2 — план урока (для преподавателя)"
+PLAN_ITEM_TITLE = "План урока (для преподавателя)"
 LESSON_ITEM_TITLE = "Ноутбук урока"
 HOMEWORK_ITEM_TITLE = "Домашнее задание"
+
+DEFAULT_LESSON_COLAB = (
+    "https://colab.research.google.com/gist/gurovic/cfc377717ba193c512a9e88593405ab8/lesson.ipynb"
+)
+DEFAULT_HOMEWORK_COLAB = (
+    "https://colab.research.google.com/gist/gurovic/15255de29367ddc86fb8d141f63b5cfd/homework.ipynb"
+)
+DEFAULT_PAGE_URL = "para-2-plan-uroka-dlia-priepodavatielia"
 
 
 def upsert_lesson_page(
@@ -28,9 +36,15 @@ def upsert_lesson_page(
     title: str,
     markdown_path: Path,
     page_url: str | None = None,
+    lesson_colab_url: str | None = None,
+    homework_colab_url: str | None = None,
 ) -> dict:
     md = markdown_path.read_text(encoding="utf-8")
-    body = lesson_md_to_canvas_html(md)
+    body = lesson_md_to_canvas_html(
+        md,
+        lesson_colab_url=lesson_colab_url or DEFAULT_LESSON_COLAB,
+        homework_colab_url=homework_colab_url or DEFAULT_HOMEWORK_COLAB,
+    )
     payload = {
         "wiki_page[title]": title,
         "wiki_page[body]": body,
@@ -59,8 +73,10 @@ def publish_pair_2(
             title=PAGE_TITLE,
             markdown_path=lesson_md,
             page_url=page_url,
+            lesson_colab_url=lesson_nb_url,
+            homework_colab_url=homework_nb_url,
         )
-    resolved_page_url = (page or {}).get("url", page_url or "m1-p2-lesson")
+    resolved_page_url = (page or {}).get("url", page_url or DEFAULT_PAGE_URL)
 
     if items_only:
         return {
@@ -126,16 +142,11 @@ def main() -> None:
         default=ROOT
         / "modules/08_01_functions_recursion/lessons/02_function_as_mapping/LESSON.md",
     )
-    parser.add_argument(
-        "--lesson-nb-url",
-        default="https://colab.research.google.com/gist/gurovic/cfc377717ba193c512a9e88593405ab8/lesson.ipynb",
-    )
-    parser.add_argument(
-        "--homework-nb-url",
-        default="https://colab.research.google.com/gist/gurovic/15255de29367ddc86fb8d141f63b5cfd/homework.ipynb",
-    )
+    parser.add_argument("--lesson-nb-url", default=DEFAULT_LESSON_COLAB)
+    parser.add_argument("--homework-nb-url", default=DEFAULT_HOMEWORK_COLAB)
     parser.add_argument(
         "--page-url",
+        default=None,
         help="Update existing wiki page slug instead of creating a new page",
     )
     parser.add_argument(
@@ -146,15 +157,22 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.update_page_only:
-        if not args.page_url:
-            parser.error("--update-page-only requires --page-url")
+        page_url = args.page_url or DEFAULT_PAGE_URL
         page = upsert_lesson_page(
             args.course_id,
             title=PAGE_TITLE,
             markdown_path=args.lesson_md,
-            page_url=args.page_url,
+            page_url=page_url,
+            lesson_colab_url=args.lesson_nb_url,
+            homework_colab_url=args.homework_nb_url,
         )
-        print(json.dumps({"page": {"url": page.get("url"), "page_id": page.get("page_id")}}, ensure_ascii=False, indent=2))
+        print(
+            json.dumps(
+                {"page": {"url": page.get("url"), "page_id": page.get("page_id")}},
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
         return
 
     result = publish_pair_2(
