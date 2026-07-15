@@ -1,0 +1,2 @@
+# Dependencies for scripts/ (Canvas publish, etc.). canvas_api.py stays stdlib-only.
+markdown>=3.5

@@ -15,7 +15,7 @@
 | **Минимум сдачи** | (1) зелёные assert у `predict_price`, `batch_predict`, `mae`; (2) в §5 записан лучший коэффициент и MAE; (3) устно: почему `print` нельзя подставить в метрику |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
 | **Дальше** | transform — [пара 4](../04_parameters_and_return/LESSON.md) |
-| **Canvas** | не на этой паре (`—`) |
+| **Canvas** | Модуль 54688: `LESSON.md` скрыт; [lesson (Colab)](https://colab.research.google.com/gist/gurovic/cfc377717ba193c512a9e88593405ab8/lesson.ipynb), [homework (Colab)](https://colab.research.google.com/gist/gurovic/15255de29367ddc86fb8d141f63b5cfd/homework.ipynb) |
 
 ### Ориентир времени (не поминутный)
 
@@ -128,4 +128,4 @@
 | По содержанию | Два коэффициента vs полный диапазон 0.05–0.15 |
 | По процессу | Код индивидуально; разбор print/return — у доски |
 | По продукту | Рабочие `predict_price`, `batch_predict`, `mae`; сдача `homework.ipynb` |
-| Canvas | — |
+| Canvas | Модуль 54688: план скрыт; ноутбуки — Colab (см. зону A) |

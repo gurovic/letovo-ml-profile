@@ -12,7 +12,7 @@
 | [Pedagogy](docs/01_PEDAGOGY.md) | Как принимаются педагогические решения |
 | [Material Design Standard](docs/02_MATERIAL_DESIGN_STANDARD.md) | Как проектируются материалы |
 | [Unit Planner](docs/03_UNIT_PLANNER.md) | Как проектируется модуль |
-| [Lesson Design](docs/04_LESSON_DESIGN.md) | Как проектируется урок |
+| [Lesson Design](docs/04_LESSON_DESIGN.md) | Как проектируется урок; [полный цикл до Canvas](docs/04_LESSON_DESIGN.md#полный-цикл-от-слота-ктп-до-canvas) |
 | [Notebook Standard](docs/05_NOTEBOOK_STANDARD.md) | Как проектируется ноутбук |
 | [Presentation Standard](docs/06_PRESENTATION_STANDARD.md) | Как проектируется презентация |
 | [KTP](docs/07_KTP.md) | Календарно-тематическое планирование года (`docs/ktp/`) |

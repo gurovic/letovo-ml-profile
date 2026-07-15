@@ -28,6 +28,7 @@ Lesson Design отвечает на один вопрос:
 4. Согласовать колонку «Материал» в зоне B с реальными разделами ноутбука / путями файлов.
 5. Чек-лист MDS §11.
 6. Калибровка пары (раздел ниже): время и нагрузка для сильного ядра vs смешанного класса.
+7. Перед публикацией в Canvas — [полный цикл](#полный-цикл-от-слота-ктп-до-canvas) (фазы 0–12).
 
 ### Зоны файла (сверху вниз)
 
@@ -371,3 +372,91 @@ Lesson Design отвечает на один вопрос:
 | Калибровка времени и нагрузки пары | Принцип дифференциации → Pedagogy §10 |
 | Как читать зоны A–E | Общие правила материалов → MDS |
 | Карточка §13 | Маппинг школьной формы → `reference/` (только чтение) |
+| Полный цикл до Canvas | Раздел ниже; детали LMS → [08_CANVAS §11](08_CANVAS.md) |
+
+---
+
+## Полный цикл: от слота КТП до Canvas
+
+Оркестрация одной пары: **репозиторий** — источник правды; **Canvas** — витрина для класса. Правила материалов не дублируются здесь — только порядок фаз и ссылки на канон.
+
+**Идеальный результат:** незнакомый учитель ведёт пару по зонам A–C без автора; ученик работает в самодостаточных ноутбуках (Colab в отдельной вкладке); ДЗ по правилам (~1 ч); в LMS скрыт `LESSON.md`, открыты ссылки на ноутбуки; §13 заполнен.
+
+```mermaid
+flowchart TD
+  ktp[KTP_slot_and_UNIT] --> mds[MDS_10_questions]
+  mds --> lessonPlan[LESSON_zones_A_to_D]
+  lessonPlan --> materials[lesson_ipynb_and_homework]
+  materials --> align[Align_B_with_notebook_sections]
+  align --> calibrate[Time_and_load_calibration]
+  calibrate --> testTeacher[test_teacher_skill]
+  testTeacher --> review[review_and_expert_editor]
+  review --> zoneE[Zone_E_section13]
+  zoneE --> gitPush[git_push_origin]
+  gitPush --> gist[GitHub_gist_per_notebook]
+  gist --> canvas[Canvas_Colab_links]
+  canvas --> done[Ideal_result_checklist]
+```
+
+### Фазы
+
+| Фаза | Что делаем | Канон / инструмент | Критерий выхода |
+|---|---|---|---|
+| **0. Контекст** | Слот в КТП, строка в `UNIT.md` §11, пререквизиты, карта инструментов | [07_KTP](07_KTP.md), [ktp/08.md](ktp/08.md), `UNIT.md` §14 | Номер пары, роль (введение / отработка), нет забегания по инструментам |
+| **1. Проектирование** | 10 вопросов MDS; одна центральная идея; ≥1–2 решения учащегося | [MDS §2–7](02_MATERIAL_DESIGN_STANDARD.md) | Ответы в зоне D (или черновик) |
+| **2. LESSON.md A–C** | Сценарий, ход, «если сбились»; сумма времени **80 мин** | Шаблон выше | Четыре вопроса из § «Как пользоваться» — без догадок |
+| **3. Материалы** | `lesson.ipynb` (если нужен); **обязательно** `homework.*` (~1 ч, уровни A–D) | [Notebook Standard](05_NOTEBOOK_STANDARD.md), `generate_notebooks.py` | Нет intro/итога в ноутбуке; данные inline; без `dict` до пререквизита; ДЗ **не** в `lesson.ipynb` |
+| **4. Согласование** | Колонка «Материал» B = якоря `## …` в ноутбуке; A «Открыть» = реальный файл | Пилот: [02_function_as_mapping](../modules/08_01_functions_recursion/lessons/02_function_as_mapping/) | Нет противоречий между B и ipynb |
+| **5. Калибровка** | Время и нагрузка: сильное ядро vs смешанный класс | § «Калибровка пары» выше | Зона C «сильнее / слабее»; нет дубля с соседней парой |
+| **6. Test-teacher** | Skill `test-teacher`: вопросы учителя → правки в том же цикле | `.cursor/skills/test-teacher/SKILL.md` | Учитель не спрашивает «что открыть в первую минуту» |
+| **7. Ревью** | `review-edu-material`; при необходимости `expert-edu-editor` | Skills + [MDS §11](02_MATERIAL_DESIGN_STANDARD.md) | Вердикт «готово» или правки закрыты |
+| **8. Экспорт §13** | Зона E: все поля школьной строки | § E выше; правило §13 без ДЗ в «Стратегиях» | §13 согласован с A–C |
+| **9. Git push** | Commit + `git push origin` | [08_CANVAS §11.3](08_CANVAS.md) | Версия на GitHub = источник для gist |
+| **10. Gist** | Один gist на каждый `.ipynb` | `gh gist create … --public` | Gist соответствует запушенному коммиту |
+| **11. Canvas** | SubHeader; скрытый план (wiki); ExternalUrl → Colab, `new_tab` | [08_CANVAS §11.3.1](08_CANVAS.md) | Промежуточная страница Canvas — норма; Colab в новой вкладке |
+| **12. Фиксация** | Поле **Canvas** в A и §13; Colab-URL; при необходимости `UNIT.md` | `LESSON.md` | Не `—`; ссылки рабочие |
+
+### Ссылки на ноутбуки: Google Colab
+
+После gist — в Canvas элемент **ExternalUrl** на Colab (не nbviewer). Канон: [08_CANVAS §11.3.1](08_CANVAS.md).
+
+```
+https://colab.research.google.com/gist/{user}/{gist_id}/{filename}.ipynb
+```
+
+Ученик: клик в модуле → промежуточная страница Canvas → Colab в **новой вкладке** (`new_tab=true`). Это принятое поведение, не баг.
+
+Проверка перед публикацией: Colab открывает ноутбук, ячейки выполняются сверху вниз.
+
+### Чек-лист «идеальный результат»
+
+- [ ] Одна центральная идея; результаты обучения наблюдаемы (MDS §3–4)
+- [ ] Зоны A–C: открыть, фраза, минимум сдачи, 80 мин, ход без пробелов
+- [ ] Зона B согласована с разделами `lesson.ipynb`
+- [ ] `homework.*` отдельно; ~1 ч; уровни A–D (закрепление + вызов)
+- [ ] Ноутбук: inline-данные, без жаргона sklearn/`fit`, без `dict` до пререквизита
+- [ ] Калибровка и дифференциация (зона C) заполнены
+- [ ] Test-teacher пройден без блокирующих вопросов
+- [ ] §13 полный; «Стратегии» без постановки ДЗ
+- [ ] `git push`; gist из запушенной версии
+- [ ] Canvas: план скрыт (wiki, MD→HTML); ноутбуки — ExternalUrl + Colab + `new_tab` (§11.3.1)
+- [ ] Поле Canvas в A и §13 обновлено
+
+**Эталон:** пара 2 модуля `08_01` — [папка урока](../modules/08_01_functions_recursion/lessons/02_function_as_mapping/), [08_CANVAS §11.5](08_CANVAS.md).
+
+### Вне scope цикла одной пары
+
+| Задача | Где |
+|---|---|
+| Проектирование модуля (`UNIT.md`) | [Unit Planner](03_UNIT_PLANNER.md) |
+| Перенумерация КТП | отдельное решение по [ktp/08.md](ktp/08.md) |
+| Все пары модуля в Canvas | повтор фаз 11–12 для каждой пары |
+| Школьный unit planner | Unit Planner §20 + `reference/` (только чтение) |
+
+### Обновление после публикации
+
+Правка в git → `push` → обновить gist при необходимости → `publish_canvas_lesson.py --update-page-only --page-url …` → зафиксировать в [08_CANVAS §11.5](08_CANVAS.md) и зоне A `LESSON.md`.
+
+### План пары в Canvas
+
+Wiki — отрендеренный MD ([08_CANVAS §11.4](08_CANVAS.md)). Ноутбуки — ExternalUrl + Colab ([§11.3.1](08_CANVAS.md)).

@@ -108,6 +108,14 @@ def canvas_post(path: str, data: dict[str, str]) -> object:
     return _request("POST", path, data=data)
 
 
+def canvas_put(path: str, data: dict[str, str]) -> object:
+    return _request("PUT", path, data=data)
+
+
+def canvas_delete(path: str) -> object:
+    return _request("DELETE", path)
+
+
 def _next_link(link_header: str) -> str | None:
     for part in link_header.split(","):
         if 'rel="next"' in part or "rel=next" in part:

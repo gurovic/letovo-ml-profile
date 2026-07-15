@@ -72,6 +72,8 @@ Stdlib, без pip. Запуск из **корня репозитория**.
 | `create-course --name N --code C [--account-id ID] [--enroll-me]` | Новый курс в подаккаунте |
 | `create-module COURSE_ID --name N [--position P]` | Пустой модуль |
 | `init-8ml [--account-id ID] [--module-name N]` | Курс `8ML` + модуль 1 (идемпотентно) |
+| `publish_canvas_lesson.py` | Пара в модуль: wiki (MD→HTML) + элементы; `--update-page-only` — только wiki |
+| `lesson_md_html.py` | MD → HTML для Canvas wiki |
 
 Скрипт поддерживает GET и POST. PUT/DELETE — через `raw` или доработку скрипта при необходимости.
 
@@ -257,7 +259,7 @@ python scripts/canvas_api.py raw courses --param enrollment_type=teacher --param
 
 ## 11. Пара (урок) внутри модуля Canvas
 
-Канон размещения материалов одной пары КТП в модуле курса.
+Канон размещения материалов одной пары КТП в модуле курса. Предшествующие фазы проектирования — [Lesson Design: полный цикл](04_LESSON_DESIGN.md#полный-цикл-от-слота-ктп-до-canvas).
 
 Репозиторий — **источник правды**; Canvas — витрина для класса. Порядок действий фиксирован: сначала коммит и **push**, затем gist для ноутбуков, затем элементы в Canvas.
 
@@ -275,6 +277,16 @@ python scripts/canvas_api.py raw courses --param enrollment_type=teacher --param
 **Подмодуль** в Canvas = вложенный module item типа `SubHeader` + дочерние элементы **или** отдельный дочерний модуль (оба варианта допустимы; в Letovo чаще плоский список с префиксом «Пара K» в названии элементов).
 
 Имя подмодуля / блока: **`Пара K. <краткое название>`** — как в зоне A `LESSON.md` (поле «Название урока»).
+
+**Названия элементов — человеческие, не имена файлов.** Ученик и учитель видят русские названия, а не `lesson.ipynb` / `LESSON.md`.
+
+| Элемент | Название в Canvas |
+|---|---|
+| План пары (wiki) | `Пара K — план урока (для преподавателя)` |
+| Ноутбук урока | `Ноутбук урока` |
+| Домашнее задание | `Домашнее задание` |
+
+Для Page-элемента заголовок берётся из **названия wiki-страницы**: задавать человеческое имя в `wiki_page[title]`, не в имени файла.
 
 ### 11.2. Видимость материалов
 
@@ -297,7 +309,7 @@ python scripts/canvas_api.py raw courses --param enrollment_type=teacher --param
 | 1 | Материалы готовы в `modules/…/lessons/<NN>_*/` |
 | 2 | **Commit + `git push`** в `origin` ([github.com/gurovic/letovo-ml-profile](https://github.com/gurovic/letovo-ml-profile)) |
 | 3 | Для каждого `.ipynb` — **GitHub Gist** с содержимым из запушенной версии |
-| 4 | В Canvas — элемент **Внешний URL** на gist; для просмотра в браузере предпочтительно **nbviewer** |
+| 4 | В Canvas — элемент **Внешний URL** (`ExternalUrl`) на **Google Colab** (gist); флаг **«открыть в новой вкладке»** (`new_tab`) — см. §11.3.1 |
 
 **Почему push перед gist:** gist должен соответствовать зафиксированной в git версии; при правках — новый push, обновить gist (новый revision или новый gist), обновить ссылку в Canvas.
 
@@ -305,21 +317,78 @@ python scripts/canvas_api.py raw courses --param enrollment_type=teacher --param
 
 | Назначение | URL |
 |---|---|
-| Gist (raw) | `https://gist.githubusercontent.com/{user}/{gist_id}/raw/{revision}/lesson.ipynb` |
-| Nbviewer | `https://nbviewer.org/gist/{user}/{gist_id}` |
+| Gist (исходник) | `https://gist.github.com/{user}/{gist_id}` |
+| **Google Colab** (для Canvas) | `https://colab.research.google.com/gist/{user}/{gist_id}/{filename}.ipynb` |
 
-Имя элемента в Canvas: `lesson.ipynb` / `homework.ipynb` или с пояснением (`Ноутбук урока`, `Домашнее задание`).
+**Не использовать** nbviewer — ученик работает в Colab, не в просмотрщике.
+
+Название элемента — человеческое (`Ноутбук урока`, `Домашнее задание`), см. §11.1.
 
 **Инструменты gist (на выбор):** веб-интерфейс gist.github.com; `gh gist create file.ipynb --public`. Токены gist — в `.env`, не в docs.
 
-### 11.4. LESSON.md в Canvas
+### 11.3.1. Ноутбуки: External URL + Colab (принятый канон)
+
+**Как сделано сейчас — эталон.** Не менять на wiki-страницу со ссылкой, пока не появится иная явная причина.
+
+| Параметр | Значение |
+|---|---|
+| Тип элемента модуля | `ExternalUrl` |
+| URL | `https://colab.research.google.com/gist/{user}/{gist_id}/{filename}.ipynb` |
+| Название | `Ноутбук урока` / `Домашнее задание` (§11.1) |
+| Опубликован | **да** (виден ученикам) |
+| `new_tab` | **да** — `module_item[new_tab]=true` при создании/обновлении |
+
+**Поведение для ученика**
+
+1. Клик по элементу в модуле → **промежуточная страница Canvas** («откройте в новом окне» / ссылка на Colab).
+2. Colab открывается в **новой вкладке** (при `new_tab=true`).
+
+Промежуточную страницу **не считать ошибкой**: у External URL в Canvas нет режима «сразу уйти на внешний сайт без промежуточного экрана». Instructure оставляет её для навигации «предыдущий / следующий» по модулю.
+
+**API (при публикации через скрипт):**
+
+```python
+{
+    "module_item[type]": "ExternalUrl",
+    "module_item[external_url]": "https://colab.research.google.com/gist/.../lesson.ipynb",
+    "module_item[new_tab]": "true",
+    "module_item[published]": "true",
+}
+```
+
+**Не использовать:** nbviewer; имена файлов в заголовках элементов (`lesson.ipynb`).
+
+**Альтернатива (не принята):** wiki-страница со ссылкой `<a target="_blank">` — Colab без промежуточного экрана, но теряется prev/next в модуле и единообразие структуры пары.
+
+Источник — `LESSON.md` из репозитория. В Canvas wiki **не** вставлять сырой текст в `<pre>`: страница показывает **отрендеренный Markdown** (заголовки, таблицы, списки).
 
 | Способ | Когда |
 |---|---|
-| Wiki-страница курса + элемент модуля (не опубликован) | Предпочтительно: содержимое `LESSON.md` в теле страницы, slug вида `m1-p2-lesson` |
-| Файл `.md` в Files + элемент модуля (не опубликован) | Если нужен скачиваемый файл |
+| Wiki-страница + элемент модуля (не опубликован) | **Предпочтительно:** MD → HTML при публикации |
+| Файл `.md` в Files + элемент модуля (не опубликован) | Только если нужен скачиваемый файл (Canvas **не** рендерит MD из Files) |
 
-Источник текста — всегда `LESSON.md` из репозитория. После правок в git — обновить страницу в Canvas вручную или через API (пока не автоматизировано).
+**Рендер MD → HTML**
+
+1. Установить зависимость (один раз): `pip install -r scripts/requirements.txt`
+2. Конвертация: `scripts/lesson_md_html.py` (библиотека `markdown`, расширения `tables`, `fenced_code`)
+3. Таблицы — с **видимой разлиновкой**: бордюры задаются **инлайн** на `<table>/<th>/<td>` (Canvas вырезает `<style>`), заголовок с фоном
+4. Тело wiki — HTML в обёртке `<div class="user_content lesson-md-content">…</div>`
+
+**Slug и название страницы**
+
+- Название wiki — человеческое: `Пара K — план урока (для преподавателя)`.
+- Canvas формирует slug из названия; при **переименовании** slug меняется и ломает привязку Page-элемента.
+- Правило: не менять название после публикации; если поменяли — обновить `module_item[page_url]` (или пересоздать Page-элемент).
+
+**Обновить страницу пары 2** (без дублирования элементов модуля):
+
+```bash
+python scripts/publish_canvas_lesson.py --update-page-only --page-url para-2-plan-uroka-dlia-priepodavatielia
+```
+
+Полная публикация новой пары — `publish_canvas_lesson.py` без `--update-page-only` (создаёт wiki + элементы).
+
+После правок в git — перезапустить `--update-page-only` с тем же `--page-url`.
 
 ### 11.5. Эталон: пара 2, модуль 1
 
@@ -336,28 +405,36 @@ python scripts/canvas_api.py raw courses --param enrollment_type=teacher --param
 
 | # | Элемент Canvas | Тип | Опубликован |
 |---|---|---|---|
-| 1 | `Пара 2. Функция-предсказатель…` | SubHeader или Text Header | — |
-| 2 | `LESSON.md` (план пары) | Page / File | **Нет** |
-| 3 | `lesson.ipynb` | External URL → gist / nbviewer | **Да** |
-| 4 | `homework.ipynb` | External URL → gist / nbviewer | **Да** |
+| 1 | Пара 2. Функция-предсказатель… | SubHeader | — |
+| 2 | Пара 2 — план урока (для преподавателя) | Page (wiki, MD→HTML) | **Нет** |
+| 3 | Ноутбук урока | ExternalUrl → Colab, `new_tab` | **Да** |
+| 4 | Домашнее задание | ExternalUrl → Colab, `new_tab` | **Да** |
 
-Canvas ID подмодуля / элементов — фиксировать здесь после создания:
+Canvas ID / slug — зафиксировано (2026-07-15):
 
-| Сущность | Canvas ID |
+| Сущность | ID / slug |
 |---|---|
-| Пара 2 (подмодуль / блок) | *(заполнить)* |
-| LESSON.md (элемент) | *(заполнить)* |
-| lesson.ipynb (элемент) | *(заполнить)* |
-| homework.ipynb (элемент) | *(заполнить)* |
-| Gist `lesson.ipynb` | *(заполнить после push)* |
-| Gist `homework.ipynb` | *(заполнить после push)* |
+| Wiki «Пара 2 — план урока…» | page_id **312663**, slug `para-2-plan-uroka-dlia-priepodavatielia` |
+| SubHeader «Пара 2…» | **485999** |
+| План пары (Page) | **486003** (не опубликован) |
+| Ноутбук урока | **486001**, `new_tab=true` |
+| Домашнее задание | **486002**, `new_tab=true` |
+| Gist урока | [gist](https://gist.github.com/gurovic/cfc377717ba193c512a9e88593405ab8) → [Colab](https://colab.research.google.com/gist/gurovic/cfc377717ba193c512a9e88593405ab8/lesson.ipynb) |
+| Gist ДЗ | [gist](https://gist.github.com/gurovic/15255de29367ddc86fb8d141f63b5cfd) → [Colab](https://colab.research.google.com/gist/gurovic/15255de29367ddc86fb8d141f63b5cfd/homework.ipynb) |
+
+Скрипты: `publish_canvas_lesson.py` (wiki + элементы), `lesson_md_html.py` (MD→HTML с разлиновкой таблиц). Обновление только wiki:
+
+```bash
+python scripts/publish_canvas_lesson.py --update-page-only --page-url para-2-plan-uroka-dlia-priepodavatielia
+```
 
 ### 11.6. Чек-лист публикации одной пары
 
 - [ ] `LESSON.md`, `lesson.ipynb`, `homework.ipynb` согласованы с [Lesson Design](04_LESSON_DESIGN.md)
 - [ ] `git push origin main` (или рабочая ветка, влитая в main)
-- [ ] Gist создан для каждого ноутбука; ссылки проверены в nbviewer
-- [ ] В модуле Canvas — блок «Пара K»; `LESSON.md` скрыт от учеников
-- [ ] Ноутбуки — опубликованные внешние ссылки
+- [ ] Gist создан для каждого ноутбука; ExternalUrl + `new_tab` + Colab-URL
+- [ ] Wiki плана пары — отрендеренный MD (таблицы с разлиновкой)
+- [ ] В модуле — человеческие названия элементов (§11.1); план скрыт от учеников
+- [ ] Ноутбуки опубликованы; промежуточная страница Canvas перед Colab — норма (§11.3.1)
 - [ ] ID и gist-URL записаны в §11.5 (или в `LESSON.md` / `UNIT.md` при необходимости)
 - [ ] Поле **Canvas** в зоне A `LESSON.md` обновлено (что выложено, не `—`)
