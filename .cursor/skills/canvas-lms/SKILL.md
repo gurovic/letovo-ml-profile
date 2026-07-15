@@ -21,7 +21,7 @@ description: >-
 | `CANVAS_API_URL` | https://canvas.letovo.ru/api/v1 |
 | `CANVAS_ACCESS_TOKEN` | Bearer token |
 
-Если `.env` пуст — попросить пользователя заполнить по `.env.example`.
+Канон курса 8 класса и публикации пар: [docs/08_CANVAS.md](../../docs/08_CANVAS.md) (`course_id` **6465**; §11 — push → gist → Canvas).
 
 ## Инструмент
 
@@ -44,6 +44,16 @@ python scripts/canvas_api.py files COURSE_ID
 python scripts/canvas_api.py raw "courses/COURSE_ID/..." --paginate
 ```
 
+Создание (по явной просьбе пользователя):
+
+```bash
+python scripts/canvas_api.py init-8ml
+python scripts/canvas_api.py create-course --name "8ML" --code "8ML" --enroll-me
+python scripts/canvas_api.py create-module COURSE_ID --name "Модуль 1. ..."
+```
+
+`init-8ml` идемпотентен: не дублирует курс и модуль с тем же названием.
+
 Добавляй `--json` для полного ответа.
 
 ## Workflow: получить информацию
@@ -64,6 +74,7 @@ python scripts/canvas_api.py raw "courses/COURSE_ID/..." --paginate
 | Формат модуля / стандарт школы в Canvas | `modules` + `module-items`; wiki `pages` |
 | Программа курса ML | `courses --search`, затем `syllabus` или `pages` |
 | Сверить demo-модуль с Canvas | выгрузить структуру модулей, сравнить с UNIT.md |
+| Опубликовать пару в модуле | [08_CANVAS §11](../../docs/08_CANVAS.md#11-пара-урок-внутри-модуля-canvas): push → gist → External URL; LESSON.md скрыт |
 | Unit Planner TODO «стандарт школы» | найти страницу-шаблон в Canvas, процитировать структуру |
 
 ## Canvas API (справка)
@@ -75,7 +86,7 @@ python scripts/canvas_api.py raw "courses/COURSE_ID/..." --paginate
 
 ## Ограничения
 
-- **Read-only** в этом skill — не создавать/менять курсы без явной просьбы.
+- Создание/изменение курсов — только по явной просьбе; команды `create-course`, `create-module`, `init-8ml`.
 - Не скачивать бинарные файлы без запроса (список — `files`).
 - HTML из pages — сырой; для решений опираться на смысл, не копировать разметку слепо.
 

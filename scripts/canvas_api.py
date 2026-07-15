@@ -49,7 +49,14 @@ def canvas_config() -> tuple[str, str]:
     return api_url, token
 
 
-def canvas_get(path: str, params: dict | None = None, *, paginate: bool = False) -> object:
+def _request(
+    method: str,
+    path: str,
+    *,
+    params: dict | None = None,
+    data: dict[str, str] | None = None,
+    paginate: bool = False,
+) -> object:
     api_url, token = canvas_config()
     if path.startswith("http"):
         url = path
@@ -57,6 +64,8 @@ def canvas_get(path: str, params: dict | None = None, *, paginate: bool = False)
         url = f"{api_url}/{path.lstrip('/')}"
 
     headers = {"Authorization": f"Bearer {token}", "Accept": "application/json"}
+    if data is not None:
+        headers["Content-Type"] = "application/x-www-form-urlencoded"
     all_items: list = []
 
     while url:
@@ -66,28 +75,37 @@ def canvas_get(path: str, params: dict | None = None, *, paginate: bool = False)
             req_url = req_url + sep + urllib.parse.urlencode(params)
             params = None
 
-        req = urllib.request.Request(req_url, headers=headers, method="GET")
+        body = urllib.parse.urlencode(data).encode("utf-8") if data is not None else None
+        req = urllib.request.Request(req_url, data=body, headers=headers, method=method)
         try:
             with urllib.request.urlopen(req, timeout=60) as resp:
-                body = resp.read().decode("utf-8")
+                raw = resp.read().decode("utf-8")
                 link = resp.headers.get("Link", "")
         except urllib.error.HTTPError as e:
             detail = e.read().decode("utf-8", errors="replace")
             print(f"HTTP {e.code}: {detail}", file=sys.stderr)
             sys.exit(1)
 
-        data = json.loads(body) if body else None
+        payload = json.loads(raw) if raw else None
 
-        if paginate and isinstance(data, list):
-            all_items.extend(data)
+        if paginate and isinstance(payload, list):
+            all_items.extend(payload)
             url = _next_link(link)
             continue
 
-        if paginate and isinstance(data, list):
+        if paginate and isinstance(payload, list):
             return all_items
-        return data
+        return payload
 
     return all_items if paginate else None
+
+
+def canvas_get(path: str, params: dict | None = None, *, paginate: bool = False) -> object:
+    return _request("GET", path, params=params, paginate=paginate)
+
+
+def canvas_post(path: str, data: dict[str, str]) -> object:
+    return _request("POST", path, data=data)
 
 
 def _next_link(link_header: str) -> str | None:
@@ -196,6 +214,105 @@ def cmd_folders(args: argparse.Namespace) -> None:
     print(json.dumps(data, ensure_ascii=False, indent=2))
 
 
+MODULE_1_NAME = "Модуль 1. Оценка недвижимости: функции и inference pipeline"
+
+
+def _default_account_id() -> int:
+    env = load_env()
+    if env.get("CANVAS_ACCOUNT_ID"):
+        return int(env["CANVAS_ACCOUNT_ID"])
+    accounts = canvas_get("accounts", paginate=True)
+    if not accounts:
+        print("Error: no Canvas accounts available for course creation.", file=sys.stderr)
+        sys.exit(1)
+    return int(accounts[0]["id"])
+
+
+def _find_course_by_code(code: str) -> dict | None:
+    courses = canvas_get(
+        "courses",
+        {"search_term": code, "enrollment_state": "active"},
+        paginate=True,
+    )
+    for course in courses:
+        if course.get("course_code") == code or course.get("name") == code:
+            return course
+    return None
+
+
+def cmd_accounts(args: argparse.Namespace) -> None:
+    data = canvas_get("accounts", paginate=True)
+    if args.json:
+        print(json.dumps(data, ensure_ascii=False, indent=2))
+        return
+    for account in data:
+        print(f"{account.get('id')}\t{account.get('name', '')}")
+
+
+def cmd_create_course(args: argparse.Namespace) -> None:
+    account_id = args.account_id or _default_account_id()
+    payload = {
+        "course[name]": args.name,
+        "course[course_code]": args.code or args.name,
+    }
+    if args.enroll_me:
+        payload["course[enroll_me]"] = "true"
+    result = canvas_post(f"accounts/{account_id}/courses", payload)
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+
+
+def cmd_create_module(args: argparse.Namespace) -> None:
+    payload = {"module[name]": args.name}
+    if args.position is not None:
+        payload["module[position]"] = str(args.position)
+    result = canvas_post(f"courses/{args.course_id}/modules", payload)
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+
+
+def cmd_init_8ml(args: argparse.Namespace) -> None:
+    course = _find_course_by_code("8ML")
+    if course:
+        print(f"Course 8ML already exists: id={course['id']}", file=sys.stderr)
+        course_id = int(course["id"])
+    else:
+        account_id = args.account_id or _default_account_id()
+        course = canvas_post(
+            f"accounts/{account_id}/courses",
+            {
+                "course[name]": "8ML",
+                "course[course_code]": "8ML",
+                "course[enroll_me]": "true",
+            },
+        )
+        course_id = int(course["id"])
+        print(f"Created course 8ML: id={course_id}", file=sys.stderr)
+
+    modules = canvas_get(f"courses/{course_id}/modules", paginate=True)
+    module_name = args.module_name or MODULE_1_NAME
+    existing = next((m for m in modules if m.get("name") == module_name), None)
+    if existing:
+        print(
+            json.dumps(
+                {"course_id": course_id, "module": existing, "created": False},
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        return
+
+    module = canvas_post(
+        f"courses/{course_id}/modules",
+        {"module[name]": module_name},
+    )
+    print(
+        json.dumps(
+            {"course_id": course_id, "module": module, "created": True},
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
+
+
 def cmd_raw(args: argparse.Namespace) -> None:
     path = args.path.lstrip("/")
     params = {}
@@ -264,6 +381,31 @@ def build_parser() -> argparse.ArgumentParser:
     c = sub.add_parser("folders", help="Course folders")
     c.add_argument("course_id", type=int)
     c.set_defaults(func=cmd_folders)
+
+    c = sub.add_parser("accounts", help="Accounts available for course creation")
+    c.add_argument("--json", action="store_true")
+    c.set_defaults(func=cmd_accounts)
+
+    c = sub.add_parser("create-course", help="Create a new course")
+    c.add_argument("--name", required=True)
+    c.add_argument("--code", help="Course code (default: same as name)")
+    c.add_argument("--account-id", type=int, help="Canvas account id (default: first available)")
+    c.add_argument("--enroll-me", action="store_true", help="Enroll current user as teacher")
+    c.set_defaults(func=cmd_create_course)
+
+    c = sub.add_parser("create-module", help="Create an empty module in a course")
+    c.add_argument("course_id", type=int)
+    c.add_argument("--name", required=True)
+    c.add_argument("--position", type=int)
+    c.set_defaults(func=cmd_create_module)
+
+    c = sub.add_parser(
+        "init-8ml",
+        help="Create course 8ML and module 1 (idempotent)",
+    )
+    c.add_argument("--account-id", type=int)
+    c.add_argument("--module-name", help=f"Default: {MODULE_1_NAME}")
+    c.set_defaults(func=cmd_init_8ml)
 
     c = sub.add_parser("raw", help="Raw GET path under /api/v1/")
     c.add_argument("path", help="e.g. courses/123/discussion_topics")
