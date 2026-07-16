@@ -10,9 +10,9 @@
 | Длительность | 2 академических часа (**80 минут**) |
 | Роль | введение |
 | Пререквизиты | Модуль 1: функция, return, predict; Python 7 класса |
-| **Открыть** | [lesson.ipynb](lesson.ipynb) — загрузка `trips.csv` в первой code-ячейке |
+| **Открыть** | [lesson.ipynb](lesson.ipynb) + `trips.csv` рядом с ноутбуком (уже в папке урока). Первая code-ячейка сама ищет CSV (`trips.csv` / `../../data/trips.csv`) |
 | **Первая фраза** | «Сегодня списки превращаются в таблицу: загрузим поездки каршеринга и назовём столбцы — цель, признаки, id» |
-| **Минимум сдачи** | (1) `df.shape` и `head` выведены; (2) `TARGET` / `FEATURES` / `ID_COL` с assert; (3) устно: чем цель отличается от признака |
+| **Минимум сдачи** | (1) `df.shape` и `head` выведены; (2) `TARGET` / `FEATURES` / `ID_COL` с assert; (3) устно: чем цель отличается от признака. Блок `## 4. Расширение` — по времени, не в минимум |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
 | **Дальше** | фильтры — [пара 12](../02_practice_filters/LESSON.md) |
 | **Canvas** | Модуль 54689: план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/d19afee5ef0dcd2be593ea93d11ba26f/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/d19afee5ef0dcd2be593ea93d11ba26f/homework.ipynb)) |
@@ -36,6 +36,7 @@
 | 1 | Первая таблица | 20 | Загружает CSV; смотрит shape, head, columns | «Строка = поездка; столбец = поле» | `## 1. Первая таблица` | shape и head на экране |
 | 2 | Роли столбцов | 25 | Заполняет TARGET, FEATURES, ID_COL | Не путать id с признаком | `## 2. Признак, цель, служебный столбец` | assert зелёные |
 | 3 | Тип object | 20 | Находит object-столбцы; объясняет dtype distance | Связь с будущим fit | `## 3. Тип object` | устно: почему distance не object |
+| 3б | (если есть время) | — | Уникальные `zone` | Не обязателен | `## 4. Расширение` | число уникальных zone |
 | 4 | Постановка ДЗ | 15 | Открывает homework.ipynb | Срез и поиск по trip_id | [homework.ipynb](homework.ipynb) | знает файл и срок |
 
 ---

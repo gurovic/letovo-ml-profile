@@ -10,9 +10,9 @@
 | Длительность | 2 академических часа (**80 минут**) |
 | Роль | введение |
 | Пререквизиты | Пара 13: EDA; модуль 1: идея predict |
-| **Открыть** | [lesson.ipynb](lesson.ipynb) — sklearn в ноутбуке |
+| **Открыть** | [lesson.ipynb](lesson.ipynb) + `trips.csv` рядом (как на паре 11). Импорты sklearn уже в первой code-ячейке |
 | **Первая фраза** | «Ручной predict из модуля 1 теперь делает библиотека: разделим данные, обучим линейную модель на расстоянии» |
-| **Минимум сдачи** | (1) X и y выделены; (2) split 80/20, random_state=42; (3) fit на train, predict на test; (4) coef и intercept напечатаны |
+| **Минимум сдачи** | (1) X и y выделены; (2) split 80/20, `random_state=42`; (3) fit на train, predict на test; (4) `coef_` и `intercept_` напечатаны. `## 4. Расширение` — по времени, не в минимум |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
 | **Дальше** | метрики — [пара 15](../05_practice_metrics/LESSON.md) |
 | **Canvas** | Модуль 54689: план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/4319bd3960b3b50ebc04ea49b3623ff3/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/4319bd3960b3b50ebc04ea49b3623ff3/homework.ipynb)) |
@@ -35,7 +35,8 @@
 |---|---|---|---|---|---|---|
 | 1 | Признак и цель | 15 | X = [[distance]], y = duration | Двойные скобки у X | `## 1. Признак и цель` | shape X и y |
 | 2 | Split | 25 | train_test_split, seed 42 | Зачем test отдельно | `## 2. train/test split` | assert длины test |
-| 3 | fit/predict | 30 | LinearRegression; предсказания test | Связь с predict_price | `## 3. fit / predict` | coef напечатан |
+| 3 | fit/predict | 30 | LinearRegression; предсказания test | «`coef_` — тот же смысл, что k в ручном predict модуля 1» | `## 3. fit / predict` | `coef_` / `intercept_` напечатаны |
+| 3б | (если есть время) | — | Split с `random_state=0` — совпали ли индексы test? | Seed меняет состав | `## 4. Расширение` | bool-ответ |
 | 4 | Постановка ДЗ | 10 | Другой test_size | Воспроизводимость seed | [homework.ipynb](homework.ipynb) | знает срок |
 
 ---
@@ -55,7 +56,7 @@
 | | |
 |---|---|
 | Слабее базы | Этапы 1–3 с фиксированным `test_size=0.2`; coef/intercept — распечатать из готового `model`; в ДЗ — задача 1 |
-| Сильнее базы | Устно связать `coef_` с `predict_price` модуля 1; в ДЗ — воспроизводимость seed и вызов обязательны |
+| Сильнее базы | Устно: `coef_` ≈ коэффициент k из ручного `predict` модуля 1; в ДЗ — воспроизводимость seed и вызов обязательны |
 
 ---
 

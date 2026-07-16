@@ -10,9 +10,9 @@
 | Длительность | 2 академических часа (**80 минут**) |
 | Роль | отработка |
 | Пререквизиты | Пара 14: train/test, LinearRegression |
-| **Открыть** | [lesson.ipynb](lesson.ipynb) — данные; split+fit ученик повторяет в §1 |
+| **Открыть** | [lesson.ipynb](lesson.ipynb) — первая ячейка только грузит данные; split+fit ученик пишет сам в `## 1` |
 | **Первая фраза** | «Модель умеет предсказывать — сегодня сами собираем split/fit и мерим MSE и R² на test» |
-| **Минимум сдачи** | (1) split+fit+`y_pred`; (2) MSE на test; (3) R² на test; (4) таблица fact/pred/error; (5) фраза интерпретации |
+| **Минимум сдачи** | (1) split+fit+`y_pred`; (2) `mse` на test; (3) `r2` на test; (4) DataFrame `compare` с колонками fact/pred/error; (5) непустая строка `METRIC_NOTE` |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
 | **Дальше** | try/except — [пара 16](../06_try_except_csv/LESSON.md) |
 | **Canvas** | Модуль 54689: план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/1b64439fdc5f01fd2ef1f7a9190ebd20/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/1b64439fdc5f01fd2ef1f7a9190ebd20/homework.ipynb)) |
@@ -24,7 +24,8 @@
 | Split + fit (опора пары 14) | 15 |
 | MSE | 15 |
 | R² | 15 |
-| Таблица + интерпретация | 25 |
+| Таблица сравнения | 15 |
+| Интерпретация (`METRIC_NOTE`) | 10 |
 | Постановка ДЗ | 10 |
 | **Итого** | **80** |
 
@@ -35,10 +36,11 @@
 | # | Этап | ~мин | Ученик | Учитель | Материал | Критерий закрытия |
 |---|---|---|---|---|---|---|
 | 1 | Split и модель | 15 | Собирает train/test + fit + `y_pred` | Тот же seed 42, что на паре 14 | `## 1. Split и модель` | `y_pred` на test есть |
-| 2 | MSE | 15 | mean_squared_error на test | Только test | `## 2. MSE` | mse >= 0 |
-| 3 | R² | 15 | r2_score на test | Доля объяснённого разброса | `## 3. R²` | число в разумных пределах |
-| 4 | Сравнение + фраза | 25 | DataFrame fact/pred/error; METRIC_NOTE | Знак ошибки; связать с R² | `## 4`–`## 5` | head + непустая фраза |
-| 5 | Постановка ДЗ | 10 | Открывает homework (MAE, train vs test) | Связь с MAE модуля 1 | [homework.ipynb](homework.ipynb) | знает срок |
+| 2 | MSE | 15 | `mean_squared_error` на test | Только test | `## 2. MSE` | `mse >= 0` |
+| 3 | R² | 15 | `r2_score` на test | Доля объяснённого разброса | `## 3. R²` | число в разумных пределах |
+| 4 | Таблица ошибок | 15 | DataFrame `compare`: fact / pred / error | Знак ошибки = fact − pred | `## 4. Таблица сравнения` | `compare.head()` на экране |
+| 5 | Интерпретация | 10 | Строка `METRIC_NOTE` про R² | «какую долю разброса объясняет» | `## 5. Интерпретация` | `len(METRIC_NOTE) > 15` |
+| 6 | Постановка ДЗ | 10 | Открывает homework (MAE, train vs test) | Связь с MAE модуля 1 | [homework.ipynb](homework.ipynb) | знает срок |
 
 ---
 

@@ -170,6 +170,7 @@
 | Тип | Jupyter-ноутбук с разделами отчёта (пары 19–20) |
 | Описание | Прогноз длительности поездки: загрузка, EDA, train/test, `LinearRegression`, MSE/R², сравнение ≥2 признаков |
 | ML-смысл | Первый полный цикл supervised regression на таблице |
+| Файл сдачи | [artifact/starter/report_starter.ipynb](artifact/starter/report_starter.ipynb) |
 | Итоговое оценивание | Критерии [artifact/PROJECT.md](artifact/PROJECT.md): метрики на test, сравнение признаков, рекомендация |
 | Связь с ключевой идеей | Артефакт демонстрирует табличный pipeline от CSV до метрики |
 

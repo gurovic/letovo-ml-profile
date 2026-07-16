@@ -2,12 +2,14 @@
 
 **Тип:** Jupyter-ноутбук с воспроизводимым циклом  
 **Срок:** пары КТП **19–20** (по **2** академических часа; при необходимости доработка дома после пары 20)  
-**Стартер:** [starter/report_starter.ipynb](starter/report_starter.ipynb)  
-**Для учителя:** итоговая сдача модуля; минимум — чек-лист ниже без пропусков
+**Файл сдачи:** [starter/report_starter.ipynb](starter/report_starter.ipynb) (заполненный)  
+**На паре 19:** каркас в `lessons/09_report_draft/lesson.ipynb` → перенести в starter  
+**На паре 20:** добивка starter + сверка в `lessons/10_report_submit/lesson.ipynb`  
+**Для учителя:** итоговая сдача модуля = starter по чек-листу ниже без пропусков
 
 **Смысл для класса:** прогноз длительности поездки по таблице `trips.csv` — от осмотра до рекомендации признака.
 
-Данные: [data/trips.csv](../data/trips.csv) (в Colab — копия рядом с ноутбуком или из starter).
+Данные: [data/trips.csv](../data/trips.csv) или копия [starter/trips.csv](starter/trips.csv) рядом с ноутбуком (в Colab — положить CSV рядом).
 
 ---
 
