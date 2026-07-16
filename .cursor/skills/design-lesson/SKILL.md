@@ -24,7 +24,7 @@ description: >-
 
 Форматы: `docs/05_NOTEBOOK_STANDARD.md`, `docs/06_PRESENTATION_STANDARD.md`.
 
-Эталон: `modules/08_01_functions_recursion/lessons/02_function_as_mapping/` (введение), `03_practice_predict/` (отработка).
+Эталон: `modules/08_01_functions_recursion/lessons/02_function_as_mapping/` (predict), `03_parameters_and_return/` (transform введение), `04_practice_transform/` (transform отработка).
 
 ## Куда класть результат
 
@@ -33,6 +33,7 @@ modules/<module>/lessons/<NN>_<slug>/
   LESSON.md       # сценарий пары (зоны A–E)
   lesson.ipynb    # если нужен ноутбук
   homework.ipynb  # или homework.md / homework.py — обязательно
+  solutions.ipynb # эталонные решения урока и ДЗ — только преподаватель
   slides.md       # только если нужно общее внимание (Presentation Standard)
 ```
 
@@ -57,6 +58,7 @@ modules/<module>/lessons/<NN>_<slug>/
 - [ ] 11. Зона E (§13) — все поля школьной строки; согласовать с A–C
 - [ ] 12. git push → gist → Canvas (Colab в отдельной вкладке; см. 08_CANVAS §11)
 - [ ] 13. Фиксация: поле Canvas в A и §13
+- [ ] 14. Если изменились навыки пары — строка в [матрице навыков](../../docs/ktp/08_skills_matrix.md) ([07_KTP](../../docs/07_KTP.md))
 ```
 
 Шаги 1–7 — проектирование; 8–11 — качество; 12–13 — публикация.

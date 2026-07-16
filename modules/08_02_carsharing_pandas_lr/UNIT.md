@@ -1,10 +1,25 @@
 # Unit Planner: pandas и линейная регрессия
 
 **Класс:** 8  
-**Статус:** план модуля; `LESSON.md` — после финализации группировки пар  
+**Статус:** материалы модуля (уроки, ноутбуки, артефакт)  
 **Длительность:** 10 пар по КТП (20 академических часов)
 
 **Сквозная линия модуля:** таблица поездок → осмотр → визуальный вывод → train/test → `LinearRegression` → метрики → отчёт аналитику.
+
+### Для преподавателя: календарь пар
+
+| Пара | Роль | План |
+|---|---|---|
+| 12 | введение | [01_pandas_dataframe](lessons/01_pandas_dataframe/LESSON.md) |
+| 13 | отработка | [02_practice_filters](lessons/02_practice_filters/LESSON.md) |
+| 14 | введение | [03_eda_scatter](lessons/03_eda_scatter/LESSON.md) |
+| 15 | введение | [04_train_test_lr](lessons/04_train_test_lr/LESSON.md) |
+| 16 | отработка | [05_practice_metrics](lessons/05_practice_metrics/LESSON.md) |
+| 17 | введение | [06_try_except_csv](lessons/06_try_except_csv/LESSON.md) |
+| 18 | отработка | [07_practice_features](lessons/07_practice_features/LESSON.md) |
+| 19 | введение (обзор) | [08_multifeature_overview](lessons/08_multifeature_overview/LESSON.md) |
+| 20 | интеграция | [09_report_draft](lessons/09_report_draft/LESSON.md) |
+| 21 | интеграция | [10_report_submit](lessons/10_report_submit/LESSON.md) |
 
 ---
 
@@ -133,20 +148,18 @@
 
 ## 11. Последовательность (план по парам КТП)
 
-| Пара КТП | Тема | Часы | Вклад в артефакт |
-|---|---|---|---|
-| 12 | pandas: `read_csv`, DataFrame, object / feature / target | 2 | схема данных поездок |
-| 13 | `describe()`, `info()`, типы столбцов | 2 | первичное описание |
-| 14 | scatter признак → длительность, визуальный вывод | 2 | график и гипотеза признака |
-| 15 | train/test split, `random_state` | 2 | воспроизводимое разбиение |
-| 16 | `LinearRegression`: fit/predict один признак | 2 | обученная модель |
-| 17 | MSE и R² — интерпретация качества | 2 | метрики на test |
-| 18 | `try/except` при загрузке и очистке CSV | 2 | устойчивый скрипт загрузки |
-| 19 | Эксперимент: другой признак, сравнение метрик | 2 | таблица сравнения |
-| 20 | Несколько признаков — когда одного столбца недостаточно (обзорно) | 2 | задел без углубления |
-| 21 | Мини-отчёт для отдела аналитики каршеринга | 2 | итоговый документ |
-
-Группировка в уроки и `LESSON.md` §13 — на следующем этапе проектирования.
+| Пара КТП | Тема | Часы | Роль | LESSON | Вклад в артефакт |
+|---|---|---|---|---|---|
+| 12 | pandas: `read_csv`, DataFrame, object / feature / target | 2 | введение | [LESSON](lessons/01_pandas_dataframe/LESSON.md) | схема данных |
+| 13 | Практика: выборка, фильтры, типы | 2 | отработка | [LESSON](lessons/02_practice_filters/LESSON.md) | срезы таблицы |
+| 14 | EDA: `describe()`, scatter признак → длительность | 2 | введение | [LESSON](lessons/03_eda_scatter/LESSON.md) | график и гипотеза |
+| 15 | train/test; `LinearRegression` fit/predict (один признак) | 2 | введение | [LESSON](lessons/04_train_test_lr/LESSON.md) | обученная модель |
+| 16 | Практика: MSE, R², сравнение прогнозов | 2 | отработка | [LESSON](lessons/05_practice_metrics/LESSON.md) | метрики на test |
+| 17 | `try/except` при загрузке и очистке CSV | 2 | введение | [LESSON](lessons/06_try_except_csv/LESSON.md) | устойчивая загрузка |
+| 18 | Практика: другой признак, сравнение метрик | 2 | отработка | [LESSON](lessons/07_practice_features/LESSON.md) | таблица сравнения |
+| 19 | Несколько признаков (обзорно) | 2 | введение | [LESSON](lessons/08_multifeature_overview/LESSON.md) | задел multi-feature |
+| 20 | Мини-отчёт — черновик | 2 | интеграция | [LESSON](lessons/09_report_draft/LESSON.md) | черновик |
+| 21 | Сдача отчёта, рефлексия | 2 | интеграция | [LESSON](lessons/10_report_submit/LESSON.md) | итоговый документ |
 
 ---
 
@@ -154,10 +167,10 @@
 
 | Поле | Значение |
 |---|---|
-| Тип | Jupyter-ноутбук или скрипт + краткий отчёт (Markdown/PDF) |
-| Описание | Прогноз длительности поездки каршеринга: загрузка, EDA, train/test, `LinearRegression`, MSE/R², сравнение ≥2 признаков |
-| ML-смысл | Первый полный цикл supervised regression на реальной таблице |
-| Итоговое оценивание | Отчёт содержит вывод для «отдела аналитики», метрики на test, обоснование выбора признака |
+| Тип | Jupyter-ноутбук с разделами отчёта (пары 20–21) |
+| Описание | Прогноз длительности поездки: загрузка, EDA, train/test, `LinearRegression`, MSE/R², сравнение ≥2 признаков |
+| ML-смысл | Первый полный цикл supervised regression на таблице |
+| Итоговое оценивание | Критерии [artifact/PROJECT.md](artifact/PROJECT.md): метрики на test, сравнение признаков, рекомендация |
 | Связь с ключевой идеей | Артефакт демонстрирует табличный pipeline от CSV до метрики |
 
 ---
@@ -239,9 +252,10 @@
 - [x] план по парам КТП согласован с [docs/ktp/08.md](../../docs/ktp/08.md)
 - [x] рефлексия автора (§17), глоссарий модуля (§18)
 - [x] концептуальная рамка и результаты обучения
-- [x] артефакт определён
-- [ ] `LESSON.md` и §13 карточки — после группировки пар в уроки
-- [ ] датасет и ноутбуки — этап `design-lesson`
+- [x] артефакт определён ([artifact/PROJECT.md](artifact/PROJECT.md))
+- [x] `LESSON.md` и §13 карточки по всем 10 парам
+- [x] датасет `data/trips.csv` и ноутбуки
+- [x] строки матрицы навыков M2 — [08_skills_matrix.md](../../docs/ktp/08_skills_matrix.md)
 
 ---
 

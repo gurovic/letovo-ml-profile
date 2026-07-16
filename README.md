@@ -31,7 +31,7 @@
 | # | Модуль | Пары КТП | Статус |
 |---|---|---|---|
 | 1 | [08_01_functions_recursion](modules/08_01_functions_recursion/) | 1–11 | демо: вводная + уроки, ноутбуки, артефакт |
-| 2 | [08_02_carsharing_pandas_lr](modules/08_02_carsharing_pandas_lr/) | 12–21 | план |
+| 2 | [08_02_carsharing_pandas_lr](modules/08_02_carsharing_pandas_lr/) | 12–21 | материалы |
 | 3 | [08_03_titanic_eda](modules/08_03_titanic_eda/) | 22–30 | план |
 | 4 | [08_04_mnist_knn](modules/08_04_mnist_knn/) | 31–38 | план |
 | 5 | [08_05_shop_feature_engineering](modules/08_05_shop_feature_engineering/) | 39–45 | план |
