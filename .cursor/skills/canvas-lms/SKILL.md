@@ -74,7 +74,7 @@ python scripts/canvas_api.py create-module COURSE_ID --name "Модуль 1. ...
 | Формат модуля / стандарт школы в Canvas | `modules` + `module-items`; wiki `pages` |
 | Программа курса ML | `courses --search`, затем `syllabus` или `pages` |
 | Сверить demo-модуль с Canvas | выгрузить структуру модулей, сравнить с UNIT.md |
-| Опубликовать пару в модуле | [08_CANVAS §11.3.1](../../docs/08_CANVAS.md): ExternalUrl → Colab, `new_tab`; план — wiki (MD→HTML), скрыт |
+| Опубликовать пару в модуле | [08_CANVAS §11.3.1–11.3.2](../../docs/08_CANVAS.md): урок — ExternalUrl; ДЗ — Assignment «Домашнее задание»; план и решения скрыты |
 | Unit Planner TODO «стандарт школы» | найти страницу-шаблон в Canvas, процитировать структуру |
 
 ## Canvas API (справка)

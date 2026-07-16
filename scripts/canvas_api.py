@@ -49,6 +49,53 @@ def canvas_config() -> tuple[str, str]:
     return api_url, token
 
 
+def _debug_enabled() -> bool:
+    env = load_env()
+    flag = (
+        env.get("CANVAS_API_DEBUG")
+        or os.environ.get("CANVAS_API_DEBUG")
+        or "1"
+    ).strip().lower()
+    return flag not in ("0", "false", "no", "off")
+
+
+def _debug_log_path() -> Path:
+    """Append-only log so agent can paste Canvas traffic into chat."""
+    return ROOT / ".canvas_api.log"
+
+
+def _emit_debug(line: str) -> None:
+    print(line, flush=True)
+    try:
+        with _debug_log_path().open("a", encoding="utf-8") as fh:
+            fh.write(line + "\n")
+    except OSError:
+        pass
+
+
+def _log_request(
+    method: str,
+    req_url: str,
+    *,
+    data: dict[str, str] | None = None,
+) -> None:
+    """Log Canvas API call to stdout + `.canvas_api.log` (token never logged).
+
+    Default on; set ``CANVAS_API_DEBUG=0`` to silence.
+    """
+    if not _debug_enabled():
+        return
+    _emit_debug(f"CANVAS {method} {req_url}")
+    if data:
+        shown: dict[str, str] = {}
+        for k, v in data.items():
+            if len(v) > 240:
+                shown[k] = v[:240] + f"…(+{len(v) - 240} chars)"
+            else:
+                shown[k] = v
+        _emit_debug(f"CANVAS body: {json.dumps(shown, ensure_ascii=False)}")
+
+
 def _request(
     method: str,
     path: str,
@@ -75,14 +122,19 @@ def _request(
             req_url = req_url + sep + urllib.parse.urlencode(params)
             params = None
 
+        _log_request(method, req_url, data=data)
         body = urllib.parse.urlencode(data).encode("utf-8") if data is not None else None
         req = urllib.request.Request(req_url, data=body, headers=headers, method=method)
         try:
             with urllib.request.urlopen(req, timeout=60) as resp:
                 raw = resp.read().decode("utf-8")
                 link = resp.headers.get("Link", "")
+                if _debug_enabled():
+                    _emit_debug(f"CANVAS <- {resp.status} ({len(raw)} bytes)")
         except urllib.error.HTTPError as e:
             detail = e.read().decode("utf-8", errors="replace")
+            if _debug_enabled():
+                _emit_debug(f"CANVAS <- {e.code} ERROR: {detail[:500]}")
             print(f"HTTP {e.code}: {detail}", file=sys.stderr)
             sys.exit(1)
 
@@ -114,6 +166,99 @@ def canvas_put(path: str, data: dict[str, str]) -> object:
 
 def canvas_delete(path: str) -> object:
     return _request("DELETE", path)
+
+
+def canvas_upload_course_file(
+    course_id: int,
+    file_path: Path,
+    *,
+    parent_folder_path: str = "/artifact",
+    content_type: str | None = None,
+    on_duplicate: str = "overwrite",
+) -> dict:
+    """Upload a local file to a course (Canvas 3-step file upload). Token never logged."""
+    file_path = Path(file_path)
+    raw_bytes = file_path.read_bytes()
+    ctype = content_type or "application/octet-stream"
+    if file_path.suffix.lower() == ".zip":
+        ctype = "application/zip"
+
+    init = canvas_post(
+        f"courses/{course_id}/files",
+        {
+            "name": file_path.name,
+            "size": str(len(raw_bytes)),
+            "content_type": ctype,
+            "parent_folder_path": parent_folder_path,
+            "on_duplicate": on_duplicate,
+        },
+    )
+    if not isinstance(init, dict) or "upload_url" not in init:
+        raise SystemExit(f"Unexpected file upload init response: {init!r}")
+
+    upload_url = str(init["upload_url"])
+    upload_params = dict(init.get("upload_params") or {})
+    boundary = f"----CanvasBoundary{os.urandom(8).hex()}"
+    parts: list[bytes] = []
+    for key, value in upload_params.items():
+        parts.append(f"--{boundary}\r\n".encode())
+        parts.append(
+            f'Content-Disposition: form-data; name="{key}"\r\n\r\n'.encode()
+        )
+        parts.append(str(value).encode("utf-8"))
+        parts.append(b"\r\n")
+    parts.append(f"--{boundary}\r\n".encode())
+    parts.append(
+        (
+            f'Content-Disposition: form-data; name="file"; '
+            f'filename="{file_path.name}"\r\n'
+            f"Content-Type: {ctype}\r\n\r\n"
+        ).encode()
+    )
+    parts.append(raw_bytes)
+    parts.append(b"\r\n")
+    parts.append(f"--{boundary}--\r\n".encode())
+    body = b"".join(parts)
+
+    _emit_debug(f"CANVAS POST {upload_url} (multipart file {file_path.name}, {len(raw_bytes)} bytes)")
+    req = urllib.request.Request(
+        upload_url,
+        data=body,
+        headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=120) as resp:
+            status = resp.status
+            raw = resp.read().decode("utf-8")
+            location = resp.headers.get("Location")
+            _emit_debug(f"CANVAS <- {status} upload ({len(raw)} bytes)")
+    except urllib.error.HTTPError as e:
+        detail = e.read().decode("utf-8", errors="replace")
+        _emit_debug(f"CANVAS <- {e.code} ERROR: {detail[:500]}")
+        print(f"HTTP {e.code}: {detail}", file=sys.stderr)
+        sys.exit(1)
+
+    # Some Canvas installs return JSON file; others redirect to confirm URL.
+    if location:
+        confirmed = canvas_get(location if location.startswith("http") else location.lstrip("/"))
+        if isinstance(confirmed, dict):
+            return confirmed
+    if raw:
+        try:
+            payload = json.loads(raw)
+            if isinstance(payload, dict) and payload.get("id"):
+                return payload
+        except json.JSONDecodeError:
+            pass
+    files = canvas_get(
+        f"courses/{course_id}/files",
+        {"search_term": file_path.name},
+        paginate=True,
+    )
+    if isinstance(files, list) and files:
+        return files[0]
+    raise SystemExit("File upload finished but file object not found")
 
 
 def _next_link(link_header: str) -> str | None:

@@ -218,3 +218,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Canvas API debug log (local; may contain course content, never tokens)
+.canvas_api.log
+
+# Generated student artifact pack for Canvas
+modules/**/artifact/*.zip
