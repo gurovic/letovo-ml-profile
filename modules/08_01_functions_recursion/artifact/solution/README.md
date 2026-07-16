@@ -11,7 +11,7 @@ python manual_tests.py
 
 Ожидается: `All 10 manual tests passed.`
 
-## Ответы на демо-данных
+## Ответы на примерах из задания
 
 Данные: `TEXTS_POSITIVE`, `TEXTS_NEGATIVE` в [data/module_datasets.py](../../data/module_datasets.py).
 

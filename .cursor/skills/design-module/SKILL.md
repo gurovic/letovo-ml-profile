@@ -3,8 +3,7 @@ name: design-module
 description: >-
   Проектирует модуль профиля ML по Unit Planner: UNIT.md, последовательность
   уроков, артефакт, data/ML-контекст. Use when creating or refactoring a
-  module, unit plan, годовой блок, демо-модуль, or user says «модуль», «Unit
-  Planner».
+  module, unit plan, годовой блок, or user says «модуль», «Unit Planner».
 ---
 
 # Проектирование модуля
@@ -23,7 +22,7 @@ description: >-
 | `docs/03_UNIT_PLANNER.md` | шаблон UNIT.md |
 
 Эталон модуля (глубина UNIT + уроков + ноутбуков): `modules/08_01_functions_recursion/`.  
-Тонкий scaffold «чтобы закрыть КТП/Canvas» — **не** готовый модуль.
+Тонкий scaffold «чтобы закрыть КТП/Canvas» — **не** готовый модуль курса.
 
 ## Куда класть результат
 
@@ -64,7 +63,7 @@ modules/<grade>_<nn>_<slug>/
 
 - Не дублировать MDS в UNIT.md — только ссылки.
 - Не создавать уроки/ноутбуки в этом skill — только план; материалы → skill `design-lesson` (с воротами глубины ноутбука).
-- Модуль «готов» только если уроки прошли `design-lesson` до публикации: stubs+assert, полные `solutions`, не демо-прогон ([Notebook Standard §3](../../docs/05_NOTEBOOK_STANDARD.md)).
+- Модуль «готов» только если уроки прошли `design-lesson` до публикации: stubs+assert, полные `solutions`, не прогон готовых ответов ([Notebook Standard §3](../../docs/05_NOTEBOOK_STANDARD.md)).
 - При изменении, затрагивающем Foundation/Pedagogy — **сообщить пользователю**.
 - Терминология: `.cursor/rules/02_Терминология.mdc`.
 - Язык материалов: русский; в коде и chat — без смешения кириллицы и латиницы в одном слове.

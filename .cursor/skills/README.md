@@ -8,7 +8,7 @@
 | [design-lesson](design-lesson/SKILL.md) | урок → `LESSON.md` + ноутбук/слайды |
 | [integrate-ml-context](integrate-ml-context/SKILL.md) | усилить data/ML в существующем модуле |
 | [canvas-lms](canvas-lms/SKILL.md) | данные из Canvas LMS (canvas.letovo.ru) |
-| [review-edu-material](review-edu-material/SKILL.md) | ревью перед публикацией или после демо |
+| [review-edu-material](review-edu-material/SKILL.md) | ревью перед публикацией модуля / урока |
 | [refine-md-fragment](refine-md-fragment/SKILL.md) | доработка выделенного фрагмента `.md` |
 | [expert-edu-editor](expert-edu-editor/SKILL.md) | итеративная доводка материалов до качества (редактор-эксперт) |
 | [test-teacher](test-teacher/SKILL.md) | прогон глазами преподавателя: вопросы → сразу правки в материалах |

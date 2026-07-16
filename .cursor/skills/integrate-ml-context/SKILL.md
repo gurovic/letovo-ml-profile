@@ -4,7 +4,7 @@ description: >-
   Усиливает data/ML-контекст в существующем модуле: сквозной датасет,
   describe/transform/predict, артефакт, ноутбуки. Use when integrating ML
   context, data examples, EDA preview, sklearn bridge, «притянуть ML»,
-  «data/ML в модуль», or refactoring demo module content.
+  «data/ML в модуль», or refactoring module content for data/ML.
 ---
 
 # Интеграция data/ML в модуль
@@ -17,7 +17,7 @@ description: >-
 
 - модуль уже есть (UNIT + уроки), но контекст абстрактный;
 - программный модуль в профиле ML без связи с данными;
-- демо-модуль нужно усилить перед ревью.
+- модуль курса нужно усилить data/ML-контекстом перед ревью.
 
 **Не применять:** если модуль вне профиля или Foundation §7 не предполагает data/ML на этом этапе.
 

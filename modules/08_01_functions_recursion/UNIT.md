@@ -1,7 +1,7 @@
 # Unit Planner: Функции и рекурсия в Python
 
 **Класс:** 8  
-**Статус:** демоверсия (уроки, ноутбуки, артефакт); остальные модули 8 класса — план `UNIT.md`  
+**Статус:** материалы (уроки, ноутбуки, артефакт)  
 **Длительность:** 10 пар по КТП (20 академических часов ≈ 4 недели при 5 ч/нед); в т.ч. 1 вводная пара
 
 **Сквозная линия модуля:** ориентация в профиле → описание данных → преобразование → предсказание (на списках, без pandas/sklearn).
@@ -301,7 +301,7 @@
 | Функции, pre-assessment | Пары 2–5 |
 | Lambda-контест | Пара 9 + `lessons/09_practice_pipeline/canvas_practice.md` |
 | Рекурсия-контест | Пара 8 + `lessons/08_recursion/canvas_practice.md` (binary_search — модуль 7 КТП) |
-| mergesort, itertools, binary_search, декораторы, фракталы | Модули 4 и 7 по КТП; в демо — вне scope |
+| mergesort, itertools, binary_search, декораторы, фракталы | Модули 4 и 7 по КТП; вне scope этого модуля |
 
 Подробная таблица: [reference/CANVAS_MAPPING.md](reference/CANVAS_MAPPING.md)
 

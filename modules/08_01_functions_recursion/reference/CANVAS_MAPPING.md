@@ -45,4 +45,4 @@ Hanoi, reverse без списка, скобки, mergesort, itertools, деко
 
 ## Обновлено
 
-2026-07 — обогащение demo-модуля по Canvas IT-8.
+2026-07 — обогащение модуля 1 по Canvas IT-8.

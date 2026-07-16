@@ -592,7 +592,7 @@ naive_classify("отличный фильм рекомендую", TEXTS_POSITIV
 | # | Критерий |
 |---|---|
 | 1 | `python manual_tests.py` → все 10 тестов без ошибок |
-| 2 | `compare_class_frequencies` на demo-данных даёт **словарь** с ≥2 маркерами (`отличный` → `"positive"`, `скучный` → `"negative"`) |
+| 2 | `compare_class_frequencies` на примерах из задания даёт **словарь** с ≥2 маркерами (`отличный` → `"positive"`, `скучный` → `"negative"`) |
 | 3 | `naive_classify` — ≥4 из 5 верных на **ваших** фразах (таблица в README) |
 | 4 | у `analyze_text("one two two three")`: `word_count == 4`, `unique_words == 3`, `top3[0] == ("two", 2)` |
 | 5 | `count_char_recursive("banana", "a") == 3` |
