@@ -15,7 +15,7 @@
 | **Минимум сдачи** | (1) `df.shape` и `head` выведены; (2) `TARGET` / `FEATURES` / `ID_COL` с assert; (3) устно: чем цель отличается от признака |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
 | **Дальше** | фильтры — [пара 12](../02_practice_filters/LESSON.md) |
-| **Canvas** | план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/d19afee5ef0dcd2be593ea93d11ba26f/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/d19afee5ef0dcd2be593ea93d11ba26f/homework.ipynb)) |
+| **Canvas** | Модуль 54689: план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/d19afee5ef0dcd2be593ea93d11ba26f/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/d19afee5ef0dcd2be593ea93d11ba26f/homework.ipynb)) |
 
 ### Ориентир времени (не поминутный)
 
@@ -63,7 +63,7 @@
 
 ### Зачем урок
 
-Пара 12 модуля 2 по КТП: введение.
+Пара 11 модуля 2 по КТП: введение.
 
 ### Центральная идея
 
@@ -110,4 +110,4 @@
 | По содержанию | Один сквозной CSV; без материалов соседних модулей |
 | По процессу | Работа в ноутбуке; сверка assert / метрик |
 | По продукту | Минимум сдачи пары; сдача homework.ipynb |
-| Canvas | план скрыт; урок Colab; ДЗ Assignment |
+| Canvas | Модуль 54689: план скрыт; урок Colab; ДЗ Assignment |

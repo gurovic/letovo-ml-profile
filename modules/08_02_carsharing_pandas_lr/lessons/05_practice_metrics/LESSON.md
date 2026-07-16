@@ -9,19 +9,19 @@
 | Пара КТП | **15** |
 | Длительность | 2 академических часа (**80 минут**) |
 | Роль | отработка |
-| Пререквизиты | Пара 15: train/test, LinearRegression |
+| Пререквизиты | Пара 14: train/test, LinearRegression |
 | **Открыть** | [lesson.ipynb](lesson.ipynb) — модель уже в первой части |
 | **Первая фраза** | «Модель умеет предсказывать — сегодня мерим, насколько хорошо, числами MSE и R² на test» |
 | **Минимум сдачи** | (1) MSE на test; (2) R² на test; (3) таблица fact/pred/error на 5 строках; (4) одна фраза интерпретации |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
 | **Дальше** | try/except — [пара 16](../06_try_except_csv/LESSON.md) |
-| **Canvas** | план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/1b64439fdc5f01fd2ef1f7a9190ebd20/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/1b64439fdc5f01fd2ef1f7a9190ebd20/homework.ipynb)) |
+| **Canvas** | Модуль 54689: план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/1b64439fdc5f01fd2ef1f7a9190ebd20/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/1b64439fdc5f01fd2ef1f7a9190ebd20/homework.ipynb)) |
 
 ### Ориентир времени (не поминутный)
 
 | Блок | ~мин |
 |---|---|
-| Опора: модель с пары 15 | 10 |
+| Опора: модель с пары 14 | 10 |
 | MSE | 20 |
 | R² | 20 |
 | Таблица сравнения | 20 |
@@ -34,11 +34,11 @@
 
 | # | Этап | ~мин | Ученик | Учитель | Материал | Критерий закрытия |
 |---|---|---|---|---|---|---|
-| 1 | MSE | 20 | mean_squared_error на test | Только test | `## 1. MSE` | mse >= 0 |
-| 2 | R² | 20 | r2_score на test | Доля объяснённого разброса | `## 2. R²` | число в разумных пределах |
-| 3 | Сравнение | 20 | DataFrame fact/pred/error | Знак ошибки | `## 3. Таблица сравнения` | head на экране |
-| 4 | Интерпретация | 10 | METRIC_NOTE | Связать с R² | `## 4. Интерпретация` | непустая строка |
-| 5 | Постановка ДЗ | 10 | MAE вручную | Связь с MAE модуля 1 | [homework.ipynb](homework.ipynb) | знает срок |
+| 1 | Опора | 10 | Прогоняет стартовую ячейку: split + fit с пары 14 | Модель уже в первой code-ячейке; без новых метрик | первая code-ячейка | `y_pred` на test есть |
+| 2 | MSE | 20 | mean_squared_error на test | Только test | `## 1. MSE` | mse >= 0 |
+| 3 | R² | 20 | r2_score на test | Доля объяснённого разброса | `## 2. R²` | число в разумных пределах |
+| 4 | Сравнение + фраза | 20 | DataFrame fact/pred/error; METRIC_NOTE | Знак ошибки; связать с R² | `## 3`–`## 4` | head + непустая фраза |
+| 5 | Постановка ДЗ | 10 | Открывает homework (MAE вручную) | Связь с MAE модуля 1 | [homework.ipynb](homework.ipynb) | знает срок |
 
 ---
 
@@ -65,7 +65,7 @@
 
 ### Зачем урок
 
-Пара 16 модуля 2 по КТП: отработка.
+Пара 15 модуля 2 по КТП: отработка.
 
 ### Центральная идея
 
@@ -112,4 +112,4 @@
 | По содержанию | Один сквозной CSV; без материалов соседних модулей |
 | По процессу | Работа в ноутбуке; сверка assert / метрик |
 | По продукту | Минимум сдачи пары; сдача homework.ipynb |
-| Canvas | план скрыт; урок Colab; ДЗ Assignment |
+| Canvas | Модуль 54689: план скрыт; урок Colab; ДЗ Assignment |

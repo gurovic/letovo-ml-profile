@@ -15,7 +15,7 @@
 | **Минимум сдачи** | (1) метрики для distance; (2) метрики для hour; (3) BETTER_FEATURE выбран; (4) 2 предложения обоснования |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
 | **Дальше** | несколько признаков — [пара 18](../08_multifeature_overview/LESSON.md) |
-| **Canvas** | план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/fae97962ced6296b3d92ec0c985243a8/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/fae97962ced6296b3d92ec0c985243a8/homework.ipynb)) |
+| **Canvas** | Модуль 54689: план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/fae97962ced6296b3d92ec0c985243a8/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/fae97962ced6296b3d92ec0c985243a8/homework.ipynb)) |
 
 ### Ориентир времени (не поминутный)
 
@@ -64,7 +64,7 @@
 
 ### Зачем урок
 
-Пара 18 модуля 2 по КТП: отработка.
+Пара 17 модуля 2 по КТП: отработка.
 
 ### Центральная идея
 
@@ -111,4 +111,4 @@
 | По содержанию | Один сквозной CSV; без материалов соседних модулей |
 | По процессу | Работа в ноутбуке; сверка assert / метрик |
 | По продукту | Минимум сдачи пары; сдача homework.ipynb |
-| Canvas | план скрыт; урок Colab; ДЗ Assignment |
+| Canvas | Модуль 54689: план скрыт; урок Colab; ДЗ Assignment |

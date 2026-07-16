@@ -9,13 +9,13 @@
 | Пара КТП | **14** |
 | Длительность | 2 академических часа (**80 минут**) |
 | Роль | введение |
-| Пререквизиты | Пара 14: EDA; модуль 1: идея predict |
+| Пререквизиты | Пара 13: EDA; модуль 1: идея predict |
 | **Открыть** | [lesson.ipynb](lesson.ipynb) — sklearn в ноутбуке |
 | **Первая фраза** | «Ручной predict из модуля 1 теперь делает библиотека: разделим данные, обучим линейную модель на расстоянии» |
 | **Минимум сдачи** | (1) X и y выделены; (2) split 80/20, random_state=42; (3) fit на train, predict на test; (4) coef и intercept напечатаны |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
 | **Дальше** | метрики — [пара 15](../05_practice_metrics/LESSON.md) |
-| **Canvas** | план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/4319bd3960b3b50ebc04ea49b3623ff3/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/4319bd3960b3b50ebc04ea49b3623ff3/homework.ipynb)) |
+| **Canvas** | Модуль 54689: план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/4319bd3960b3b50ebc04ea49b3623ff3/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/4319bd3960b3b50ebc04ea49b3623ff3/homework.ipynb)) |
 
 ### Ориентир времени (не поминутный)
 
@@ -63,13 +63,13 @@
 
 ### Зачем урок
 
-Пара 15 модуля 2 по КТП: введение.
+Пара 14 модуля 2 по КТП: введение.
 
 ### Центральная идея
 
 | Поле | Значение |
 |---|---|
-| Центральная идея | Обучение = fit на train; оценка качества — только на test (метрики на паре 16) |
+| Центральная идея | Обучение = fit на train; оценка качества — только на test (метрики на паре 15) |
 | Данные урока | `data/trips.csv` (каршеринг «Дорога») |
 
 ### Результаты обучения
@@ -110,4 +110,4 @@
 | По содержанию | Один сквозной CSV; без материалов соседних модулей |
 | По процессу | Работа в ноутбуке; сверка assert / метрик |
 | По продукту | Минимум сдачи пары; сдача homework.ipynb |
-| Canvas | план скрыт; урок Colab; ДЗ Assignment |
+| Canvas | Модуль 54689: план скрыт; урок Colab; ДЗ Assignment |

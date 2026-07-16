@@ -9,13 +9,13 @@
 | Пара КТП | **12** |
 | Длительность | 2 академических часа (**80 минут**) |
 | Роль | отработка |
-| Пререквизиты | Пара 12: read_csv, DataFrame, feature/target |
+| Пререквизиты | Пара 11: read_csv, DataFrame, feature/target |
 | **Открыть** | [lesson.ipynb](lesson.ipynb) — тот же `trips.csv` |
 | **Первая фраза** | «Таблица уже есть — сегодня выбираем нужные поездки фильтрами и проверяем типы» |
 | **Минимум сдачи** | (1) фильтр zone==center; (2) distance>=15; (3) loc и iloc на 3 строках; (4) hour как int, диапазон 0–23 |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
 | **Дальше** | EDA — [пара 13](../03_eda_scatter/LESSON.md) |
-| **Canvas** | план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/d7f6297f93377ee22e14e00e3e781cbc/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/d7f6297f93377ee22e14e00e3e781cbc/homework.ipynb)) |
+| **Canvas** | Модуль 54689: план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/d7f6297f93377ee22e14e00e3e781cbc/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/d7f6297f93377ee22e14e00e3e781cbc/homework.ipynb)) |
 
 ### Ориентир времени (не поминутный)
 
@@ -65,7 +65,7 @@
 
 ### Зачем урок
 
-Пара 13 модуля 2 по КТП: отработка.
+Пара 12 модуля 2 по КТП: отработка.
 
 ### Центральная идея
 
@@ -112,4 +112,4 @@
 | По содержанию | Один сквозной CSV; без материалов соседних модулей |
 | По процессу | Работа в ноутбуке; сверка assert / метрик |
 | По продукту | Минимум сдачи пары; сдача homework.ipynb |
-| Canvas | план скрыт; урок Colab; ДЗ Assignment |
+| Canvas | Модуль 54689: план скрыт; урок Colab; ДЗ Assignment |

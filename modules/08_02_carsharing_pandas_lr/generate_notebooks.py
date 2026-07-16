@@ -458,7 +458,7 @@ def add_lesson09() -> None:
             "print('MSE', report_mse, 'R2', report_r2)"
         ),
         md("## 4. Рекомендация\n\n1 абзац для отдела аналитики: какой признак, качество, ограничения."),
-        code("REPORT_RECOMMENDATION = ''  # заполните к паре 21"),
+        code("REPORT_RECOMMENDATION = ''  # заполните к паре 20"),
     )
     hw = nb(
         md("# ДЗ: доработать черновик"),

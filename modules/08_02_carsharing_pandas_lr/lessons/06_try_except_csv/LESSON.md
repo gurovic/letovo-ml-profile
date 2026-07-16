@@ -9,13 +9,13 @@
 | Пара КТП | **16** |
 | Длительность | 2 академических часа (**80 минут**) |
 | Роль | введение |
-| Пререквизиты | Пары 12–16: pandas, модель |
+| Пререквизиты | Пары 11–15: pandas, LR, MSE/R² |
 | **Открыть** | [lesson.ipynb](lesson.ipynb) — функции load_trips / clean_trips |
 | **Первая фраза** | «В аналитике файл иногда отсутствует или битый — учимся ловить ошибку и чистить строки до модели» |
 | **Минимум сдачи** | (1) успешный load_trips; (2) пойман FileNotFoundError; (3) clean_trips убирает строку с NaN в duration |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
 | **Дальше** | сравнение признаков — [пара 17](../07_practice_features/LESSON.md) |
-| **Canvas** | план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/089cdafdda13bf74965ef262a23b511a/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/089cdafdda13bf74965ef262a23b511a/homework.ipynb)) |
+| **Canvas** | Модуль 54689: план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/089cdafdda13bf74965ef262a23b511a/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/089cdafdda13bf74965ef262a23b511a/homework.ipynb)) |
 
 ### Ориентир времени (не поминутный)
 
@@ -63,7 +63,7 @@
 
 ### Зачем урок
 
-Пара 17 модуля 2 по КТП: введение.
+Пара 16 модуля 2 по КТП: введение.
 
 ### Центральная идея
 
@@ -110,4 +110,4 @@
 | По содержанию | Один сквозной CSV; без материалов соседних модулей |
 | По процессу | Работа в ноутбуке; сверка assert / метрик |
 | По продукту | Минимум сдачи пары; сдача homework.ipynb |
-| Canvas | план скрыт; урок Colab; ДЗ Assignment |
+| Canvas | Модуль 54689: план скрыт; урок Colab; ДЗ Assignment |
