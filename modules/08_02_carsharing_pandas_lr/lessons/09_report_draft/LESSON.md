@@ -15,7 +15,7 @@
 | **Минимум сдачи** | (1) блок данных заполнен; (2) describe/EDA; (3) MSE и R² на test для distance; (4) черновик рекомендации начат |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
 | **Дальше** | сдача — [пара 21](../10_report_submit/LESSON.md) |
-| **Canvas** | — (заполнить после публикации) |
+| **Canvas** | план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/7ccd6be939bc2c0c6a745a57c81b1bcd/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/7ccd6be939bc2c0c6a745a57c81b1bcd/homework.ipynb)) |
 
 ### Ориентир времени (не поминутный)
 
@@ -111,4 +111,4 @@
 | По содержанию | Один сквозной CSV; без материалов соседних модулей |
 | По процессу | Работа в ноутбуке; сверка assert / метрик |
 | По продукту | Минимум сдачи пары; сдача homework.ipynb |
-| Canvas | — |
+| Canvas | план скрыт; урок Colab; ДЗ Assignment |

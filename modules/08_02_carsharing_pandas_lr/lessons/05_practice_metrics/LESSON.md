@@ -15,7 +15,7 @@
 | **Минимум сдачи** | (1) MSE на test; (2) R² на test; (3) таблица fact/pred/error на 5 строках; (4) одна фраза интерпретации |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
 | **Дальше** | try/except — [пара 17](../06_try_except_csv/LESSON.md) |
-| **Canvas** | — (заполнить после публикации) |
+| **Canvas** | план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/1b64439fdc5f01fd2ef1f7a9190ebd20/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/1b64439fdc5f01fd2ef1f7a9190ebd20/homework.ipynb)) |
 
 ### Ориентир времени (не поминутный)
 
@@ -112,4 +112,4 @@
 | По содержанию | Один сквозной CSV; без материалов соседних модулей |
 | По процессу | Работа в ноутбуке; сверка assert / метрик |
 | По продукту | Минимум сдачи пары; сдача homework.ipynb |
-| Canvas | — |
+| Canvas | план скрыт; урок Colab; ДЗ Assignment |

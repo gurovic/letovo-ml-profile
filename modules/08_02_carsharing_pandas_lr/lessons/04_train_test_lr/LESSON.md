@@ -15,7 +15,7 @@
 | **Минимум сдачи** | (1) X и y выделены; (2) split 80/20, random_state=42; (3) fit на train, predict на test; (4) coef и intercept напечатаны |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
 | **Дальше** | метрики — [пара 16](../05_practice_metrics/LESSON.md) |
-| **Canvas** | — (заполнить после публикации) |
+| **Canvas** | план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/4319bd3960b3b50ebc04ea49b3623ff3/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/4319bd3960b3b50ebc04ea49b3623ff3/homework.ipynb)) |
 
 ### Ориентир времени (не поминутный)
 
@@ -110,4 +110,4 @@
 | По содержанию | Один сквозной CSV; без материалов соседних модулей |
 | По процессу | Работа в ноутбуке; сверка assert / метрик |
 | По продукту | Минимум сдачи пары; сдача homework.ipynb |
-| Canvas | — |
+| Canvas | план скрыт; урок Colab; ДЗ Assignment |

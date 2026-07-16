@@ -15,7 +15,7 @@
 | **Минимум сдачи** | (1) фильтр zone==center; (2) distance>=15; (3) loc и iloc на 3 строках; (4) hour как int, диапазон 0–23 |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
 | **Дальше** | EDA — [пара 14](../03_eda_scatter/LESSON.md) |
-| **Canvas** | — (заполнить после публикации) |
+| **Canvas** | план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/d7f6297f93377ee22e14e00e3e781cbc/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/d7f6297f93377ee22e14e00e3e781cbc/homework.ipynb)) |
 
 ### Ориентир времени (не поминутный)
 
@@ -112,4 +112,4 @@
 | По содержанию | Один сквозной CSV; без материалов соседних модулей |
 | По процессу | Работа в ноутбуке; сверка assert / метрик |
 | По продукту | Минимум сдачи пары; сдача homework.ipynb |
-| Canvas | — |
+| Canvas | план скрыт; урок Colab; ДЗ Assignment |

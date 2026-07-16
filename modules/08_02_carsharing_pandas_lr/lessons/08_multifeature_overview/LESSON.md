@@ -15,7 +15,7 @@
 | **Минимум сдачи** | (1) LR на distance+hour; (2) R² двух признаков ≥ R² одного distance; (3) короткая фраза MULTI_NOTE |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
 | **Дальше** | черновик отчёта — [пара 20](../09_report_draft/LESSON.md) |
-| **Canvas** | — (заполнить после публикации) |
+| **Canvas** | план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/4a7ce32878ae54ad8a992494cf2d84f2/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/4a7ce32878ae54ad8a992494cf2d84f2/homework.ipynb)) |
 
 ### Ориентир времени (не поминутный)
 
@@ -110,4 +110,4 @@
 | По содержанию | Один сквозной CSV; без материалов соседних модулей |
 | По процессу | Работа в ноутбуке; сверка assert / метрик |
 | По продукту | Минимум сдачи пары; сдача homework.ipynb |
-| Canvas | — |
+| Canvas | план скрыт; урок Colab; ДЗ Assignment |

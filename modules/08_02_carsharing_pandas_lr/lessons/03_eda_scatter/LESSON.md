@@ -15,7 +15,7 @@
 | **Минимум сдачи** | (1) describe distance и duration; (2) info без сюрпризов по пропускам; (3) scatter с подписями; (4) одна фраза вывода в EDA_CONCLUSION |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
 | **Дальше** | train/test и LR — [пара 15](../04_train_test_lr/LESSON.md) |
-| **Canvas** | — (заполнить после публикации) |
+| **Canvas** | план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/195d27b46e4ce375e61e41830e0a3a60/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/195d27b46e4ce375e61e41830e0a3a60/homework.ipynb)) |
 
 ### Ориентир времени (не поминутный)
 
@@ -111,4 +111,4 @@
 | По содержанию | Один сквозной CSV; без материалов соседних модулей |
 | По процессу | Работа в ноутбуке; сверка assert / метрик |
 | По продукту | Минимум сдачи пары; сдача homework.ipynb |
-| Canvas | — |
+| Canvas | план скрыт; урок Colab; ДЗ Assignment |

@@ -15,7 +15,7 @@
 | **Минимум сдачи** | (1) успешный load_trips; (2) пойман FileNotFoundError; (3) clean_trips убирает строку с NaN в duration |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
 | **Дальше** | сравнение признаков — [пара 18](../07_practice_features/LESSON.md) |
-| **Canvas** | — (заполнить после публикации) |
+| **Canvas** | план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/089cdafdda13bf74965ef262a23b511a/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/089cdafdda13bf74965ef262a23b511a/homework.ipynb)) |
 
 ### Ориентир времени (не поминутный)
 
@@ -110,4 +110,4 @@
 | По содержанию | Один сквозной CSV; без материалов соседних модулей |
 | По процессу | Работа в ноутбуке; сверка assert / метрик |
 | По продукту | Минимум сдачи пары; сдача homework.ipynb |
-| Canvas | — |
+| Canvas | план скрыт; урок Colab; ДЗ Assignment |
