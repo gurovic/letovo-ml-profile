@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Publish module 08_02 (pairs 12-21) to Canvas course 6465."""
+"""Publish module 08_02 (pairs 11-20) to Canvas course 6465."""
 
 from __future__ import annotations
 
@@ -52,92 +52,92 @@ class Pair:
 
 
 PAIRS: dict[int, Pair] = {
-    12: Pair(
-        12,
+    11: Pair(
+        11,
         "01_pandas_dataframe",
-        "Пара 12. pandas: DataFrame, feature / target",
-        "para-12-plan-uroka-dlia-priepodavatielia",
+        "Пара 11. pandas: DataFrame, feature / target",
+        "para-11-plan-uroka-dlia-priepodavatielia",
         lesson_gist="d19afee5ef0dcd2be593ea93d11ba26f",
         homework_gist="d19afee5ef0dcd2be593ea93d11ba26f",
         solutions_gist="d19afee5ef0dcd2be593ea93d11ba26f",
     ),
-    13: Pair(
-        13,
+    12: Pair(
+        12,
         "02_practice_filters",
-        "Пара 13. Практика: фильтры и типы",
-        "para-13-plan-uroka-dlia-priepodavatielia",
+        "Пара 12. Практика: фильтры и типы",
+        "para-12-plan-uroka-dlia-priepodavatielia",
         lesson_gist="d7f6297f93377ee22e14e00e3e781cbc",
         homework_gist="d7f6297f93377ee22e14e00e3e781cbc",
         solutions_gist="d7f6297f93377ee22e14e00e3e781cbc",
     ),
-    14: Pair(
-        14,
+    13: Pair(
+        13,
         "03_eda_scatter",
-        "Пара 14. EDA: describe и scatter",
-        "para-14-plan-uroka-dlia-priepodavatielia",
+        "Пара 13. EDA: describe и scatter",
+        "para-13-plan-uroka-dlia-priepodavatielia",
         lesson_gist="195d27b46e4ce375e61e41830e0a3a60",
         homework_gist="195d27b46e4ce375e61e41830e0a3a60",
         solutions_gist="195d27b46e4ce375e61e41830e0a3a60",
     ),
-    15: Pair(
-        15,
+    14: Pair(
+        14,
         "04_train_test_lr",
-        "Пара 15. train/test и LinearRegression",
-        "para-15-plan-uroka-dlia-priepodavatielia",
+        "Пара 14. train/test и LinearRegression",
+        "para-14-plan-uroka-dlia-priepodavatielia",
         lesson_gist="4319bd3960b3b50ebc04ea49b3623ff3",
         homework_gist="4319bd3960b3b50ebc04ea49b3623ff3",
         solutions_gist="4319bd3960b3b50ebc04ea49b3623ff3",
     ),
-    16: Pair(
-        16,
+    15: Pair(
+        15,
         "05_practice_metrics",
-        "Пара 16. Практика: MSE и R²",
-        "para-16-plan-uroka-dlia-priepodavatielia",
+        "Пара 15. Практика: MSE и R²",
+        "para-15-plan-uroka-dlia-priepodavatielia",
         lesson_gist="1b64439fdc5f01fd2ef1f7a9190ebd20",
         homework_gist="1b64439fdc5f01fd2ef1f7a9190ebd20",
         solutions_gist="1b64439fdc5f01fd2ef1f7a9190ebd20",
     ),
-    17: Pair(
-        17,
+    16: Pair(
+        16,
         "06_try_except_csv",
-        "Пара 17. try/except при загрузке CSV",
-        "para-17-plan-uroka-dlia-priepodavatielia",
+        "Пара 16. try/except при загрузке CSV",
+        "para-16-plan-uroka-dlia-priepodavatielia",
         lesson_gist="089cdafdda13bf74965ef262a23b511a",
         homework_gist="089cdafdda13bf74965ef262a23b511a",
         solutions_gist="089cdafdda13bf74965ef262a23b511a",
     ),
-    18: Pair(
-        18,
+    17: Pair(
+        17,
         "07_practice_features",
-        "Пара 18. Практика: сравнение признаков",
-        "para-18-plan-uroka-dlia-priepodavatielia",
+        "Пара 17. Практика: сравнение признаков",
+        "para-17-plan-uroka-dlia-priepodavatielia",
         lesson_gist="fae97962ced6296b3d92ec0c985243a8",
         homework_gist="fae97962ced6296b3d92ec0c985243a8",
         solutions_gist="fae97962ced6296b3d92ec0c985243a8",
     ),
-    19: Pair(
-        19,
+    18: Pair(
+        18,
         "08_multifeature_overview",
-        "Пара 19. Несколько признаков (обзор)",
-        "para-19-plan-uroka-dlia-priepodavatielia",
+        "Пара 18. Несколько признаков (обзор)",
+        "para-18-plan-uroka-dlia-priepodavatielia",
         lesson_gist="4a7ce32878ae54ad8a992494cf2d84f2",
         homework_gist="4a7ce32878ae54ad8a992494cf2d84f2",
         solutions_gist="4a7ce32878ae54ad8a992494cf2d84f2",
     ),
-    20: Pair(
-        20,
+    19: Pair(
+        19,
         "09_report_draft",
-        "Пара 20. Мини-отчёт — черновик",
-        "para-20-plan-uroka-dlia-priepodavatielia",
+        "Пара 19. Мини-отчёт — черновик",
+        "para-19-plan-uroka-dlia-priepodavatielia",
         lesson_gist="7ccd6be939bc2c0c6a745a57c81b1bcd",
         homework_gist="7ccd6be939bc2c0c6a745a57c81b1bcd",
         solutions_gist="7ccd6be939bc2c0c6a745a57c81b1bcd",
     ),
-    21: Pair(
-        21,
+    20: Pair(
+        20,
         "10_report_submit",
-        "Пара 21. Сдача отчёта",
-        "para-21-plan-uroka-dlia-priepodavatielia",
+        "Пара 20. Сдача отчёта",
+        "para-20-plan-uroka-dlia-priepodavatielia",
         lesson_gist="2f707a5bf751c9c842849b2a66dacab4",
         solutions_gist="2f707a5bf751c9c842849b2a66dacab4",
         skip_homework=True,
@@ -242,14 +242,14 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Publish M2 to Canvas")
     parser.add_argument("--course-id", type=int, default=COURSE_DEFAULT)
     parser.add_argument("--module-id", type=int, default=None)
-    parser.add_argument("--pair", type=int, default=None, help="KTP pair 12-21")
+    parser.add_argument("--pair", type=int, default=None, help="KTP pair 11-20")
     parser.add_argument("--all", action="store_true")
     parser.add_argument("--update-page-only", action="store_true")
     parser.add_argument(
         "--gist-map",
         type=Path,
         default=MODULE / "canvas_gist_map.json",
-        help="JSON: {\"12\": {\"gist_id\": \"...\"}, ...}",
+        help="JSON: {\"11\": {\"gist_id\": \"...\"}, ...}",
     )
     args = parser.parse_args()
 

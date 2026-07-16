@@ -1,7 +1,7 @@
 # Артефакт модуля: библиотека `text_stats`
 
 **Тип:** Python-модуль + README учащегося  
-**Срок:** пары КТП **10–11** (по **2** академических часа на пару, **4 ч** всего + доработка дома при необходимости)  
+**Срок:** пары КТП **9–10** (по **2** академических часа на пару, **4 ч** всего + доработка дома при необходимости)  
 **Для учителя:** это **итоговая сдача** модуля; минимум — `manual_tests.py` без ошибок (10 проверок)
 
 **Смысл для класса:** частоты слов в текстах двух классов отзывов; простой классификатор «позитив / негатив» без pandas и sklearn.
@@ -32,9 +32,9 @@
 | `word_frequencies(tokens)` | список → `{слово: частота}` | частоты слов |
 | `filter_tokens(tokens, min_len=3)` | оставить токены длиной ≥ `min_len` | убрать короткие слова |
 | `top_n(freq, n=5)` | top-n пар `(слово, count)` по убыванию частоты | самые частые слова |
-| `count_char_recursive(s, ch)` | рекурсивный подсчёт `ch` в `s` | рекурсия (пара 8) |
+| `count_char_recursive(s, ch)` | рекурсивный подсчёт `ch` в `s` | рекурсия (пара 7) |
 | `analyze_text(text)` | `{"word_count", "unique_words", "top3"}` | краткое описание одного текста |
-| `apply_pipeline(data, steps)` | последовательно применить функции из `steps` | цепочка шагов (пара 9) |
+| `apply_pipeline(data, steps)` | последовательно применить функции из `steps` | цепочка шагов (пара 8) |
 | `aggregate_frequencies(texts)` | суммарные частоты по списку текстов класса | нужна для сравнения классов; **отдельного теста нет** — проверяется через `compare_class_frequencies` |
 | `compare_class_frequencies(texts_a, texts_b, ratio=2.0)` | `{слово: "positive"\|"negative"}` при перевесе ≥ `ratio` | маркерные слова класса |
 | `naive_classify(text, texts_a, texts_b)` | `"positive"` / `"negative"` / `"unknown"` | предсказание класса текста |
@@ -108,7 +108,7 @@ naive_classify("отличный фильм рекомендую", TEXTS_POSITIV
 
 ---
 
-## Для учителя (пары 10–11)
+## Для учителя (пары 9–10)
 
 Планы пар и карточки §13: [10_artifact_build/LESSON.md](../lessons/10_artifact_build/LESSON.md), [11_artifact_submit/LESSON.md](../lessons/11_artifact_submit/LESSON.md).
 
@@ -137,7 +137,7 @@ naive_classify("отличный фильм рекомендую", TEXTS_POSITIV
 
 ## Карточки урока (§13)
 
-Перенесены в LESSON пар 10–11 (одна пара = один LESSON.md):
+Перенесены в LESSON пар 9–10 (одна пара = один LESSON.md):
 
 - [§13 пара 10](../lessons/10_artifact_build/LESSON.md#13-карточка-урока)
-- [§13 пара 11](../lessons/11_artifact_submit/LESSON.md#13-карточка-урока)
+- [§13 пара 10](../lessons/10_artifact_submit/LESSON.md#13-карточка-урока)

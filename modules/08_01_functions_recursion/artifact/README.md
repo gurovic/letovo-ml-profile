@@ -11,7 +11,7 @@
 ## Учителю: быстрый старт
 
 1. Раздать папку **starter/** (не solution).
-2. Пара 10 — [PROJECT.md § Для учителя](PROJECT.md#для-учителя-пары-1011) и [шаги 1–5 starter/README](starter/README.md#учителю-порядок-на-парах-1011).
+2. Пара 9 — [PROJECT.md § Для учителя](PROJECT.md#для-учителя-пары-910) и [шаги 1–5 starter/README](starter/README.md#учителю-порядок-на-парах-910).
 3. Проверка сдачи из `artifact/starter/`:
 
 ```bash

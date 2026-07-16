@@ -6,15 +6,15 @@
 |---|---|
 | Модуль | pandas и линейная регрессия (`08_02`) |
 | Название урока | EDA: describe(), scatter признак → длительность |
-| Пара КТП | **14** |
+| Пара КТП | **13** |
 | Длительность | 2 академических часа (**80 минут**) |
 | Роль | введение |
-| Пререквизиты | Пары 12–13: DataFrame, фильтры |
+| Пререквизиты | Пары 11–12: DataFrame, фильтры |
 | **Открыть** | [lesson.ipynb](lesson.ipynb) — matplotlib в ноутбуке |
 | **Первая фраза** | «Прежде чем учить модель — смотрим числа и график: есть ли связь между расстоянием и длительностью?» |
 | **Минимум сдачи** | (1) describe distance и duration; (2) info без сюрпризов по пропускам; (3) scatter с подписями; (4) одна фраза вывода в EDA_CONCLUSION |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
-| **Дальше** | train/test и LR — [пара 15](../04_train_test_lr/LESSON.md) |
+| **Дальше** | train/test и LR — [пара 14](../04_train_test_lr/LESSON.md) |
 | **Canvas** | план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/195d27b46e4ce375e61e41830e0a3a60/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/195d27b46e4ce375e61e41830e0a3a60/homework.ipynb)) |
 
 ### Ориентир времени (не поминутный)

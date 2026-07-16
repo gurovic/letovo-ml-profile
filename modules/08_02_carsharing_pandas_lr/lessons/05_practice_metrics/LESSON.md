@@ -6,7 +6,7 @@
 |---|---|
 | Модуль | pandas и линейная регрессия (`08_02`) |
 | Название урока | Практика: MSE, R², сравнение прогнозов |
-| Пара КТП | **16** |
+| Пара КТП | **15** |
 | Длительность | 2 академических часа (**80 минут**) |
 | Роль | отработка |
 | Пререквизиты | Пара 15: train/test, LinearRegression |
@@ -14,7 +14,7 @@
 | **Первая фраза** | «Модель умеет предсказывать — сегодня мерим, насколько хорошо, числами MSE и R² на test» |
 | **Минимум сдачи** | (1) MSE на test; (2) R² на test; (3) таблица fact/pred/error на 5 строках; (4) одна фраза интерпретации |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
-| **Дальше** | try/except — [пара 17](../06_try_except_csv/LESSON.md) |
+| **Дальше** | try/except — [пара 16](../06_try_except_csv/LESSON.md) |
 | **Canvas** | план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/1b64439fdc5f01fd2ef1f7a9190ebd20/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/1b64439fdc5f01fd2ef1f7a9190ebd20/homework.ipynb)) |
 
 ### Ориентир времени (не поминутный)

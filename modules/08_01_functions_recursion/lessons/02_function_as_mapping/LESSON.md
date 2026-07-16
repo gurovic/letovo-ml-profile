@@ -14,8 +14,8 @@
 | **Первая фраза** | «Сегодня одно правило цены превратим в функцию, научимся мерить ошибку и выбирать параметры по данным — всё в одном ноутбуке» |
 | **Минимум сдачи** | (1) зелёные assert у `predict_price`, `batch_predict`, `mae`; (2) в §5 записан лучший коэффициент и MAE; (3) устно: почему `print` нельзя подставить в метрику |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
-| **Дальше** | transform — [пара 4](../04_parameters_and_return/LESSON.md) |
-| **Canvas** | Модуль 54688: `LESSON.md` скрыт; [lesson (Colab)](https://colab.research.google.com/gist/gurovic/cfc377717ba193c512a9e88593405ab8/lesson.ipynb), [homework (Colab)](https://colab.research.google.com/gist/gurovic/15255de29367ddc86fb8d141f63b5cfd/homework.ipynb) |
+| **Дальше** | transform — [пара 3](../03_parameters_and_return/LESSON.md) |
+| **Canvas** | Модуль 54688: план и решения скрыты; [урок (Colab)](https://colab.research.google.com/gist/gurovic/cfc377717ba193c512a9e88593405ab8/lesson.ipynb); ДЗ — Assignment «Домашнее задание» ([Colab в описании](https://colab.research.google.com/gist/gurovic/15255de29367ddc86fb8d141f63b5cfd/homework.ipynb)) |
 
 ### Ориентир времени (не поминутный)
 
@@ -102,6 +102,7 @@
 
 - [x] ноутбук `lesson.ipynb` — ход пары (§1–5)
 - [x] [homework.ipynb](homework.ipynb) — ДЗ ~1 ч: второй признак, устойчивость, сетка параметров
+- [x] [solutions.ipynb](solutions.ipynb) — эталонные решения урока и ДЗ (только преподаватель)
 - [ ] презентация — не нужна
 
 ### Домашнее задание
@@ -128,4 +129,4 @@
 | По содержанию | Два коэффициента vs полный диапазон 0.05–0.15 |
 | По процессу | Код индивидуально; разбор print/return — у доски |
 | По продукту | Рабочие `predict_price`, `batch_predict`, `mae`; сдача `homework.ipynb` |
-| Canvas | Модуль 54688: план скрыт; ноутбуки — Colab (см. зону A) |
+| Canvas | Модуль 54688: план и решения скрыты; урок — Colab; ДЗ — Assignment (Colab в описании) |

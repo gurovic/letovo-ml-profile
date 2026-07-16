@@ -23,4 +23,4 @@ from data.module_datasets import APARTMENTS, EXAM_SCORES
 | `FEATURE_ROWS` | 9 | словарь-признак; цепочка extract → scale → predict |
 | `MODEL_RUNS` | 9 | сортировка моделей по метрике f1 |
 | `FEATURE_POINTS` | 9 | точка с максимальной «дальностью» (задача на `key=`) |
-| `TEXTS_POSITIVE` / `TEXTS_NEGATIVE` | 10–11 | итоговый артефакт `text_stats` |
+| `TEXTS_POSITIVE` / `TEXTS_NEGATIVE` | 9–10 | итоговый артефакт `text_stats` |

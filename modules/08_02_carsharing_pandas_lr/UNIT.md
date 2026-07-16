@@ -10,16 +10,16 @@
 
 | Пара | Роль | План |
 |---|---|---|
-| 12 | введение | [01_pandas_dataframe](lessons/01_pandas_dataframe/LESSON.md) |
-| 13 | отработка | [02_practice_filters](lessons/02_practice_filters/LESSON.md) |
-| 14 | введение | [03_eda_scatter](lessons/03_eda_scatter/LESSON.md) |
-| 15 | введение | [04_train_test_lr](lessons/04_train_test_lr/LESSON.md) |
-| 16 | отработка | [05_practice_metrics](lessons/05_practice_metrics/LESSON.md) |
-| 17 | введение | [06_try_except_csv](lessons/06_try_except_csv/LESSON.md) |
-| 18 | отработка | [07_practice_features](lessons/07_practice_features/LESSON.md) |
-| 19 | введение (обзор) | [08_multifeature_overview](lessons/08_multifeature_overview/LESSON.md) |
-| 20 | интеграция | [09_report_draft](lessons/09_report_draft/LESSON.md) |
-| 21 | интеграция | [10_report_submit](lessons/10_report_submit/LESSON.md) |
+| 11 | введение | [01_pandas_dataframe](lessons/01_pandas_dataframe/LESSON.md) |
+| 12 | отработка | [02_practice_filters](lessons/02_practice_filters/LESSON.md) |
+| 13 | введение | [03_eda_scatter](lessons/03_eda_scatter/LESSON.md) |
+| 14 | введение | [04_train_test_lr](lessons/04_train_test_lr/LESSON.md) |
+| 15 | отработка | [05_practice_metrics](lessons/05_practice_metrics/LESSON.md) |
+| 16 | введение | [06_try_except_csv](lessons/06_try_except_csv/LESSON.md) |
+| 17 | отработка | [07_practice_features](lessons/07_practice_features/LESSON.md) |
+| 18 | введение (обзор) | [08_multifeature_overview](lessons/08_multifeature_overview/LESSON.md) |
+| 19 | интеграция | [09_report_draft](lessons/09_report_draft/LESSON.md) |
+| 20 | интеграция | [10_report_submit](lessons/10_report_submit/LESSON.md) |
 
 ---
 
@@ -142,7 +142,7 @@
 | Исследование | Сравнивать альтернативные признаки как гипотезы |
 | Самоорганизация | Фиксировать шаги эксперимента в отчёте |
 
-**Процесс формирования:** пары 12–15 — осмотр и разбиение; 16–19 — модель и устойчивость кода; 20–21 — сравнение и отчёт.
+**Процесс формирования:** пары 11–14 — осмотр и разбиение; 15–18 — модель и устойчивость кода; 19–20 — сравнение и отчёт.
 
 ---
 
@@ -150,16 +150,16 @@
 
 | Пара КТП | Тема | Часы | Роль | LESSON | Вклад в артефакт |
 |---|---|---|---|---|---|
-| 12 | pandas: `read_csv`, DataFrame, object / feature / target | 2 | введение | [LESSON](lessons/01_pandas_dataframe/LESSON.md) | схема данных |
-| 13 | Практика: выборка, фильтры, типы | 2 | отработка | [LESSON](lessons/02_practice_filters/LESSON.md) | срезы таблицы |
-| 14 | EDA: `describe()`, scatter признак → длительность | 2 | введение | [LESSON](lessons/03_eda_scatter/LESSON.md) | график и гипотеза |
-| 15 | train/test; `LinearRegression` fit/predict (один признак) | 2 | введение | [LESSON](lessons/04_train_test_lr/LESSON.md) | обученная модель |
-| 16 | Практика: MSE, R², сравнение прогнозов | 2 | отработка | [LESSON](lessons/05_practice_metrics/LESSON.md) | метрики на test |
+| 11 | pandas: `read_csv`, DataFrame, object / feature / target | 2 | введение | [LESSON](lessons/01_pandas_dataframe/LESSON.md) | схема данных |
+| 12 | Практика: выборка, фильтры, типы | 2 | отработка | [LESSON](lessons/02_practice_filters/LESSON.md) | срезы таблицы |
+| 13 | EDA: `describe()`, scatter признак → длительность | 2 | введение | [LESSON](lessons/03_eda_scatter/LESSON.md) | график и гипотеза |
+| 14 | train/test; `LinearRegression` fit/predict (один признак) | 2 | введение | [LESSON](lessons/04_train_test_lr/LESSON.md) | обученная модель |
+| 15 | Практика: MSE, R², сравнение прогнозов | 2 | отработка | [LESSON](lessons/05_practice_metrics/LESSON.md) | метрики на test |
 | 17 | `try/except` при загрузке и очистке CSV | 2 | введение | [LESSON](lessons/06_try_except_csv/LESSON.md) | устойчивая загрузка |
-| 18 | Практика: другой признак, сравнение метрик | 2 | отработка | [LESSON](lessons/07_practice_features/LESSON.md) | таблица сравнения |
-| 19 | Несколько признаков (обзорно) | 2 | введение | [LESSON](lessons/08_multifeature_overview/LESSON.md) | задел multi-feature |
-| 20 | Мини-отчёт — черновик | 2 | интеграция | [LESSON](lessons/09_report_draft/LESSON.md) | черновик |
-| 21 | Сдача отчёта, рефлексия | 2 | интеграция | [LESSON](lessons/10_report_submit/LESSON.md) | итоговый документ |
+| 17 | Практика: другой признак, сравнение метрик | 2 | отработка | [LESSON](lessons/07_practice_features/LESSON.md) | таблица сравнения |
+| 18 | Несколько признаков (обзорно) | 2 | введение | [LESSON](lessons/08_multifeature_overview/LESSON.md) | задел multi-feature |
+| 19 | Мини-отчёт — черновик | 2 | интеграция | [LESSON](lessons/09_report_draft/LESSON.md) | черновик |
+| 20 | Сдача отчёта, рефлексия | 2 | интеграция | [LESSON](lessons/10_report_submit/LESSON.md) | итоговый документ |
 
 ---
 
@@ -167,7 +167,7 @@
 
 | Поле | Значение |
 |---|---|
-| Тип | Jupyter-ноутбук с разделами отчёта (пары 20–21) |
+| Тип | Jupyter-ноутбук с разделами отчёта (пары 19–20) |
 | Описание | Прогноз длительности поездки: загрузка, EDA, train/test, `LinearRegression`, MSE/R², сравнение ≥2 признаков |
 | ML-смысл | Первый полный цикл supervised regression на таблице |
 | Итоговое оценивание | Критерии [artifact/PROJECT.md](artifact/PROJECT.md): метрики на test, сравнение признаков, рекомендация |
@@ -179,8 +179,8 @@
 
 | Тип | Трудность | Адресация |
 |---|---|---|
-| Data | Путают индекс строки и значение признака | пара 12–13: явные имена столбцов |
-| ML | Метрики на train | пара 15–17: правило test-only для оценки |
+| Data | Путают индекс строки и значение признака | пара 11–12: явные имена столбцов |
+| ML | Метрики на train | пара 14–16: правило test-only для оценки |
 | Code | `SettingWithCopyWarning` | минимизировать цепочки присваивания; копия при очистке |
 | Math | R² «чем больше, тем лучше» без контекста | пара 17: связь с разбросом цели |
 
@@ -267,4 +267,4 @@
 
 ## 21. Согласование с КТП
 
-Годовой КТП (модуль 2 = пары 12–21): [docs/ktp/08.md](../../docs/ktp/08.md)
+Годовой КТП (модуль 2 = пары 11–20): [docs/ktp/08.md](../../docs/ktp/08.md)

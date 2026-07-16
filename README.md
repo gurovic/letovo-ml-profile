@@ -30,17 +30,17 @@
 
 | # | Модуль | Пары КТП | Статус |
 |---|---|---|---|
-| 1 | [08_01_functions_recursion](modules/08_01_functions_recursion/) | 1–11 | демо: вводная + уроки, ноутбуки, артефакт |
-| 2 | [08_02_carsharing_pandas_lr](modules/08_02_carsharing_pandas_lr/) | 12–21 | материалы |
-| 3 | [08_03_titanic_eda](modules/08_03_titanic_eda/) | 22–30 | план |
-| 4 | [08_04_mnist_knn](modules/08_04_mnist_knn/) | 31–38 | план |
-| 5 | [08_05_shop_feature_engineering](modules/08_05_shop_feature_engineering/) | 39–45 | план |
-| 6 | [08_06_ab_startup](modules/08_06_ab_startup/) | 46–53 | план |
-| 7 | [08_07_bank_arrays_search](modules/08_07_bank_arrays_search/) | 54–62 | план |
-| 8 | [08_08_logistics_clustering](modules/08_08_logistics_clustering/) | 63–70 | план |
-| 9 | [08_09_courier_dp](modules/08_09_courier_dp/) | 71–76 | план |
-| 10 | [08_10_churn_logreg](modules/08_10_churn_logreg/) | 77–82 | план |
-| 11 | [08_11_virtual_polygon](modules/08_11_virtual_polygon/) | 83–86 | план |
+| 1 | [08_01_functions_recursion](modules/08_01_functions_recursion/) | 1–10 | демо: вводная + уроки, ноутбуки, артефакт |
+| 2 | [08_02_carsharing_pandas_lr](modules/08_02_carsharing_pandas_lr/) | 11–20 | материалы |
+| 3 | [08_03_titanic_eda](modules/08_03_titanic_eda/) | 21–29 | план |
+| 4 | [08_04_mnist_knn](modules/08_04_mnist_knn/) | 30–37 | план |
+| 5 | [08_05_shop_feature_engineering](modules/08_05_shop_feature_engineering/) | 38–44 | план |
+| 6 | [08_06_ab_startup](modules/08_06_ab_startup/) | 45–52 | план |
+| 7 | [08_07_bank_arrays_search](modules/08_07_bank_arrays_search/) | 53–61 | план |
+| 8 | [08_08_logistics_clustering](modules/08_08_logistics_clustering/) | 62–69 | план |
+| 9 | [08_09_courier_dp](modules/08_09_courier_dp/) | 70–75 | план |
+| 10 | [08_10_churn_logreg](modules/08_10_churn_logreg/) | 76–81 | план |
+| 11 | [08_11_virtual_polygon](modules/08_11_virtual_polygon/) | 82–85 | план |
 
 ## Работа с ИИ
 

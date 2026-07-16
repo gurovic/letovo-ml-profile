@@ -12,6 +12,41 @@ LESSON_02_DATA = (
     "PRICES_MLN = [3.9, 4.2, 5.8, 6.5, 7.1]\n"
 )
 
+LESSON_03_DATA = (
+    "# Баллы экзамена (10 учеников)\n"
+    "EXAM_SCORES = [40, 55, 62, 75, 88, 91, 48, 100, 33, 67]\n"
+    "# Площади квартир — те же, что на паре 2\n"
+    "AREAS_SQM = [28, 32, 45, 55, 60]\n"
+)
+
+LESSON_04_DATA = (
+    "# Лабораторные баллы (8 работ) — другая выборка, не EXAM_SCORES\n"
+    "LAB_SCORES = [72, 81, 55, 90, 44, 38, 92, 58]\n"
+    "AREAS_SQM = [28, 32, 45, 55, 60]\n"
+    "ROOMS_COUNTS = [1, 1, 2, 2, 3]  # число комнат у квартиры с тем же индексом\n"
+)
+
+LESSON_05_DATA = (
+    "# Предсказания и метки (0/1) — 10 объектов\n"
+    "PREDICTIONS = [1, 0, 1, 1, 0, 1, 1, 0, 1, 0]\n"
+    "LABELS =      [1, 0, 1, 0, 0, 1, 1, 0, 1, 1]\n"
+    "# Баллы (для predict_pass на паре)\n"
+    "SCORES = [72, 55, 88, 44, 61, 90, 77, 48, 83, 58]\n"
+)
+
+LESSON_07_DATA = (
+    "# Вложенный список (без dict)\n"
+    "NESTED_LIST = [1, [2, [3, 4]], 5]\n"
+    "# Простое дерево: (name, children)\n"
+    "CATEGORY_TREE = (\n"
+    "    'root',\n"
+    "    [\n"
+    "        ('electronics', [('phones', []), ('laptops', [])]),\n"
+    "        ('books', []),\n"
+    "    ],\n"
+    ")\n"
+)
+
 DATA_IMPORT = (
     "import sys\n"
     "from pathlib import Path\n"
@@ -141,89 +176,67 @@ NOTEBOOKS = {
             "# print(f'Лучший коэффициент: {best_coef:.2f}; MAE: {best_error:.3f}')"
         ),
     ),
-    "lessons/04_parameters_and_return/lesson.ipynb": nb(
+    "lessons/03_parameters_and_return/lesson.ipynb": nb(
+        md("# Параметры и return — describe, scale, контракт transform"),
+        code(LESSON_03_DATA),
         md(
-            "# Параметры и return\n\n"
-            "**Пара КТП 4** (2 ч) — введение.\n\n"
-            "**Идея:** параметры и `return` задают контракт шага над данными.\n\n"
-            "**Данные:** `EXAM_SCORES`, `APARTMENTS`."
+            "## 1. Proto-EDA: `describe_numbers`\n\n"
+            "Список чисел → кортеж `(mean, min, max, count)`. Результат нужен следующей функции — используйте `return`."
         ),
-        code(DATA_IMPORT),
-        md("## 1. Proto-EDA: `describe_numbers`\n\nСписок чисел → кортеж `(mean, min, max, count)`."),
         code(
             "def describe_numbers(values):\n"
             '    """Вернуть (mean, min, max, count)."""\n'
             "    pass\n\n\n"
             "assert describe_numbers([10, 20, 30])[0] == 20\n"
-            "print('describe_numbers OK (допишите остальные поля кортежа)')"
+            "assert describe_numbers([10, 20, 30])[3] == 3\n"
+            "print(describe_numbers(EXAM_SCORES))"
         ),
         md(
-            "## 2. `min_max_scale` — к диапазону [0, 1]\n\n"
-            "Формула: `(x - min) / (max - min)`. Задел под kNN."
+            "## 2. Min-max scale\n\n"
+            "Приведите список к диапазону [0, 1]: `(x - min) / (max - min)`. "
+            "Если `min == max`, верните список нулей той же длины."
         ),
         code(
             "def min_max_scale(values):\n"
             '    """Min-max scaling списка чисел."""\n'
             "    pass\n\n\n"
-            "areas = [a['area_sqm'] for a in APARTMENTS]\n"
-            "scaled = min_max_scale(areas)\n"
+            "scaled = min_max_scale(AREAS_SQM)\n"
             "assert abs(min(scaled) - 0) < 1e-9 and abs(max(scaled) - 1) < 1e-9\n"
             "print(scaled)"
         ),
-        md("## 3. `clip_outlier` — ограничение выброса"),
+        md("## 3. Clip выброса\n\nОграничьте одно число границами `low` и `high`. Сравните mean до и после clip для одного «дикого» балла."),
         code(
             "def clip_outlier(x, low, high):\n"
             "    return max(low, min(high, x))\n\n\n"
-            "print(clip_outlier(150, 0, 100))\n"
-            "print(clip_outlier(EXAM_SCORES[0], 0, 100))"
+            "wild = EXAM_SCORES[7]  # 100\n"
+            "print('до clip:', describe_numbers(EXAM_SCORES))\n"
+            "clipped_one = clip_outlier(wild, 0, 95)\n"
+            "print('clip(100, 0, 95) =', clipped_one)"
         ),
-        md("## 4. Опасный default: `bucket=[]`"),
+        md(
+            "## 4. Опасный default\n\n"
+            "Запустите `collect_outliers_bad` дважды. Почему список растёт? Исправьте через `bucket=None`."
+        ),
         code(
             "def collect_outliers_bad(x, bucket=[]):\n"
             "    if x > 100:\n"
             "        bucket.append(x)\n"
             "    return bucket\n\n\n"
             "print(collect_outliers_bad(105))\n"
-            "print(collect_outliers_bad(110))  # почему список растёт?"
-        ),
-        code(
+            "print(collect_outliers_bad(110))\n\n\n"
             "def collect_outliers_ok(x, bucket=None):\n"
             "    if bucket is None:\n"
             "        bucket = []\n"
             "    if x > 100:\n"
             "        bucket.append(x)\n"
-            "    return bucket\n"
+            "    return bucket\n\n\n"
+            "assert collect_outliers_ok(105) == [105]\n"
+            "assert collect_outliers_ok(110) == [110]"
         ),
-        md("## Итог\n\nДальше — **пара 5**: серия transform-задач (`grade_stats`, порог)."),
-    ),
-    "lessons/05_practice_transform/lesson.ipynb": nb(
         md(
-            "# Практика: transform\n\n"
-            "**Пара КТП 5** (2 ч) — отработка.\n\n"
-            "Серия: **transform-функции** над списками. Опора — пара 4.\n\n"
-            "**Данные:** `EXAM_SCORES`, `APARTMENTS`, `FEATURE_ROWS`."
+            "## 5. Порог сдачи\n\n"
+            "`grade_stats(scores, pass_threshold=60)` → `(mean, passed_count, failed_count)`."
         ),
-        code(DATA_IMPORT),
-        md(
-            "## Напоминание: допишите, если нет с пары 4\n\n"
-            "`describe_numbers`, `min_max_scale` — нужны для задач ниже."
-        ),
-        code(
-            "def describe_numbers(values):\n"
-            "    pass\n\n\n"
-            "def min_max_scale(values):\n"
-            "    pass\n"
-        ),
-        md("## Задача 1. Описать `EXAM_SCORES`"),
-        code("print(describe_numbers(EXAM_SCORES))\n"),
-        md("## Задача 2. Масштаб площадей (повтор с проверкой)"),
-        code(
-            "areas = [a['area_sqm'] for a in APARTMENTS]\n"
-            "scaled = min_max_scale(areas)\n"
-            "assert abs(min(scaled) - 0) < 1e-9 and abs(max(scaled) - 1) < 1e-9\n"
-            "print('scale OK', scaled)"
-        ),
-        md("## Задача 3. `grade_stats`"),
         code(
             "def grade_stats(scores, pass_threshold=60):\n"
             '    """(mean, passed_count, failed_count)."""\n'
@@ -232,42 +245,107 @@ NOTEBOOKS = {
             "assert passed + failed == len(EXAM_SCORES)\n"
             "print(mean, passed, failed)"
         ),
-        md(
-            "## Задача 4. Порог ≈ 50% сдавших\n\n"
-            "Подберите `pass_threshold`, при котором доля сдавших близка к 0.5. Запишите порог."
-        ),
-        code("# перебор порогов; вывод: лучший порог = ...\n"),
-        md(
-            "## Задача 5 (по желанию). Clip и снова describe\n\n"
-            "Обрежьте все баллы в [50, 95], сравните mean до и после."
-        ),
-        code("# эксперимент\n"),
-        md(
-            "## Домашнее задание\n\n"
-            "`feature_row_stats(row)` → `(mean, max)` по **числовым** значениям словаря. "
-            "Проверка: `FEATURE_ROWS[0]`."
-        ),
-        code("# ваш код\n"),
-        md("## Итог\n\nДальше — **пара 6**: отладка метрик (accuracy, scope)."),
     ),
-    "lessons/06_scope_and_debugging/lesson.ipynb": nb(
+    "lessons/04_practice_transform/lesson.ipynb": nb(
+        md("# Практика: transform на новых данных"),
+        code(LESSON_04_DATA),
         md(
-            "# Scope и отладка\n\n"
-            "**Пара КТП 6** (2 ч) — введение.\n\n"
-            "**Идея:** метрика — функция; баг в метрике искажает вывод о модели.\n\n"
-            "**Данные:** `PREDICTIONS`, `LABELS`."
+            "## 1. Опора\n\n"
+            "Вставьте **рабочие** функции с [пары 3](../03_parameters_and_return/lesson.ipynb): "
+            "`describe_numbers`, `min_max_scale`, `clip_outlier`, `grade_stats`. "
+            "Без заготовок `pass` — только ваш код."
         ),
-        code(DATA_IMPORT),
-        md("## 1. Эталон: `accuracy`\n\nAccuracy = доля верных предсказаний (`pred == label`)."),
+        code(
+            "# describe_numbers, min_max_scale, clip_outlier, grade_stats — вставьте сюда\n"
+            "# Проверка:\n"
+            "# assert describe_numbers([1, 2, 3])[0] == 2\n"
+        ),
+        md(
+            "## 2. Другая выборка\n\n"
+            "Вычислите `describe_numbers(LAB_SCORES)`. "
+            "Запишите в комментарии: сколько работ (`count`) и средний балл (`mean`)."
+        ),
+        code(
+            "stats = describe_numbers(LAB_SCORES)\n"
+            "print(stats)\n"
+            "# count = ..., mean = ...\n"
+            "assert stats[3] == len(LAB_SCORES)"
+        ),
+        md(
+            "## 3. Два признака\n\n"
+            "Масштабируйте **отдельно** `AREAS_SQM` и `ROOMS_COUNTS` в [0, 1]. "
+            "Почему нельзя просто сложить сырые площадь и число комнат?"
+        ),
+        code(
+            "scaled_areas = min_max_scale(AREAS_SQM)\n"
+            "scaled_rooms = min_max_scale(ROOMS_COUNTS)\n"
+            "assert abs(min(scaled_areas) - 0) < 1e-9 and abs(max(scaled_areas) - 1) < 1e-9\n"
+            "assert abs(min(scaled_rooms) - 0) < 1e-9 and abs(max(scaled_rooms) - 1) < 1e-9\n"
+            "print('areas', scaled_areas)\n"
+            "print('rooms', scaled_rooms)"
+        ),
+        md(
+            "## 4. Порог: ровно k сдавших\n\n"
+            "Найдите целый `pass_threshold`, при котором на `LAB_SCORES` **ровно 4** сдавших "
+            "(`score >= threshold`). Запишите порог и проверьте через `grade_stats`.\n\n"
+            "*Не то же самое, что «доля ≈ 50%» в ДЗ пары 3.*"
+        ),
+        code(
+            "TARGET_PASSED = 4\n"
+            "# перебор порогов; best_threshold = ...\n"
+            "# mean, passed, failed = grade_stats(LAB_SCORES, best_threshold)\n"
+            "# assert passed == TARGET_PASSED\n"
+            "# print(f'порог = {best_threshold}, passed = {passed}')"
+        ),
+        md(
+            "## 5. Цепочка transform\n\n"
+            "Напишите `apply_transform(values, fn)` — вернуть `fn(values)`. "
+            "Получите кортеж describe **после** `min_max_scale(LAB_SCORES)`."
+        ),
+        code(
+            "def apply_transform(values, fn):\n"
+            '    """Применить fn к списку values и вернуть результат."""\n'
+            "    pass\n\n\n"
+            "scaled_lab = apply_transform(LAB_SCORES, min_max_scale)\n"
+            "after_stats = describe_numbers(scaled_lab)\n"
+            "assert abs(after_stats[1] - 0) < 1e-9 and abs(after_stats[2] - 1) < 1e-9\n"
+            "print('describe после scale:', after_stats)"
+        ),
+    ),
+    "lessons/05_scope_and_debugging/lesson.ipynb": nb(
+        md("# Scope и отладка — метрика как функция"),
+        code(LESSON_05_DATA),
+        md(
+            "## 1. Эталон accuracy\n\n"
+            "Accuracy = доля верных предсказаний (`pred == label`). "
+            "Прочитайте эталон и вычислите значение на `PREDICTIONS` / `LABELS`."
+        ),
         code(
             "def accuracy(preds, labels):\n"
             "    if len(preds) != len(labels):\n"
             "        return None\n"
             "    correct = sum(p == y for p, y in zip(preds, labels))\n"
             "    return correct / len(labels)\n\n\n"
-            "print('accuracy =', accuracy(PREDICTIONS, LABELS))"
+            "REF_ACCURACY = accuracy(PREDICTIONS, LABELS)\n"
+            "print('эталон accuracy =', REF_ACCURACY)"
         ),
-        md("## 2. Баг: нет `return`"),
+        md(
+            "## 2. Своя accuracy\n\n"
+            "Напишите `my_accuracy(preds, labels)` **с нуля** (не копируйте тело эталона). "
+            "При разной длине списков верните `None`."
+        ),
+        code(
+            "def my_accuracy(preds, labels):\n"
+            '    """Доля верных предсказаний или None."""\n'
+            "    pass\n\n\n"
+            "assert abs(my_accuracy(PREDICTIONS, LABELS) - REF_ACCURACY) < 1e-9\n"
+            "assert my_accuracy([1], [1, 0]) is None"
+        ),
+        md(
+            "## 3. Баг: нет return\n\n"
+            "Запустите `accuracy_buggy`. Почему результат `None`? "
+            "Исправьте функцию (или объясните в комментарии и допишите `accuracy_fixed`)."
+        ),
         code(
             "def accuracy_buggy(preds, labels):\n"
             "    correct = 0\n"
@@ -275,106 +353,105 @@ NOTEBOOKS = {
             "        if preds[i] == labels[i]:\n"
             "            correct += 1\n"
             "    # баг: нет return\n\n\n"
-            "print(accuracy_buggy(PREDICTIONS, LABELS))"
-        ),
-        code(
+            "print('buggy:', accuracy_buggy(PREDICTIONS, LABELS))\n\n\n"
             "def accuracy_fixed(preds, labels):\n"
-            "    # исправьте\n"
             "    pass\n\n\n"
-            "assert abs(accuracy_fixed(PREDICTIONS, LABELS) - accuracy(PREDICTIONS, LABELS)) < 1e-9\n"
-            "print('accuracy_fixed OK')"
+            "# assert abs(accuracy_fixed(PREDICTIONS, LABELS) - REF_ACCURACY) < 1e-9"
         ),
-        md("## 3. Баг: `global` при подсчёте метрики\n\nИсправьте **без** `global`: накопите результат через return или аргумент."),
+        md(
+            "## 4. Подсчёт без global\n\n"
+            "Напишите `count_correct(preds, labels)` — число совпадений в цикле. "
+            "**Без** `global`. Подсказка: накопитель в цикле, `return` в конце."
+        ),
         code(
-            "total_correct = 0\n\n\n"
-            "def update_metrics(pred, label):\n"
-            "    total_correct = total_correct + (pred == label)  # баг scope\n"
-            "    return total_correct\n\n\n"
-            "# ваша версия без global\n"
+            "def count_correct(preds, labels):\n"
+            "    pass\n\n\n"
+            "assert count_correct(PREDICTIONS, LABELS) == round(REF_ACCURACY * len(PREDICTIONS))"
         ),
-        md("## 4. Баг: predict без `return`"),
+        md(
+            "## 5. predict без return\n\n"
+            "Исправьте `predict_pass`: вернуть `1`, если `score >= threshold`, иначе `0`."
+        ),
         code(
             "def predict_pass_buggy(score, threshold=60):\n"
             "    if score >= threshold:\n"
             "        1\n"
             "    else:\n"
             "        0\n\n\n"
-            "# result = predict_pass_buggy(72)\n"
-            "# print(result)  # почему None?\n"
+            "def predict_pass(score, threshold=60):\n"
+            "    pass\n\n\n"
+            "assert predict_pass(72) == 1\n"
+            "assert predict_pass(55) == 0\n"
+            "assert predict_pass_buggy(72) is None"
         ),
-        md("## Итог\n\nДальше — **пара 7**: серия `confusion_counts` и журнал отладки."),
     ),
-    "lessons/07_practice_metrics/lesson.ipynb": nb(
+    "lessons/06_practice_metrics/lesson.ipynb": nb(
+        md("# Практика: confusion_counts и журнал отладки"),
+        code(LESSON_05_DATA),
         md(
-            "# Практика: метрики\n\n"
-            "**Пара КТП 7** (2 ч) — отработка.\n\n"
-            "Серия: **метрики и журнал отладки**. Опора — пара 6.\n\n"
-            "**Данные:** `PREDICTIONS`, `LABELS`.\n\n"
-            "Счётчики: **tp** pred=1 label=1; **fp** pred=1 label=0; "
-            "**fn** pred=0 label=1; **tn** pred=0 label=0."
+            "## 1. Опора\n\n"
+            "Вставьте с [пары 5](../05_scope_and_debugging/lesson.ipynb): `count_correct` и `my_accuracy`."
         ),
-        code(DATA_IMPORT),
-        md("## Задача 1. Накопление correct без `global`"),
-        code("# ваш код и проверка\n"),
+        code("# count_correct, my_accuracy\n"),
         md(
-            "## Задача 2. `confusion_counts` → `(tp, fp, fn, tn)`\n\n"
-            "Метки 0/1."
+            "## 2. confusion_counts\n\n"
+            "Один проход по `zip(preds, labels)`. Верните `(tp, fp, fn, tn)` для меток 0/1."
         ),
         code(
             "def confusion_counts(preds, labels):\n"
+            '    """(tp, fp, fn, tn)."""\n'
             "    pass\n\n\n"
-            "print(confusion_counts(PREDICTIONS, LABELS))"
+            "tp, fp, fn, tn = confusion_counts(PREDICTIONS, LABELS)\n"
+            "assert tp + fp + fn + tn == len(PREDICTIONS)\n"
+            "print(tp, fp, fn, tn)"
         ),
         md(
-            "## Задача 3. Ручная сверка\n\n"
-            "На **первых 4** объектах `PREDICTIONS`/`LABELS` посчитайте tp/fp/fn/tn вручную "
-            "и сравните с функцией."
+            "## 3. Сверка вручную\n\n"
+            "На **первых 4** парах `PREDICTIONS`/`LABELS` посчитайте tp, fp, fn, tn вручную "
+            "и сравните с `confusion_counts(PREDICTIONS[:4], LABELS[:4])`."
         ),
-        code("# ручной подсчёт + сравнение\n"),
-        md(
-            "## Задача 4. Журнал отладки\n\n"
-            "Три строки (accuracy_buggy, update_metrics, predict_pass_buggy с пары 6):\n\n"
-            "| Функция | Симптом | Причина | Исправление |\n"
-            "|---|---|---|---|\n"
-            "| | | | |"
+        code(
+            "# ручной подсчёт\n"
+            "manual = confusion_counts(PREDICTIONS[:4], LABELS[:4])\n"
+            "print('функция на 4:', manual)\n"
+            "# assert manual == (..., ..., ..., ...)"
         ),
         md(
-            "## Домашнее задание\n\n"
-            "Исправьте `homework_counter.py` (рядом с этим ноутбуком) и опишите три шага отладки "
-            "(симптом → причина → исправление)."
+            "## 4. Журнал отладки\n\n"
+            "Добавьте **markdown-ячейку**: таблица **3** багов с пары 5 "
+            "(функция | симптом | причина | исправление)."
         ),
-        md("## Итог\n\nДальше — **пара 8**: рекурсия на вложенных данных."),
     ),
-    "lessons/08_recursion/lesson.ipynb": nb(
+    "lessons/07_recursion/lesson.ipynb": nb(
+        md("# Рекурсия на данных — flatten и дерево"),
+        code(LESSON_07_DATA),
         md(
-            "# Рекурсия\n\n"
-            "**Пара КТП 8** (2 ч) — введение. Отработка серии — **пара 9**.\n\n"
-            "**Данные:** `NESTED_API_RESPONSE`, `CATEGORY_TREE`."
+            "## 1. flatten\n\n"
+            "Базовый случай: элемент **не** список. Шаг: если список — обойти элементы рекурсивно."
         ),
-        code(DATA_IMPORT),
-        md("## 1. `flatten` — развернуть вложенный список"),
         code(
             "def flatten(nested):\n"
             '    """Список любой вложенности → плоский список."""\n'
             "    pass\n\n\n"
-            "assert flatten([1, [2, [3, 4]], 5]) == [1, 2, 3, 4, 5]\n"
-            "print('flatten OK')"
+            "assert flatten(NESTED_LIST) == [1, 2, 3, 4, 5]"
         ),
-        md("## 2. `extract_ids` — все `id` из вложенных dict"),
-        code(
-            "def extract_ids(nested):\n"
-            '    """Собрать все значения ключа \'id\' рекурсивно."""\n'
-            "    pass\n\n\n"
-            "# print(extract_ids(NESTED_API_RESPONSE))\n"
+        md(
+            "## 2. walk_categories\n\n"
+            "Дерево `(name, children)`. Печать с отступом `depth` пробелов. "
+            "Сначала имя узла, затем рекурсия по `children`."
         ),
-        md("## 3. `walk_categories` — обход дерева с отступом"),
         code(
             "def walk_categories(node, depth=0):\n"
             "    pass\n\n\n"
             "# walk_categories(CATEGORY_TREE)\n"
         ),
-        md("## 4. Fibonacci — антипример (дорого для «просто числа»)"),
+        md(
+            "## 3. Fibonacci — антипример\n\n"
+            "Сравните время `fib_recursive(25)` и `fib_iterative(25)`. "
+            "Рекурсия уместна для **структур** (списки, деревья), а не для «просто посчитать число»."
+        ),
         code(
+            "import time\n\n\n"
             "def fib_recursive(n):\n"
             "    if n <= 1:\n"
             "        return n\n"
@@ -384,23 +461,22 @@ NOTEBOOKS = {
             "    for _ in range(n):\n"
             "        a, b = b, a + b\n"
             "    return a\n\n\n"
-            "# сравните время для n=25\n"
-        ),
-        md(
-            "## Домашнее задание\n\n"
-            "`count_leaves(node)` для `CATEGORY_TREE`. Серия практики — пара 9."
-        ),
-        code("def count_leaves(node):\n    pass\n"),
-        md(
-            "## Итог\n\n"
-            "Рекурсия — для **вложенных структур**. Дальше — **пара 9**: серия + lambda + pipeline."
+            "N = 25\n"
+            "t0 = time.perf_counter()\n"
+            "fib_recursive(N)\n"
+            "t_rec = time.perf_counter() - t0\n"
+            "t0 = time.perf_counter()\n"
+            "fib_iterative(N)\n"
+            "t_iter = time.perf_counter() - t0\n"
+            "print(f'recursive: {t_rec:.3f}s, iterative: {t_iter:.3f}s')\n"
+            "assert fib_recursive(10) == fib_iterative(10)"
         ),
     ),
-    "lessons/09_practice_pipeline/lesson.ipynb": nb(
+    "lessons/08_practice_pipeline/lesson.ipynb": nb(
         md(
             "# Практика: рекурсия, lambda, pipeline\n\n"
-            "**Пара КТП 9** (2 ч) — отработка.\n\n"
-            "Минимум сдачи: A1–A2, B1–B2, C1. Опора — пары 2–8.\n\n"
+            "**Пара КТП 8** (2 ч) — отработка.\n\n"
+            "Минимум сдачи: A1–A2, B1–B2, C1. Опора — [пара 7](../07_recursion/lesson.ipynb).\n\n"
             "**Данные:** `NESTED_API_RESPONSE`, `CATEGORY_TREE`, `EXAM_SCORES`, "
             "`MODEL_RUNS`, `FEATURE_ROWS`, `FEATURE_POINTS`."
         ),
@@ -474,15 +550,752 @@ NOTEBOOKS = {
         ),
         md(
             "## Мост к артефакту\n\n"
-            "Пары 10–11: [artifact/PROJECT.md](../../artifact/PROJECT.md) и "
-            "[LESSON пары 10](../10_artifact_build/LESSON.md)."
+            "Пары 9–10: [artifact/PROJECT.md](../../artifact/PROJECT.md) и "
+            "[LESSON пары 9](../09_artifact_build/LESSON.md)."
         ),
         md("## Итог\n\n**Pipeline = композиция функций.** Дальше — итоговый модуль `text_stats`."),
     ),
 }
 
 
+SOLUTIONS = {
+    "lessons/03_parameters_and_return/solutions.ipynb": nb(
+        md(
+            "# Решения: параметры и return\n\n"
+            "**Для преподавателя.** Все задачи из `lesson.ipynb` и `homework.ipynb`."
+        ),
+        code(
+            "EXAM_SCORES = [40, 55, 62, 75, 88, 91, 48, 100, 33, 67]\n"
+            "AREAS_SQM = [28, 32, 45, 55, 60]\n"
+            "ROW_AREAS = [28, 45, 60, 32]\n"
+            "ROW_ROOMS = [1, 2, 3, 1]\n"
+            "ROW_FLOORS = [3, 7, 12, 2]\n"
+        ),
+        md("## Урок. 1. `describe_numbers`"),
+        code(
+            "def describe_numbers(values):\n"
+            "    if not values:\n"
+            "        return (0.0, 0.0, 0.0, 0)\n"
+            "    return (sum(values) / len(values), min(values), max(values), len(values))\n\n\n"
+            "assert describe_numbers([10, 20, 30])[0] == 20"
+        ),
+        md("## Урок. 2. `min_max_scale`"),
+        code(
+            "def min_max_scale(values):\n"
+            "    if not values:\n"
+            "        return []\n"
+            "    lo, hi = min(values), max(values)\n"
+            "    if lo == hi:\n"
+            "        return [0.0] * len(values)\n"
+            "    return [(x - lo) / (hi - lo) for x in values]\n\n\n"
+            "scaled = min_max_scale(AREAS_SQM)\n"
+            "assert abs(min(scaled) - 0) < 1e-9 and abs(max(scaled) - 1) < 1e-9"
+        ),
+        md("## Урок. 3. `clip_outlier`"),
+        code(
+            "def clip_outlier(x, low, high):\n"
+            "    return max(low, min(high, x))"
+        ),
+        md("## Урок. 4. mutable default"),
+        code(
+            "def collect_outliers_ok(x, bucket=None):\n"
+            "    if bucket is None:\n"
+            "        bucket = []\n"
+            "    if x > 100:\n"
+            "        bucket.append(x)\n"
+            "    return bucket\n\n\n"
+            "assert collect_outliers_ok(105) == [105]\n"
+            "assert collect_outliers_ok(110) == [110]"
+        ),
+        md("## Урок. 5. `grade_stats`"),
+        code(
+            "def grade_stats(scores, pass_threshold=60):\n"
+            "    passed = sum(1 for s in scores if s >= pass_threshold)\n"
+            "    failed = len(scores) - passed\n"
+            "    mean = sum(scores) / len(scores) if scores else 0.0\n"
+            "    return (mean, passed, failed)\n\n\n"
+            "mean, passed, failed = grade_stats(EXAM_SCORES)\n"
+            "assert passed + failed == len(EXAM_SCORES)"
+        ),
+        md("## ДЗ. 1. Напоминание — функции урока выше"),
+        md("## ДЗ. 2. Clip всей выборки"),
+        code(
+            "def clip_scores(scores, low, high):\n"
+            "    return [clip_outlier(s, low, high) for s in scores]\n\n\n"
+            "before = describe_numbers(EXAM_SCORES)\n"
+            "clipped = clip_scores(EXAM_SCORES, 50, 95)\n"
+            "after = describe_numbers(clipped)\n"
+            "print('mean до:', before[0], 'после:', after[0])"
+        ),
+        md("## ДЗ. 3. `row_numeric_stats`"),
+        code(
+            "def row_numeric_stats(area, rooms, floor):\n"
+            "    nums = [area, rooms, floor]\n"
+            "    return (sum(nums) / len(nums), max(nums))\n\n\n"
+            "assert abs(row_numeric_stats(ROW_AREAS[0], ROW_ROOMS[0], ROW_FLOORS[0])[0] - 10.666666) < 1e-5"
+        ),
+        md("## ДЗ. 4. Подбор порога"),
+        code(
+            "best = None\n"
+            "for threshold in range(40, 96):\n"
+            "    _, passed, failed = grade_stats(EXAM_SCORES, threshold)\n"
+            "    rate = passed / len(EXAM_SCORES)\n"
+            "    diff = abs(rate - 0.5)\n"
+            "    if best is None or diff < best[0]:\n"
+            "        best = (diff, threshold, rate)\n"
+            "print(f'лучший порог = {best[1]}, доля сдавших = {best[2]:.2f}')"
+        ),
+    ),
+    "lessons/04_practice_transform/solutions.ipynb": nb(
+        md(
+            "# Решения: практика transform\n\n"
+            "**Для преподавателя.** Все задачи из `lesson.ipynb` и `homework.ipynb`."
+        ),
+        code(
+            "LAB_SCORES = [72, 81, 55, 90, 44, 38, 92, 58]\n"
+            "AREAS_SQM = [28, 32, 45, 55, 60]\n"
+            "ROOMS_COUNTS = [1, 1, 2, 2, 3]\n"
+            "FEATURE_ROWS = [\n"
+            "    (28, 1, 3, 'north'),\n"
+            "    (45, 2, 7, 'center'),\n"
+            "    (60, 3, 12, 'south'),\n"
+            "    (32, 1, 2, 'west'),\n"
+            "]\n\n\n"
+            "def describe_numbers(values):\n"
+            "    if not values:\n"
+            "        return (0.0, 0.0, 0.0, 0)\n"
+            "    return (sum(values) / len(values), min(values), max(values), len(values))\n\n\n"
+            "def min_max_scale(values):\n"
+            "    if not values:\n"
+            "        return []\n"
+            "    lo, hi = min(values), max(values)\n"
+            "    if lo == hi:\n"
+            "        return [0.0] * len(values)\n"
+            "    return [(x - lo) / (hi - lo) for x in values]\n\n\n"
+            "def clip_outlier(x, low, high):\n"
+            "    return max(low, min(high, x))\n\n\n"
+            "def grade_stats(scores, pass_threshold=60):\n"
+            "    passed = sum(1 for s in scores if s >= pass_threshold)\n"
+            "    failed = len(scores) - passed\n"
+            "    mean = sum(scores) / len(scores) if scores else 0.0\n"
+            "    return (mean, passed, failed)\n"
+        ),
+        md("## Урок. 2. Describe `LAB_SCORES`"),
+        code(
+            "stats = describe_numbers(LAB_SCORES)\n"
+            "assert stats[3] == 8\n"
+            "print(stats)"
+        ),
+        md("## Урок. 3. Два scale"),
+        code(
+            "scaled_areas = min_max_scale(AREAS_SQM)\n"
+            "scaled_rooms = min_max_scale(ROOMS_COUNTS)\n"
+            "assert abs(max(scaled_areas) - 1) < 1e-9\n"
+            "assert abs(max(scaled_rooms) - 1) < 1e-9"
+        ),
+        md("## Урок. 4. Порог для k=4"),
+        code(
+            "TARGET_PASSED = 4\n"
+            "best_threshold = None\n"
+            "for threshold in range(0, 101):\n"
+            "    _, passed, _ = grade_stats(LAB_SCORES, threshold)\n"
+            "    if passed == TARGET_PASSED:\n"
+            "        best_threshold = threshold\n"
+            "        break\n"
+            "assert best_threshold == 59\n"
+            "print('порог =', best_threshold)"
+        ),
+        md("## Урок. 5. `apply_transform`"),
+        code(
+            "def apply_transform(values, fn):\n"
+            "    return fn(values)\n\n\n"
+            "after_stats = describe_numbers(apply_transform(LAB_SCORES, min_max_scale))\n"
+            "assert abs(after_stats[1] - 0) < 1e-9 and abs(after_stats[2] - 1) < 1e-9"
+        ),
+        md("## ДЗ. 2. `numeric_stats_from_row`"),
+        code(
+            "def numeric_stats_from_row(row):\n"
+            "    nums = [x for x in row if isinstance(x, (int, float))]\n"
+            "    return describe_numbers(nums)[0], max(nums)\n\n\n"
+            "mean, mx = numeric_stats_from_row(FEATURE_ROWS[0])\n"
+            "assert abs(mean - 10.666666) < 1e-5 and mx == 28"
+        ),
+        md("## ДЗ. 3. `transform_pipeline`"),
+        code(
+            "def clip_scores(scores, low, high):\n"
+            "    return [clip_outlier(s, low, high) for s in scores]\n\n\n"
+            "def transform_pipeline(values, *fns):\n"
+            "    result = values\n"
+            "    for fn in fns:\n"
+            "        result = fn(result)\n"
+            "    return result\n\n\n"
+            "only_scale = describe_numbers(min_max_scale(LAB_SCORES))[0]\n"
+            "clip_then_scale = describe_numbers(\n"
+            "    transform_pipeline(LAB_SCORES, lambda xs: clip_scores(xs, 50, 95), min_max_scale)\n"
+            ")[0]\n"
+            "print('mean: только scale', only_scale, '; clip→scale', clip_then_scale)"
+        ),
+        md("## ДЗ. 4. Сравнение preprocess"),
+        code(
+            "before = describe_numbers(LAB_SCORES)[0]\n"
+            "after_clip = describe_numbers(clip_scores(LAB_SCORES, 50, 95))[0]\n"
+            "print('mean до:', before, 'после clip [50,95]:', after_clip)"
+        ),
+    ),
+    "lessons/05_scope_and_debugging/solutions.ipynb": nb(
+        md(
+            "# Решения: scope и отладка\n\n"
+            "**Для преподавателя.** Все задачи из `lesson.ipynb` и `homework.ipynb`."
+        ),
+        code(
+            "PREDICTIONS = [1, 0, 1, 1, 0, 1, 1, 0, 1, 0]\n"
+            "LABELS =      [1, 0, 1, 0, 0, 1, 1, 0, 1, 1]\n"
+            "SCORES = [72, 55, 88, 44, 61, 90, 77, 48, 83, 58]\n"
+        ),
+        md("## Урок. 1–2. accuracy / my_accuracy"),
+        code(
+            "def accuracy(preds, labels):\n"
+            "    if len(preds) != len(labels):\n"
+            "        return None\n"
+            "    correct = sum(p == y for p, y in zip(preds, labels))\n"
+            "    return correct / len(labels)\n\n\n"
+            "REF_ACCURACY = accuracy(PREDICTIONS, LABELS)\n\n\n"
+            "def my_accuracy(preds, labels):\n"
+            "    if len(preds) != len(labels):\n"
+            "        return None\n"
+            "    if not preds:\n"
+            "        return 0.0\n"
+            "    correct = 0\n"
+            "    for p, y in zip(preds, labels):\n"
+            "        if p == y:\n"
+            "            correct += 1\n"
+            "    return correct / len(labels)\n\n\n"
+            "assert abs(my_accuracy(PREDICTIONS, LABELS) - REF_ACCURACY) < 1e-9"
+        ),
+        md("## Урок. 3. accuracy_fixed"),
+        code(
+            "def accuracy_fixed(preds, labels):\n"
+            "    correct = 0\n"
+            "    for i in range(len(preds)):\n"
+            "        if preds[i] == labels[i]:\n"
+            "            correct += 1\n"
+            "    return correct / len(preds) if preds else 0.0"
+        ),
+        md("## Урок. 4. count_correct"),
+        code(
+            "def count_correct(preds, labels):\n"
+            "    total = 0\n"
+            "    for p, y in zip(preds, labels):\n"
+            "        if p == y:\n"
+            "            total += 1\n"
+            "    return total\n\n\n"
+            "assert count_correct(PREDICTIONS, LABELS) == 7"
+        ),
+        md("## Урок. 5. predict_pass"),
+        code(
+            "def predict_pass(score, threshold=60):\n"
+            "    return 1 if score >= threshold else 0\n\n\n"
+            "assert predict_pass(72) == 1"
+        ),
+        md("## ДЗ. 2. batch_predict_pass"),
+        code(
+            "def batch_predict_pass(scores, threshold=60):\n"
+            "    return [predict_pass(s, threshold) for s in scores]\n\n\n"
+            "preds = batch_predict_pass(SCORES, 60)\n"
+            "assert len(preds) == len(SCORES)"
+        ),
+        md("## ДЗ. 4. shadowing"),
+        code(
+            "def accuracy_shadow_bug(preds, labels):\n"
+            "    labels = 0  # затёрли аргумент!\n"
+            "    correct = sum(p == labels for p in preds)\n"
+            "    return correct / len(preds)\n\n\n"
+            "def accuracy_shadow_ok(preds, labels):\n"
+            "    correct = sum(p == y for p, y in zip(preds, labels))\n"
+            "    return correct / len(preds)\n\n\n"
+            "assert abs(accuracy_shadow_ok(PREDICTIONS, LABELS) - REF_ACCURACY) < 1e-9"
+        ),
+    ),
+    "lessons/06_practice_metrics/solutions.ipynb": nb(
+        md("# Решения: практика метрик\n\n**Для преподавателя.**"),
+        code(
+            "PREDICTIONS = [1, 0, 1, 1, 0, 1, 1, 0, 1, 0]\n"
+            "LABELS =      [1, 0, 1, 0, 0, 1, 1, 0, 1, 1]\n"
+        ),
+        md("## Урок. confusion_counts"),
+        code(
+            "def confusion_counts(preds, labels):\n"
+            "    tp = fp = fn = tn = 0\n"
+            "    for p, y in zip(preds, labels):\n"
+            "        if p == 1 and y == 1:\n"
+            "            tp += 1\n"
+            "        elif p == 1 and y == 0:\n"
+            "            fp += 1\n"
+            "        elif p == 0 and y == 1:\n"
+            "            fn += 1\n"
+            "        elif p == 0 and y == 0:\n"
+            "            tn += 1\n"
+            "    return tp, fp, fn, tn\n\n\n"
+            "assert confusion_counts(PREDICTIONS[:4], LABELS[:4]) == (2, 1, 0, 1)"
+        ),
+        md("## ДЗ. counter"),
+        code(
+            "def increment(counter):\n"
+            "    return counter + 1\n\n\n"
+            "def reset_and_count(items):\n"
+            "    total = 0\n"
+            "    for x in items:\n"
+            "        total += x\n"
+            "    return total\n\n\n"
+            "c = 0\n"
+            "c = increment(c)\n"
+            "assert c == 1\n"
+            "assert reset_and_count([1, 2, 3]) == 6"
+        ),
+    ),
+    "lessons/02_function_as_mapping/solutions.ipynb": nb(
+        md(
+            "# Решения: функция-предсказатель\n\n"
+            "**Для преподавателя.** Все задачи из `lesson.ipynb` и `homework.ipynb`."
+        ),
+        code(
+            "AREAS_SQM = [28, 32, 45, 55, 60]\n"
+            "PRICES_MLN = [3.9, 4.2, 5.8, 6.5, 7.1]\n"
+            "ROOMS = [1, 1, 2, 2, 3]\n"
+        ),
+        md("## Урок. 1. `predict_price`"),
+        code(
+            "def predict_price(area_sqm, intercept=1.5, coef=0.09):\n"
+            "    return intercept + coef * area_sqm\n\n\n"
+            "assert predict_price(0) == 1.5\n"
+            "assert abs(predict_price(50) - 6.0) < 1e-9"
+        ),
+        md("## Урок. 2. print vs return"),
+        code(
+            "def predict_print(area_sqm):\n"
+            "    print(predict_price(area_sqm))\n\n\n"
+            "def predict_return(area_sqm):\n"
+            "    return predict_price(area_sqm)\n\n\n"
+            "print('predict_print(45) + 1 →', end=' ')\n"
+            "try:\n"
+            "    print(predict_print(45) + 1)\n"
+            "except TypeError:\n"
+            "    print('ошибка: print не возвращает значение (None)')\n\n"
+            "print('predict_return(45) + 1 =', predict_return(45) + 1)"
+        ),
+        md("## Урок. 3. `batch_predict`"),
+        code(
+            "def batch_predict(values, predict_fn):\n"
+            "    return [predict_fn(v) for v in values]\n\n\n"
+            "areas = list(AREAS_SQM)\n"
+            "preds = batch_predict(areas, predict_price)\n"
+            "assert len(preds) == len(areas)\n"
+            "assert batch_predict([], predict_price) == []"
+        ),
+        md(
+            "## Урок. 4. `mae`\n\n"
+            "При разной длине списков — `ValueError`: метрика не определена."
+        ),
+        code(
+            "def mae(preds, facts):\n"
+            "    if len(preds) != len(facts):\n"
+            "        raise ValueError('preds и facts должны быть одной длины')\n"
+            "    if not preds:\n"
+            "        return 0.0\n"
+            "    return sum(abs(p - f) for p, f in zip(preds, facts)) / len(preds)\n\n\n"
+            "assert mae([2, 5], [3, 3]) == 1.5\n"
+            "print('MAE на паре:', mae(preds, PRICES_MLN))"
+        ),
+        md(
+            "## Урок. 5. Выбор коэффициента\n\n"
+            "`coef=coef` в аргументах по умолчанию — иначе замыкание в цикле даст один и тот же coef."
+        ),
+        code(
+            "results = []\n\n"
+            "for coef_percent in range(5, 16):\n"
+            "    coef = coef_percent / 100\n\n"
+            "    def candidate(area_sqm, coef=coef):\n"
+            "        return predict_price(area_sqm, intercept=1.5, coef=coef)\n\n"
+            "    predictions = batch_predict(AREAS_SQM, candidate)\n"
+            "    error = mae(predictions, PRICES_MLN)\n"
+            "    results.append((error, coef, predictions))\n\n"
+            "best_error, best_coef, best_predictions = min(results)\n"
+            "print(f'Лучший коэффициент: {best_coef:.2f}; MAE: {best_error:.3f}')"
+        ),
+        md("## ДЗ. 1. Базовые функции — см. ячейки урока выше"),
+        md("## ДЗ. 2. `predict_room_price`"),
+        code(
+            "def predict_room_price(area_sqm, rooms, intercept=1.5, coef=0.09):\n"
+            "    room_bonus = max(rooms - 1, 0) * 0.3\n"
+            "    return predict_price(area_sqm, intercept, coef) + room_bonus\n\n\n"
+            "assert abs(predict_room_price(45, 2) - 5.85) < 1e-9\n"
+            "print('строка 2:', predict_room_price(AREAS_SQM[2], ROOMS[2]))"
+        ),
+        md("## ДЗ. 3. Устойчивость при удалении точки"),
+        code(
+            "idx_max = max(range(len(AREAS_SQM)), key=lambda i: AREAS_SQM[i])\n"
+            "areas_sub = [a for i, a in enumerate(AREAS_SQM) if i != idx_max]\n"
+            "prices_sub = [p for i, p in enumerate(PRICES_MLN) if i != idx_max]\n\n"
+            "sub_results = []\n"
+            "for coef_percent in range(5, 16):\n"
+            "    coef = coef_percent / 100\n\n"
+            "    def candidate(area_sqm, coef=coef):\n"
+            "        return predict_price(area_sqm, intercept=1.5, coef=coef)\n\n"
+            "    predictions = batch_predict(areas_sub, candidate)\n"
+            "    sub_results.append((mae(predictions, prices_sub), coef))\n\n"
+            "best_sub_error, best_sub_coef = min(sub_results)\n"
+            "print(f'Убрали {AREAS_SQM[idx_max]} м²: coef={best_sub_coef:.2f}, MAE={best_sub_error:.3f}')\n"
+            "print(\n"
+            "    'На этих данных лучший coef совпал (0.09), но MAE чуть ниже — '\n"
+            "    'одна точка влияет на метрику.'\n"
+            ")"
+        ),
+        md("## ДЗ. 4. Сетка intercept × coef"),
+        code(
+            "grid = []\n"
+            "for intercept in [0.5, 1.0, 1.5, 2.0]:\n"
+            "    for coef_percent in range(5, 16):\n"
+            "        coef = coef_percent / 100\n\n"
+            "        def candidate(area_sqm, intercept=intercept, coef=coef):\n"
+            "            return predict_price(area_sqm, intercept, coef)\n\n"
+            "        preds = batch_predict(AREAS_SQM, candidate)\n"
+            "        grid.append((mae(preds, PRICES_MLN), intercept, coef))\n\n"
+            "top3 = sorted(grid)[:3]\n"
+            "for error, intercept, coef in top3:\n"
+            "    print(f'MAE={error:.3f}, intercept={intercept}, coef={coef:.2f}')"
+        ),
+    ),
+    "lessons/07_recursion/solutions.ipynb": nb(
+        md("# Решения: рекурсия\n\n**Для преподавателя.**"),
+        code(LESSON_07_DATA),
+        md("## Урок. flatten"),
+        code(
+            "def flatten(nested):\n"
+            "    flat = []\n"
+            "    for item in nested:\n"
+            "        if isinstance(item, list):\n"
+            "            flat.extend(flatten(item))\n"
+            "        else:\n"
+            "            flat.append(item)\n"
+            "    return flat\n\n\n"
+            "assert flatten(NESTED_LIST) == [1, 2, 3, 4, 5]"
+        ),
+        md("## Урок. walk_categories"),
+        code(
+            "def walk_categories(node, depth=0):\n"
+            "    name, children = node\n"
+            "    print('  ' * depth + name)\n"
+            "    for child in children:\n"
+            "        walk_categories(child, depth + 1)\n\n\n"
+            "# walk_categories(CATEGORY_TREE)"
+        ),
+        md("## ДЗ. count_leaves"),
+        code(
+            "def count_leaves(node):\n"
+            "    name, children = node\n"
+            "    if not children:\n"
+            "        return 1\n"
+            "    return sum(count_leaves(child) for child in children)\n\n\n"
+            "assert count_leaves(CATEGORY_TREE) == 3"
+        ),
+        md("## ДЗ. flatten_extra"),
+        code(
+            "EXTRA = [0, [10, [20, 30]], 40]\n"
+            "assert flatten(EXTRA) == [0, 10, 20, 30, 40]"
+        ),
+    ),
+    "lessons/08_practice_pipeline/homework.ipynb": nb(
+        md(
+            "# Домашнее задание: углубление серии (пара 8)\n\n"
+            "Если на паре не успели — дорешайте **A3, B3, C2** из `lesson.ipynb`."
+        ),
+        code(DATA_IMPORT),
+        md("## 1. Опора\n\nСкопируйте с пары минимум A1–A2, B1–B2, C1 (если ещё не сделано)."),
+        code("# extract_ids, walk_categories, apply_pipeline + шаги pipeline\n"),
+        md("## 2. A3. `count_leaves`"),
+        code("def count_leaves(node):\n    pass\n\n\n# assert count_leaves(CATEGORY_TREE) >= 4\n"),
+        md("## 3. B3. Farthest point\n\n`max(FEATURE_POINTS, key=…)` — точка с максимальной суммой квадратов координат."),
+        code("# farthest = max(FEATURE_POINTS, key=lambda p: ...)\n# print(farthest)\n"),
+        md(
+            "## 4. C2. Текстовый pipeline\n\n"
+            "Соберите pipeline: strip → lower → split → оставить токены длиной ≥ 4. "
+            "Проверьте на строке `'  Data science ML course  '`."
+        ),
+        code(
+            "text_pipeline = [\n"
+            "    lambda s: s.strip().lower(),\n"
+            "    lambda s: s.split(),\n"
+            "    lambda tokens: [t for t in tokens if len(t) >= 4],\n"
+            "]\n"
+            "# print(apply_pipeline('  Data science ML course  ', text_pipeline))\n"
+        ),
+    ),
+    "lessons/08_practice_pipeline/solutions.ipynb": nb(
+        md("# Решения: практика pipeline\n\n**Для преподавателя.**"),
+        code(DATA_IMPORT),
+        md("## A1. extract_ids"),
+        code(
+            "def extract_ids(nested):\n"
+            "    ids = []\n"
+            "    if isinstance(nested, dict):\n"
+            "        if 'id' in nested:\n"
+            "            ids.append(nested['id'])\n"
+            "        for value in nested.values():\n"
+            "            ids.extend(extract_ids(value))\n"
+            "    elif isinstance(nested, list):\n"
+            "        for item in nested:\n"
+            "            ids.extend(extract_ids(item))\n"
+            "    return ids\n\n\n"
+            "assert extract_ids(NESTED_API_RESPONSE) == [1, 2, 3]"
+        ),
+        md("## A2. walk_categories"),
+        code(
+            "def walk_categories(node, depth=0):\n"
+            "    if isinstance(node, str):\n"
+            "        print('  ' * depth + node)\n"
+            "        return\n"
+            "    name = node[0]\n"
+            "    print('  ' * depth + str(name))\n"
+            "    for child in node[1:]:\n"
+            "        walk_categories(child, depth + 1)\n\n\n"
+            "# walk_categories(CATEGORY_TREE)"
+        ),
+        md("## A3. count_leaves"),
+        code(
+            "def count_leaves(node):\n"
+            "    if isinstance(node, str):\n"
+            "        return 1\n"
+            "    children = node[1:]\n"
+            "    if not children:\n"
+            "        return 1\n"
+            "    return sum(count_leaves(child) for child in children)\n\n\n"
+            "assert count_leaves(CATEGORY_TREE) >= 4"
+        ),
+        md("## B2. leaderboard"),
+        code(
+            "leaderboard = sorted(MODEL_RUNS, key=lambda r: (-r['f1'], r['id']))\n"
+            "assert [r['id'] for r in leaderboard] == [25, 30, 305, 101, 200]"
+        ),
+        md("## B3. farthest point"),
+        code(
+            "farthest = max(FEATURE_POINTS, key=lambda p: p[0] ** 2 + p[1] ** 2)\n"
+            "print(farthest)"
+        ),
+        md("## C1. apply_pipeline"),
+        code(
+            "def apply_pipeline(data, steps):\n"
+            "    result = data\n"
+            "    for step in steps:\n"
+            "        result = step(result)\n"
+            "    return result\n\n\n"
+            "def extract_area(row):\n"
+            "    return row['area_sqm']\n\n\n"
+            "def scale_area(area, max_area=60):\n"
+            "    return area / max_area\n\n\n"
+            "def predict_from_scaled(scaled_area):\n"
+            "    return PRICE_INTERCEPT + PRICE_COEF_AREA * (scaled_area * 60)\n\n\n"
+            "apt_pipeline = [extract_area, scale_area, predict_from_scaled]\n"
+            "pred = apply_pipeline(FEATURE_ROWS[0], apt_pipeline)\n"
+            "print('predicted mln:', pred)"
+        ),
+        md("## C2. text pipeline"),
+        code(
+            "text_pipeline = [\n"
+            "    lambda s: s.strip().lower(),\n"
+            "    lambda s: s.split(),\n"
+            "    lambda tokens: [t for t in tokens if len(t) >= 4],\n"
+            "]\n"
+            "assert apply_pipeline('  Data science ML course  ', text_pipeline) == ['data', 'science', 'course']"
+        ),
+    ),
+}
+
+
 HOMEWORKS = {
+    "lessons/03_parameters_and_return/homework.ipynb": nb(
+        md("# Домашнее задание: параметры и return"),
+        code(
+            "EXAM_SCORES = [40, 55, 62, 75, 88, 91, 48, 100, 33, 67]\n"
+            "AREAS_SQM = [28, 32, 45, 55, 60]\n"
+            "# Одна «строка» признаков — три числа с одним индексом\n"
+            "ROW_AREAS = [28, 45, 60, 32]\n"
+            "ROW_ROOMS = [1, 2, 3, 1]\n"
+            "ROW_FLOORS = [3, 7, 12, 2]\n"
+        ),
+        md(
+            "## 1. Напоминание с пары\n\n"
+            "Скопируйте из `lesson.ipynb` (или напишите заново): "
+            "`describe_numbers`, `min_max_scale`, `clip_outlier`, `grade_stats`."
+        ),
+        code(
+            "def describe_numbers(values):\n"
+            "    pass\n\n\n"
+            "def min_max_scale(values):\n"
+            "    pass\n\n\n"
+            "def clip_outlier(x, low, high):\n"
+            "    pass\n\n\n"
+            "def grade_stats(scores, pass_threshold=60):\n"
+            "    pass\n"
+        ),
+        md(
+            "## 2. Clip всей выборки\n\n"
+            "Напишите `clip_scores(scores, low, high)` — список с clip каждого балла. "
+            "Обрежьте `EXAM_SCORES` в [50, 95]. Сравните `mean` до и после (через `describe_numbers`)."
+        ),
+        code(
+            "def clip_scores(scores, low, high):\n"
+            "    pass\n\n\n"
+            "# before, after, вывод mean\n"
+        ),
+        md(
+            "## 3. Статистика по строке признаков\n\n"
+            "`row_numeric_stats(area, rooms, floor)` → `(mean, max)` по трём числам. "
+            "Проверьте на `ROW_*[0]`."
+        ),
+        code(
+            "def row_numeric_stats(area, rooms, floor):\n"
+            "    pass\n\n\n"
+            "# assert на ROW_AREAS[0], ROW_ROOMS[0], ROW_FLOORS[0]\n"
+        ),
+        md(
+            "## 4. Подбор порога\n\n"
+            "Переберите `pass_threshold` от 40 до 95. Найдите порог, при котором доля сдавших "
+            "ближе всего к 0.5. Запишите порог и долю."
+        ),
+        code("# перебор; print('лучший порог = ...')\n"),
+    ),
+    "lessons/04_practice_transform/homework.ipynb": nb(
+        md("# Домашнее задание: практика transform"),
+        code(
+            "LAB_SCORES = [72, 81, 55, 90, 44, 38, 92, 58]\n"
+            "# Строка признаков: числа + название района (строка не входит в статистику)\n"
+            "FEATURE_ROWS = [\n"
+            "    (28, 1, 3, 'north'),\n"
+            "    (45, 2, 7, 'center'),\n"
+            "    (60, 3, 12, 'south'),\n"
+            "    (32, 1, 2, 'west'),\n"
+            "]\n"
+        ),
+        md(
+            "## 1. Опора\n\n"
+            "Скопируйте с пары 3–4: `describe_numbers`, `min_max_scale`, `clip_outlier`, "
+            "`grade_stats`, `apply_transform`."
+        ),
+        code(
+            "# ваши функции\n"
+        ),
+        md(
+            "## 2. `numeric_stats_from_row`\n\n"
+            "Для кортежа `row` верните `(mean, max)` только по **числовым** элементам "
+            "(подсказка: `isinstance(x, (int, float))`). Проверьте на `FEATURE_ROWS[0]`."
+        ),
+        code(
+            "def numeric_stats_from_row(row):\n"
+            "    pass\n\n\n"
+            "# assert numeric_stats_from_row(FEATURE_ROWS[0]) == (...)\n"
+        ),
+        md(
+            "## 3. `transform_pipeline`\n\n"
+            "Напишите `transform_pipeline(values, *fns)` — последовательно применить все функции. "
+            "Сравните `describe_numbers(min_max_scale(LAB_SCORES))` и цепочку "
+            "`clip [50,95] → scale` через pipeline (mean до и после в комментарии)."
+        ),
+        code(
+            "def clip_scores(scores, low, high):\n"
+            "    pass\n\n\n"
+            "def transform_pipeline(values, *fns):\n"
+            "    pass\n\n\n"
+            "# сравнение mean\n"
+        ),
+        md(
+            "## 4. Обоснование preprocess\n\n"
+            "Добавьте **markdown-ячейку** (3–4 предложения): на `LAB_SCORES` что сильнее меняет смысл `mean` — "
+            "только `min_max_scale` или сначала clip в [50, 95], потом scale? Опирайтесь на числа из §3."
+        ),
+    ),
+    "lessons/05_scope_and_debugging/homework.ipynb": nb(
+        md("# Домашнее задание: scope и отладка"),
+        code(
+            "PREDICTIONS = [1, 0, 1, 1, 0, 1, 1, 0, 1, 0]\n"
+            "LABELS =      [1, 0, 1, 0, 0, 1, 1, 0, 1, 1]\n"
+            "SCORES = [72, 55, 88, 44, 61, 90, 77, 48, 83, 58]\n"
+        ),
+        md(
+            "## 1. Опора\n\n"
+            "Скопируйте с пары: `my_accuracy`, `count_correct`, `predict_pass`."
+        ),
+        code("# ваши функции\n"),
+        md(
+            "## 2. `batch_predict_pass`\n\n"
+            "`batch_predict_pass(scores, threshold)` → список 0/1 для каждого балла. "
+            "Проверьте длину на `SCORES`."
+        ),
+        code(
+            "def batch_predict_pass(scores, threshold=60):\n"
+            "    pass\n\n\n"
+            "# assert len(batch_predict_pass(SCORES)) == len(SCORES)\n"
+        ),
+        md(
+            "## 3. Журнал отладки\n\n"
+            "Добавьте **markdown-ячейку**: таблица из **двух** багов с пары "
+            "(симптом → причина → исправление)."
+        ),
+        md(
+            "## 4. Shadowing\n\n"
+            "Исправьте `accuracy_shadow_bug`: переменная `labels` внутри функции "
+            "затирает аргумент. Напишите `accuracy_shadow_ok`."
+        ),
+        code(
+            "def accuracy_shadow_bug(preds, labels):\n"
+            "    labels = 0\n"
+            "    correct = sum(p == labels for p in preds)\n"
+            "    return correct / len(preds)\n\n\n"
+            "def accuracy_shadow_ok(preds, labels):\n"
+            "    pass\n\n\n"
+            "# assert abs(accuracy_shadow_ok(PREDICTIONS, LABELS) - 0.7) < 1e-9\n"
+        ),
+    ),
+    "lessons/06_practice_metrics/homework.ipynb": nb(
+        md("# Домашнее задание: отладка счётчика"),
+        md(
+            "## 1. `increment` без global\n\n"
+            "Перепишите так, чтобы счётчик передавался аргументом и возвращался новое значение "
+            "(как в `homework_counter.py`, но **без** `global`)."
+        ),
+        code(
+            "def increment(counter):\n"
+            "    pass\n\n\n"
+            "c = 0\n"
+            "c = increment(c)\n"
+            "c = increment(c)\n"
+            "# assert c == 2\n"
+        ),
+        md("## 2. `reset_and_count`\n\nСумма списка — не забудьте `return`."),
+        code(
+            "def reset_and_count(items):\n"
+            "    total = 0\n"
+            "    for x in items:\n"
+            "        total += x\n"
+            "    pass\n\n\n"
+            "# assert reset_and_count([1, 2, 3]) == 6\n"
+        ),
+        md(
+            "## 3. Журнал\n\n"
+            "Markdown-ячейка: для **каждой** из двух функций выше — "
+            "симптом → причина → исправление (как на паре)."
+        ),
+        md(
+            "## 4. precision и recall (по желанию)\n\n"
+            "Из `confusion_counts` с пары: `precision = tp / (tp + fp)`, "
+            "`recall = tp / (tp + fn)`. Посчитайте на `PREDICTIONS`/`LABELS`."
+        ),
+        code(
+            "PREDICTIONS = [1, 0, 1, 1, 0, 1, 1, 0, 1, 0]\n"
+            "LABELS =      [1, 0, 1, 0, 0, 1, 1, 0, 1, 1]\n"
+            "# tp, fp, fn, tn = ...\n"
+            "# precision, recall\n"
+        ),
+    ),
     "lessons/02_function_as_mapping/homework.ipynb": nb(
         md("# Домашнее задание: функция-предсказатель"),
         code(
@@ -536,6 +1349,37 @@ HOMEWORKS = {
             "# заполните и выведите top3\n"
         ),
     ),
+    "lessons/07_recursion/homework.ipynb": nb(
+        md("# Домашнее задание: рекурсия на дереве"),
+        code(LESSON_07_DATA),
+        md(
+            "## 1. Опора\n\n"
+            "Скопируйте с пары: `flatten`, `walk_categories`."
+        ),
+        code("# flatten, walk_categories\n"),
+        md(
+            "## 2. `count_leaves`\n\n"
+            "Лист — узел с пустым `children`. Верните число листьев в `CATEGORY_TREE`."
+        ),
+        code(
+            "def count_leaves(node):\n"
+            "    pass\n\n\n"
+            "# assert count_leaves(CATEGORY_TREE) == 3\n"
+        ),
+        md(
+            "## 3. Другой вложенный список\n\n"
+            "Проверьте `flatten` на `EXTRA = [0, [10, [20, 30]], 40]`."
+        ),
+        code(
+            "EXTRA = [0, [10, [20, 30]], 40]\n"
+            "# assert flatten(EXTRA) == [0, 10, 20, 30, 40]\n"
+        ),
+        md(
+            "## 4. Когда рекурсия (markdown)\n\n"
+            "По результатам §3 урока (Fibonacci): **2–3 предложения** — когда рекурсия уместна "
+            "в data/ML, а когда лучше цикл."
+        ),
+    ),
 }
 
 
@@ -543,4 +1387,6 @@ if __name__ == "__main__":
     for rel, notebook in NOTEBOOKS.items():
         write(rel, notebook)
     for rel, notebook in HOMEWORKS.items():
+        write(rel, notebook)
+    for rel, notebook in SOLUTIONS.items():
         write(rel, notebook)

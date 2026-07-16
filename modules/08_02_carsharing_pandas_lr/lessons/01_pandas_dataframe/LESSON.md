@@ -6,7 +6,7 @@
 |---|---|
 | Модуль | pandas и линейная регрессия (`08_02`) |
 | Название урока | pandas: read_csv, DataFrame, feature / target |
-| Пара КТП | **12** |
+| Пара КТП | **11** |
 | Длительность | 2 академических часа (**80 минут**) |
 | Роль | введение |
 | Пререквизиты | Модуль 1: функция, return, predict; Python 7 класса |
@@ -14,7 +14,7 @@
 | **Первая фраза** | «Сегодня списки превращаются в таблицу: загрузим поездки каршеринга и назовём столбцы — цель, признаки, id» |
 | **Минимум сдачи** | (1) `df.shape` и `head` выведены; (2) `TARGET` / `FEATURES` / `ID_COL` с assert; (3) устно: чем цель отличается от признака |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
-| **Дальше** | фильтры — [пара 13](../02_practice_filters/LESSON.md) |
+| **Дальше** | фильтры — [пара 12](../02_practice_filters/LESSON.md) |
 | **Canvas** | план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/d19afee5ef0dcd2be593ea93d11ba26f/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/d19afee5ef0dcd2be593ea93d11ba26f/homework.ipynb)) |
 
 ### Ориентир времени (не поминутный)

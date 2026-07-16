@@ -6,7 +6,7 @@
 |---|---|
 | Модуль | pandas и линейная регрессия (`08_02`) |
 | Название урока | try/except при загрузке и очистке CSV |
-| Пара КТП | **17** |
+| Пара КТП | **16** |
 | Длительность | 2 академических часа (**80 минут**) |
 | Роль | введение |
 | Пререквизиты | Пары 12–16: pandas, модель |
@@ -14,7 +14,7 @@
 | **Первая фраза** | «В аналитике файл иногда отсутствует или битый — учимся ловить ошибку и чистить строки до модели» |
 | **Минимум сдачи** | (1) успешный load_trips; (2) пойман FileNotFoundError; (3) clean_trips убирает строку с NaN в duration |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
-| **Дальше** | сравнение признаков — [пара 18](../07_practice_features/LESSON.md) |
+| **Дальше** | сравнение признаков — [пара 17](../07_practice_features/LESSON.md) |
 | **Canvas** | план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/089cdafdda13bf74965ef262a23b511a/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/089cdafdda13bf74965ef262a23b511a/homework.ipynb)) |
 
 ### Ориентир времени (не поминутный)

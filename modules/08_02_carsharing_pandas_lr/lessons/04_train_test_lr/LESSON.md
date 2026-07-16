@@ -6,7 +6,7 @@
 |---|---|
 | Модуль | pandas и линейная регрессия (`08_02`) |
 | Название урока | train/test split; LinearRegression fit/predict |
-| Пара КТП | **15** |
+| Пара КТП | **14** |
 | Длительность | 2 академических часа (**80 минут**) |
 | Роль | введение |
 | Пререквизиты | Пара 14: EDA; модуль 1: идея predict |
@@ -14,7 +14,7 @@
 | **Первая фраза** | «Ручной predict из модуля 1 теперь делает библиотека: разделим данные, обучим линейную модель на расстоянии» |
 | **Минимум сдачи** | (1) X и y выделены; (2) split 80/20, random_state=42; (3) fit на train, predict на test; (4) coef и intercept напечатаны |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
-| **Дальше** | метрики — [пара 16](../05_practice_metrics/LESSON.md) |
+| **Дальше** | метрики — [пара 15](../05_practice_metrics/LESSON.md) |
 | **Canvas** | план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/4319bd3960b3b50ebc04ea49b3623ff3/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/4319bd3960b3b50ebc04ea49b3623ff3/homework.ipynb)) |
 
 ### Ориентир времени (не поминутный)
