@@ -32,21 +32,67 @@ def load_env(path: Path = ENV_PATH) -> dict[str, str]:
     return env
 
 
+AUTH_401_HINT = """\
+Canvas 401 Invalid access token — токен отклонён сервером.
+
+Частые причины (в этом репозитории уже случались):
+  1. У Personal Access Token истёк expires_at — в Canvas создайте новый;
+     для разработки профиля лучше без срока или с длинным сроком.
+  2. В Canvas нажали Regenerate / New Access Token — старое значение в .env
+     сразу недействительно; скопируйте новый токен в .env целиком (одна строка).
+  3. Команда агента в sandbox не читает gitignored .env и подставляет
+     устаревший CANVAS_ACCESS_TOKEN из окружения — запускайте Canvas-скрипты
+     с доступом к .env (permissions: all) из корня репозитория.
+
+Проверка:  python scripts/canvas_api.py self
+Канон:     docs/08_CANVAS.md §2
+"""
+
+
 def canvas_config() -> tuple[str, str]:
     env = load_env()
-    token = env.get("CANVAS_ACCESS_TOKEN") or os.environ.get("CANVAS_ACCESS_TOKEN")
+    file_token = (env.get("CANVAS_ACCESS_TOKEN") or "").strip()
+    env_token = (os.environ.get("CANVAS_ACCESS_TOKEN") or "").strip()
+    token = file_token or env_token
     api_url = (
         env.get("CANVAS_API_URL")
         or os.environ.get("CANVAS_API_URL")
         or "https://canvas.letovo.ru/api/v1"
     ).rstrip("/")
     if not token:
+        hint = ""
+        if not ENV_PATH.exists():
+            hint = f" Файл {ENV_PATH} не найден."
+        elif not file_token and env_token:
+            hint = " В .env пусто; есть только переменная окружения."
+        elif ENV_PATH.exists() and not file_token:
+            hint = (
+                f" Файл {ENV_PATH.name} есть, но CANVAS_ACCESS_TOKEN пуст "
+                "(или файл недоступен sandbox'у агента)."
+            )
         print(
-            "Error: CANVAS_ACCESS_TOKEN not found. Copy .env.example to .env and set token.",
+            "Error: CANVAS_ACCESS_TOKEN not found."
+            " Copy .env.example to .env and set token."
+            + hint,
             file=sys.stderr,
         )
         sys.exit(1)
+    # Не логируем токен; только источник — для диагностики sandbox vs .env
+    source = "file:.env" if file_token else "env:CANVAS_ACCESS_TOKEN"
+    if _debug_enabled():
+        _emit_debug(f"CANVAS auth source={source} token_len={len(token)}")
     return api_url, token
+
+
+def require_canvas_auth() -> dict:
+    """Preflight before write/publish: GET users/self. On 401 exits with checklist."""
+    user = canvas_get("users/self")
+    if not isinstance(user, dict) or "id" not in user:
+        print("Error: unexpected response from users/self", file=sys.stderr)
+        sys.exit(1)
+    name = user.get("name") or user.get("short_name") or "?"
+    print(f"Canvas auth OK: id={user['id']} name={name}", flush=True)
+    return user
 
 
 def _debug_enabled() -> bool:
@@ -136,6 +182,8 @@ def _request(
             if _debug_enabled():
                 _emit_debug(f"CANVAS <- {e.code} ERROR: {detail[:500]}")
             print(f"HTTP {e.code}: {detail}", file=sys.stderr)
+            if e.code == 401:
+                print(AUTH_401_HINT, file=sys.stderr)
             sys.exit(1)
 
         payload = json.loads(raw) if raw else None

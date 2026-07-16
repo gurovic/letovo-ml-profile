@@ -14,7 +14,7 @@ MODULE = ROOT / "modules/08_02_carsharing_pandas_lr"
 LESSONS = MODULE / "lessons"
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from canvas_api import canvas_get, canvas_post, canvas_put  # noqa: E402
+from canvas_api import canvas_get, canvas_post, canvas_put, require_canvas_auth  # noqa: E402
 from lesson_md_html import lesson_md_to_canvas_html, prepare_lesson_md_for_canvas_teacher  # noqa: E402
 from publish_canvas_lesson import (  # noqa: E402
     HOMEWORK_ITEM_TITLE,
@@ -253,6 +253,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
+    require_canvas_auth()
     module_id = args.module_id or ensure_module(args.course_id)
     gist_map = load_gist_map(args.gist_map) if args.gist_map.exists() else {}
 

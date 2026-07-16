@@ -20,6 +20,7 @@ from canvas_api import (  # noqa: E402
     canvas_post,
     canvas_put,
     canvas_upload_course_file,
+    require_canvas_auth,
 )
 from lesson_md_html import (  # noqa: E402
     lesson_md_to_canvas_html,
@@ -1400,6 +1401,7 @@ def main() -> None:
     parser.add_argument("--solutions-position", type=int, default=3)
     parser.add_argument("--submit-position", type=int, default=None)
     args = parser.parse_args()
+    require_canvas_auth()
 
     if args.migrate_homework_layout:
         homework = args.homework_nb_url or PAIR_PRESETS[2].colab(

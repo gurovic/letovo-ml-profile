@@ -29,15 +29,33 @@
 | `CANVAS_ACCOUNT_ID` | ID подаккаунта для `create-course` (см. §4) |
 | `CANVAS_COURSE_ID_08` | ID курса 8 класса в Canvas (**6465**) — опционально для скриптов |
 
-**Проверка токена (чтение):**
+**Проверка токена (обязательный preflight перед любой записью в Canvas):**
 
 ```bash
 python scripts/canvas_api.py self
 ```
 
-Успех — JSON с `id`, `name`. Ошибка `401 Invalid access token` — перевыпустить токен в Canvas: **Настройки → Утверждённые интеграции → New Access Token**.
+Успех — JSON с `id`, `name`. Скрипты `publish_canvas_*.py` сами вызывают `require_canvas_auth()` (тот же `users/self`) в начале и **не** начинают публикацию при 401.
 
-**Безопасность:** не вставлять токен в чат, skills, rules, docs, git. После утечки — перевыпуск.
+**Как выпускать токен (чтобы не ловить 401 посреди сессии):**
+
+| Правило | Зачем |
+|---|---|
+| Canvas → **Account → Settings → Approved Integrations → + New Access Token** | Personal Access Token (не OAuth developer key) |
+| Purpose: например `letovo-ml-profile` | Чтобы найти в списке |
+| **Expiration: пусто** или срок ≥ месяцев | Короткий `expires_at` — главная причина «утром работало, вечером 401» |
+| Скопировать токен в `.env` **сразу** (показывается один раз) | Строка `CANVAS_ACCESS_TOKEN=...` без кавычек и пробелов |
+| После **Regenerate** — снова вставить новое значение в `.env` | Старый токен мгновенно мёртв; git/gist тут ни при чём |
+
+**Диагностика `401 Invalid access token`:**
+
+1. Истёк срок токена или нажали Regenerate, а `.env` не обновили.
+2. Агент запустил команду в sandbox без чтения gitignored `.env` и подставил устаревший `CANVAS_ACCESS_TOKEN` из окружения ОС → всегда `permissions: all` (или эквивалент) для Canvas-скриптов; рабочая директория — **корень репозитория**.
+3. В `.env` обрезанная/старая строка — пересоздать токен и вставить целиком.
+
+Ошибка 401 печатает этот чек-лист из `scripts/canvas_api.py` (`AUTH_401_HINT`).
+
+**Безопасность:** не вставлять токен в чат, skills, rules, docs, git. После утечки — перевыпуск и правка `.env`.
 
 ---
 
@@ -224,7 +242,7 @@ python scripts/canvas_api.py raw courses --param enrollment_type=teacher --param
 
 | Код | Смысл | Действие |
 |---|---|---|
-| 401 | Неверный или просроченный токен | Перевыпустить, обновить `.env` |
+| 401 | Неверный / просроченный / перевыпущенный токен; или sandbox без `.env` | §2: новый токен без короткого expires → `.env` → `self`; агент — с доступом к `.env` |
 | 403 | Нет прав на объект | Проверить запись в курс; не полагаться на `enroll_me` |
 | 404 | Неверный `course_id` или slug страницы | `courses --search` |
 | Пустой `courses` | Нет записи или другой search | Расширить поиск; проверить `enrollment_state` |
@@ -248,7 +266,8 @@ python scripts/canvas_api.py raw courses --param enrollment_type=teacher --param
 
 ## 10. Чек-лист перед публикацией модуля
 
-- [ ] `python scripts/canvas_api.py self` — токен валиден
+- [ ] `python scripts/canvas_api.py self` — токен валиден (если 401 — §2, не публиковать дальше)
+- [ ] Токен без короткого expires; `.env` совпадает с текущим токеном в Canvas (не после забытого Regenerate)
 - [ ] Известен `course_id` курса 8 класса (**6465**, `ML: 8`)
 - [ ] Есть роль учителя в курсе (модули открываются без 403)
 - [ ] Модуль Canvas создан; имя согласовано с КТП / `UNIT.md`

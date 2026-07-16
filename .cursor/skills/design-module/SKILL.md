@@ -22,7 +22,8 @@ description: >-
 | `docs/02_MATERIAL_DESIGN_STANDARD.md` §2, §11 | 10 вопросов, чек-лист |
 | `docs/03_UNIT_PLANNER.md` | шаблон UNIT.md |
 
-Эталон демо: `modules/08_01_functions_recursion/`.
+Эталон модуля (глубина UNIT + уроков + ноутбуков): `modules/08_01_functions_recursion/`.  
+Тонкий scaffold «чтобы закрыть КТП/Canvas» — **не** готовый модуль.
 
 ## Куда класть результат
 
@@ -62,7 +63,8 @@ modules/<grade>_<nn>_<slug>/
 ## Правила
 
 - Не дублировать MDS в UNIT.md — только ссылки.
-- Не создавать уроки/ноутбуки в этом skill — только план; материалы → skill `design-lesson`.
+- Не создавать уроки/ноутбуки в этом skill — только план; материалы → skill `design-lesson` (с воротами глубины ноутбука).
+- Модуль «готов» только если уроки прошли `design-lesson` до публикации: stubs+assert, полные `solutions`, не демо-прогон ([Notebook Standard §3](../../docs/05_NOTEBOOK_STANDARD.md)).
 - При изменении, затрагивающем Foundation/Pedagogy — **сообщить пользователю**.
 - Терминология: `.cursor/rules/02_Терминология.mdc`.
 - Язык материалов: русский; в коде и chat — без смешения кириллицы и латиницы в одном слове.
