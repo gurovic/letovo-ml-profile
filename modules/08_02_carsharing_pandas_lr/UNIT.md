@@ -155,7 +155,7 @@
 | 13 | EDA: `describe()`, scatter признак → длительность | 2 | введение | [LESSON](lessons/03_eda_scatter/LESSON.md) | график и гипотеза |
 | 14 | train/test; `LinearRegression` fit/predict (один признак) | 2 | введение | [LESSON](lessons/04_train_test_lr/LESSON.md) | обученная модель |
 | 15 | Практика: MSE, R², сравнение прогнозов | 2 | отработка | [LESSON](lessons/05_practice_metrics/LESSON.md) | метрики на test |
-| 17 | `try/except` при загрузке и очистке CSV | 2 | введение | [LESSON](lessons/06_try_except_csv/LESSON.md) | устойчивая загрузка |
+| 16 | `try/except` при загрузке и очистке CSV | 2 | введение | [LESSON](lessons/06_try_except_csv/LESSON.md) | устойчивая загрузка |
 | 17 | Практика: другой признак, сравнение метрик | 2 | отработка | [LESSON](lessons/07_practice_features/LESSON.md) | таблица сравнения |
 | 18 | Несколько признаков (обзорно) | 2 | введение | [LESSON](lessons/08_multifeature_overview/LESSON.md) | задел multi-feature |
 | 19 | Мини-отчёт — черновик | 2 | интеграция | [LESSON](lessons/09_report_draft/LESSON.md) | черновик |
@@ -182,7 +182,7 @@
 | Data | Путают индекс строки и значение признака | пара 11–12: явные имена столбцов |
 | ML | Метрики на train | пара 14–16: правило test-only для оценки |
 | Code | `SettingWithCopyWarning` | минимизировать цепочки присваивания; копия при очистке |
-| Math | R² «чем больше, тем лучше» без контекста | пара 17: связь с разбросом цели |
+| Math | R² «чем больше, тем лучше» без контекста | пара 15: связь с разбросом цели |
 
 ---
 
@@ -252,16 +252,16 @@
 - [x] план по парам КТП согласован с [docs/ktp/08.md](../../docs/ktp/08.md)
 - [x] рефлексия автора (§17), глоссарий модуля (§18)
 - [x] концептуальная рамка и результаты обучения
-- [x] артефакт определён ([artifact/PROJECT.md](artifact/PROJECT.md))
+- [x] артефакт определён ([artifact/PROJECT.md](artifact/PROJECT.md), [starter/](artifact/starter/))
 - [x] `LESSON.md` и §13 карточки по всем 10 парам
-- [x] датасет `data/trips.csv` и ноутбуки
+- [x] датасет `data/trips.csv` и ноутбуки (stubs + solutions)
 - [x] строки матрицы навыков M2 — [08_skills_matrix.md](../../docs/ktp/08_skills_matrix.md)
 
 ---
 
 ## 20. Экспорт в школьный unit planner
 
-Маппинг полей: [reference/SCHOOL_UNIT_PLANNER.md](../../reference/SCHOOL_UNIT_PLANNER.md). Карточки уроков — после появления `LESSON.md` §13.
+Маппинг полей: [reference/SCHOOL_UNIT_PLANNER.md](../../reference/SCHOOL_UNIT_PLANNER.md). Карточки уроков — `LESSON.md` §13 по всем парам 11–20.
 
 ---
 

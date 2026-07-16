@@ -8,6 +8,7 @@ Pattern (как в модуле 1): stubs + asserts в lesson/homework; полн
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -32,8 +33,8 @@ IMPORTS_SKLEARN = (
 )
 
 SOL_BANNER = (
-    "**Для преподавателя.** Эталон к `lesson.ipynb` и `homework.ipynb` "
-    "(если ДЗ есть). Не показывать ученикам до сдачи."
+    "**Для преподавателя.** Эталон к `lesson.ipynb` и `homework.ipynb`. "
+    "Не показывать ученикам до сдачи."
 )
 
 
@@ -96,11 +97,13 @@ def add_lesson01() -> None:
             "TARGET = ''  # имя столбца-цели\n"
             "FEATURES = []  # список имён признаков\n"
             "ID_COL = ''  # служебный столбец\n\n"
-            "assert TARGET == 'duration_min'\n"
-            "assert ID_COL == 'trip_id'\n"
-            "assert 'distance_km' in FEATURES\n"
+            "assert TARGET in df.columns\n"
+            "assert TARGET not in FEATURES\n"
+            "assert ID_COL in df.columns\n"
             "assert ID_COL not in FEATURES\n"
-            "assert set(FEATURES).issubset(df.columns)"
+            "assert 'distance_km' in FEATURES\n"
+            "assert set(FEATURES).issubset(df.columns)\n"
+            "assert df[TARGET].dtype.kind in 'iuf'"
         ),
         md(
             "## 3. Тип object\n\n"
@@ -128,6 +131,7 @@ def add_lesson01() -> None:
     hw = nb(
         md("# ДЗ: осмотр таблицы"),
         code(LOAD_DATA),
+        md("### A. Закрепление"),
         md("## 1. Срез столбцов\n\nПервые 10 строк только `distance_km`, `duration_min`, `hour`."),
         code(
             "subset = None  # DataFrame 10×3\n"
@@ -150,7 +154,8 @@ def add_lesson01() -> None:
             "print(a)"
         ),
         md(
-            "## 4. Вызов\n\n"
+            "### B. Вызов\n\n"
+            "## 4. Средняя comfort\n\n"
             "Средняя `duration_min` только для `vehicle_type == 'comfort'` "
             "(округлите до 1 знака). Сравните со средним по всей таблице — одной фразой."
         ),
@@ -181,24 +186,49 @@ def add_lesson01() -> None:
             "TARGET = 'duration_min'\n"
             "FEATURES = ['distance_km', 'hour', 'zone', 'vehicle_type']\n"
             "ID_COL = 'trip_id'\n"
-            "assert TARGET == 'duration_min'\n"
+            "assert TARGET in df.columns\n"
+            "assert TARGET not in FEATURES\n"
             "assert ID_COL not in FEATURES"
         ),
-        md("## Урок. 3–4. object и зоны"),
+        md("## Урок. 3. object"),
         code(
             "object_cols = df.select_dtypes(include='object').columns.tolist()\n"
-            "n_zones = df['zone'].nunique()\n"
-            "print(object_cols, n_zones)"
+            "print('object:', object_cols)\n"
+            "assert 'trip_id' in object_cols\n"
+            "assert 'zone' in object_cols\n"
+            "assert 'distance_km' not in object_cols"
         ),
-        md("## ДЗ. 1–4"),
+        md("## Урок. 4. Зоны"),
+        code(
+            "n_zones = df['zone'].nunique()\n"
+            "assert n_zones == df['zone'].nunique()\n"
+            "print(n_zones)"
+        ),
+        md("## ДЗ. 1. Срез столбцов"),
         code(
             "subset = df[['distance_km', 'duration_min', 'hour']].head(10)\n"
+            "assert list(subset.columns) == ['distance_km', 'duration_min', 'hour']\n"
+            "assert len(subset) == 10\n"
+            "print(subset)"
+        ),
+        md("## ДЗ. 2. Одна поездка"),
+        code(
             "duration_t0001 = df.loc[df['trip_id'] == 'T0001', 'duration_min'].iloc[0]\n"
+            "print(duration_t0001)"
+        ),
+        md("## ДЗ. 3. Два способа длины"),
+        code(
+            "a = len(df)\n"
+            "b = df.shape[0]\n"
+            "assert a == b\n"
+            "print(a)"
+        ),
+        md("## ДЗ. 4. Средняя comfort"),
+        code(
             "mean_comfort = round(df.loc[df['vehicle_type'] == 'comfort', 'duration_min'].mean(), 1)\n"
             "mean_all = round(df['duration_min'].mean(), 1)\n"
             "COMPARE_NOTE = f'comfort: {mean_comfort}, все: {mean_all} — сравните порядок величин'\n"
-            "print(subset)\n"
-            "print(duration_t0001, mean_comfort, COMPARE_NOTE)"
+            "print(mean_comfort, mean_all, COMPARE_NOTE)"
         ),
     )
     NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
@@ -252,6 +282,7 @@ def add_lesson02() -> None:
     hw = nb(
         md("# ДЗ: фильтры"),
         code(LOAD_DATA),
+        md("### A. Закрепление"),
         md("## 1. Комфорт\n\nТолько `vehicle_type == 'comfort'` — число строк."),
         code(
             "n_comfort = None\n"
@@ -273,7 +304,8 @@ def add_lesson02() -> None:
             "print(top5[['trip_id', 'duration_min']])"
         ),
         md(
-            "## 4. Вызов\n\n"
+            "### B. Вызов\n\n"
+            "## 4. Доля center\n\n"
             "Доля поездок `zone == 'center'` среди всех (0–1, округлить до 3 знаков). "
             "Одной фразой: это много или мало для аналитика?"
         ),
@@ -288,25 +320,51 @@ def add_lesson02() -> None:
     sol = nb(
         md("# Решения: фильтры\n\n" + SOL_BANNER),
         code(LOAD_DATA),
-        md("## Урок"),
+        md("## Урок. 1. Фильтр center"),
         code(
             "center = df[df['zone'] == 'center']\n"
+            "assert (center['zone'] == 'center').all()\n"
+            "print(len(center))"
+        ),
+        md("## Урок. 2. Длинные поездки"),
+        code(
             "long_trips = df[df['distance_km'] >= 15]\n"
+            "assert (long_trips['distance_km'] >= 15).all()\n"
+            "print(long_trips[['trip_id', 'distance_km', 'duration_min']].head())"
+        ),
+        md("## Урок. 3. loc vs iloc"),
+        code(
             "by_name = df.loc[:2, ['distance_km', 'duration_min']]\n"
             "by_pos = df.iloc[:3][['distance_km', 'duration_min']]\n"
-            "hours = df['hour'].astype(int)\n"
-            "print(len(center), len(long_trips), hours.min(), hours.max())\n"
-            "assert (by_name.values == by_pos.values).all()"
+            "assert (by_name.values == by_pos.values).all()\n"
+            "print(by_name)\nprint(by_pos)"
         ),
-        md("## ДЗ"),
+        md("## Урок. 4. Тип hour"),
+        code(
+            "hours = df['hour'].astype(int)\n"
+            "assert hours.min() >= 0 and hours.max() <= 23\n"
+            "print(int(hours.min()), int(hours.max()))"
+        ),
+        md("## ДЗ. 1. Комфорт"),
         code(
             "n_comfort = int((df['vehicle_type'] == 'comfort').sum())\n"
+            "print(n_comfort)"
+        ),
+        md("## ДЗ. 2. Утро"),
+        code(
             "n_morning = int(((df['hour'] >= 7) & (df['hour'] <= 9)).sum())\n"
+            "print(n_morning)"
+        ),
+        md("## ДЗ. 3. Топ-5"),
+        code(
             "top5 = df.sort_values('duration_min', ascending=False).head(5)\n"
+            "print(top5[['trip_id', 'duration_min']])"
+        ),
+        md("## ДЗ. 4. Доля center"),
+        code(
             "share_center = round((df['zone'] == 'center').mean(), 3)\n"
             "SHARE_NOTE = f'center ≈ {share_center:.0%} поездок — ориентир доли центра'\n"
-            "print(n_comfort, n_morning, share_center, SHARE_NOTE)\n"
-            "print(top5[['trip_id', 'duration_min']])"
+            "print(share_center, SHARE_NOTE)"
         ),
     )
     NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
@@ -364,6 +422,7 @@ def add_lesson03() -> None:
     hw = nb(
         md("# ДЗ: EDA"),
         code(LOAD_DATA + IMPORTS_MPL),
+        md("### A. Закрепление"),
         md("## 1. hour\n\n`describe()` для `hour`. Запишите медиану в `median_hour`."),
         code(
             "median_hour = None\n"
@@ -379,7 +438,8 @@ def add_lesson03() -> None:
             "assert HOUR_SCATTER_DONE"
         ),
         md(
-            "## 3. Вызов\n\n"
+            "### B. Вызов\n\n"
+            "## 3. Сравнение scatter\n\n"
             "Сравните визуально distance→duration и hour→duration. "
             "Какой признак выглядит перспективнее для линейной модели? Почему (2 предложения)?"
         ),
@@ -394,37 +454,56 @@ def add_lesson03() -> None:
     sol = nb(
         md("# Решения: EDA\n\n" + SOL_BANNER),
         code(LOAD_DATA + IMPORTS_MPL),
-        md("## Урок"),
+        md("## Урок. 1. describe"),
         code(
             "print(df[['distance_km', 'duration_min']].describe())\n"
             "mean_duration = df['duration_min'].mean()\n"
+            "assert abs(mean_duration - df['duration_min'].mean()) < 1e-9\n"
+            "print(mean_duration)"
+        ),
+        md("## Урок. 2. info"),
+        code(
             "n_non_null_duration = int(df['duration_min'].notna().sum())\n"
+            "print(n_non_null_duration)"
+        ),
+        md("## Урок. 3. Scatter distance"),
+        code(
             "plt.figure(figsize=(6, 4))\n"
             "plt.scatter(df['distance_km'], df['duration_min'], alpha=0.5)\n"
             "plt.xlabel('distance_km')\n"
             "plt.ylabel('duration_min')\n"
             "plt.title('Длительность vs расстояние')\n"
-            "plt.show()\n"
+            "plt.show()"
+        ),
+        md("## Урок. 4. Вывод EDA"),
+        code(
             "EDA_CONCLUSION = (\n"
             "    'С ростом distance_km длительность в среднем растёт, но разброс заметный.'\n"
             ")\n"
-            "print(mean_duration, n_non_null_duration, EDA_CONCLUSION)"
+            "print(EDA_CONCLUSION)"
         ),
-        md("## ДЗ"),
+        md("## ДЗ. 1. hour describe"),
         code(
             "median_hour = df['hour'].median()\n"
+            "print(median_hour)"
+        ),
+        md("## ДЗ. 2. Scatter hour"),
+        code(
             "plt.figure(figsize=(6, 4))\n"
             "plt.scatter(df['hour'], df['duration_min'], alpha=0.4)\n"
             "plt.xlabel('hour')\n"
             "plt.ylabel('duration_min')\n"
             "plt.title('Длительность vs час')\n"
-            "plt.show()\n"
+            "plt.show()"
+        ),
+        md("## ДЗ. 3. Сравнение признаков"),
+        code(
             "BETTER_FOR_LINEAR = 'distance_km'\n"
             "WHY_VISUAL = (\n"
             "    'На scatter с distance видна наклонная полоса; у hour облако более размытое. '\n"
             "    'Линейная модель на distance выглядит уместнее как первый кандидат.'\n"
             ")\n"
-            "print(median_hour, BETTER_FOR_LINEAR, WHY_VISUAL)"
+            "print(BETTER_FOR_LINEAR, WHY_VISUAL)"
         ),
     )
     NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
@@ -487,6 +566,7 @@ def add_lesson04() -> None:
     hw = nb(
         md("# ДЗ: split и воспроизводимость"),
         code(LOAD_DATA + IMPORTS_SKLEARN),
+        md("### A. Закрепление"),
         md("## 1. Другой test_size\n\n`test_size=0.3`, `random_state=42`. Сколько строк в test?"),
         code(
             "X = df[['distance_km']]\n"
@@ -505,7 +585,8 @@ def add_lesson04() -> None:
             "print(reproducible)"
         ),
         md(
-            "## 3. Вызов\n\n"
+            "### B. Вызов\n\n"
+            "## 3. Модель на hour\n\n"
             "Обучите модель на `hour` (тот же split 0.2 / 42). "
             "Выведите `coef_`. Одной фразой: знак коэффициента ожидаем?"
         ),
@@ -520,34 +601,57 @@ def add_lesson04() -> None:
     sol = nb(
         md("# Решения: train/test и LR\n\n" + SOL_BANNER),
         code(LOAD_DATA + IMPORTS_SKLEARN),
-        md("## Урок"),
+        md("## Урок. 1. X и y"),
         code(
             "X = df[['distance_km']]\n"
             "y = df['duration_min']\n"
+            "assert list(X.columns) == ['distance_km']\n"
+            "print(X.shape, y.shape)"
+        ),
+        md("## Урок. 2. train/test split"),
+        code(
             "X_train, X_test, y_train, y_test = train_test_split(\n"
             "    X, y, test_size=0.2, random_state=42\n"
             ")\n"
+            "assert len(X_test) == int(0.2 * len(df))\n"
+            "print(len(X_train), len(X_test))"
+        ),
+        md("## Урок. 3. fit / predict"),
+        code(
             "model = LinearRegression().fit(X_train, y_train)\n"
             "y_pred = model.predict(X_test)\n"
+            "print('coef', model.coef_, 'intercept', model.intercept_)\n"
+            "print('первые 3 pred:', y_pred[:3])"
+        ),
+        md("## Урок. 4. Другой seed"),
+        code(
             "_, _, _, y_test_other = train_test_split(X, y, test_size=0.2, random_state=0)\n"
             "same_first_indices = bool((y_test.index[:3] == y_test_other.index[:3]).all())\n"
-            "print(model.coef_, model.intercept_, same_first_indices)\n"
-            "assert same_first_indices is False"
+            "assert same_first_indices is False\n"
+            "print(same_first_indices)"
         ),
-        md("## ДЗ"),
+        md("## ДЗ. 1. test_size=0.3"),
         code(
             "X = df[['distance_km']]\n"
             "y = df['duration_min']\n"
             "_, X_te, _, y_te = train_test_split(X, y, test_size=0.3, random_state=42)\n"
             "n_test_03 = len(X_te)\n"
+            "print(n_test_03)"
+        ),
+        md("## ДЗ. 2. Воспроизводимость"),
+        code(
             "a = train_test_split(X, y, test_size=0.2, random_state=42)[3].values\n"
             "b = train_test_split(X, y, test_size=0.2, random_state=42)[3].values\n"
             "reproducible = bool((a == b).all())\n"
+            "print(reproducible)"
+        ),
+        md("## ДЗ. 3. coef hour"),
+        code(
             "Xh = df[['hour']]\n"
             "Xtr, Xte, ytr, yte = train_test_split(Xh, y, test_size=0.2, random_state=42)\n"
             "coef_hour = LinearRegression().fit(Xtr, ytr).coef_\n"
             "COEF_NOTE = 'Знак coef зависит от данных; на паре важнее зафиксировать seed и размер test'\n"
-            "print(n_test_03, reproducible, coef_hour, COEF_NOTE)"
+            "print(coef_hour, COEF_NOTE)"
         ),
     )
     NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
@@ -557,22 +661,31 @@ def add_lesson04() -> None:
 
 def add_lesson05() -> None:
     base = "lessons/05_practice_metrics"
-    pipeline = (
-        LOAD_DATA
-        + IMPORTS_SKLEARN
-        + "X = df[['distance_km']]\n"
-        "y = df['duration_min']\n"
-        "X_train, X_test, y_train, y_test = train_test_split(\n"
-        "    X, y, test_size=0.2, random_state=42\n"
-        ")\n"
-        "model = LinearRegression().fit(X_train, y_train)\n"
-        "y_pred = model.predict(X_test)\n"
-    )
+    starter = LOAD_DATA + IMPORTS_SKLEARN
     lesson = nb(
         md("# Практика: MSE и R²"),
-        code(pipeline),
+        code(starter),
         md(
-            "## 1. MSE\n\n"
+            "## 1. Split и модель\n\n"
+            "X = `distance_km`, y = `duration_min`. Split 0.2 / seed 42, "
+            "обучите `LinearRegression`, получите `y_pred` на test."
+        ),
+        code(
+            "X = None\n"
+            "y = None\n"
+            "X_train = X_test = y_train = y_test = None\n"
+            "model = None\n"
+            "y_pred = None\n"
+            "assert X is not None and y is not None\n"
+            "assert list(X.columns) == ['distance_km']\n"
+            "assert X_test is not None\n"
+            "assert len(X_test) == int(0.2 * len(df))\n"
+            "assert model is not None and y_pred is not None\n"
+            "assert len(y_pred) == len(y_test)\n"
+            "print(len(X_train), len(X_test))"
+        ),
+        md(
+            "## 2. MSE\n\n"
             "Посчитайте среднеквадратичную ошибку на **test** "
             "(`mean_squared_error` или вручную)."
         ),
@@ -583,7 +696,7 @@ def add_lesson05() -> None:
             "assert mse >= 0\n"
             "print('MSE', round(mse, 2))"
         ),
-        md("## 2. R²\n\nКоэффициент детерминации на test."),
+        md("## 3. R²\n\nКоэффициент детерминации на test."),
         code(
             "r2 = None\n"
             "assert r2 is not None\n"
@@ -591,7 +704,7 @@ def add_lesson05() -> None:
             "print('R2', round(r2, 3))"
         ),
         md(
-            "## 3. Таблица сравнения\n\n"
+            "## 4. Таблица сравнения\n\n"
             "DataFrame: столбцы `fact`, `pred`, `error` (= fact − pred). Покажите `head()`."
         ),
         code(
@@ -602,7 +715,7 @@ def add_lesson05() -> None:
             "print(compare.head())"
         ),
         md(
-            "## 4. Интерпретация\n\n"
+            "## 5. Интерпретация\n\n"
             "Одна фраза про R²: какую долю разброса длительности модель объясняет на test?"
         ),
         code(
@@ -613,30 +726,43 @@ def add_lesson05() -> None:
     )
     hw = nb(
         md("# ДЗ: метрики"),
-        code(pipeline),
-        md("## 1. MAE\n\nСредняя абсолютная ошибка на test (как MAE из модуля 1)."),
+        code(starter),
+        md("### A. Закрепление"),
+        md(
+            "## 1. MAE\n\n"
+            "Повторите split/fit (0.2 / 42) на `distance_km`. "
+            "Средняя абсолютная ошибка на test (как MAE из модуля 1)."
+        ),
         code(
+            "X = df[['distance_km']]\n"
+            "y = df['duration_min']\n"
+            "X_train, X_test, y_train, y_test = None, None, None, None\n"
+            "model = None\n"
+            "y_pred = None\n"
             "mae = None\n"
+            "assert X_train is not None and model is not None and y_pred is not None\n"
             "assert mae is not None\n"
             "assert abs(mae - abs(y_test - y_pred).mean()) < 1e-9\n"
             "print(round(mae, 2))"
         ),
         md(
             "## 2. Метрики на train\n\n"
-            "Посчитайте MSE на **train**. Больше или меньше, чем на test? "
-            "Одной фразой — почему смотрим на test."
+            "Посчитайте MSE на **train** и на **test**. "
+            "Больше или меньше на train? Одной фразой — почему смотрим на test."
         ),
         code(
             "mse_train = None\n"
-            "mse_test = mean_squared_error(y_test, y_pred)\n"
+            "mse_test = None\n"
             "TRAIN_VS_TEST = ''\n"
-            "assert mse_train is not None\n"
+            "assert mse_train is not None and mse_test is not None\n"
             "assert abs(mse_train - mean_squared_error(y_train, model.predict(X_train))) < 1e-9\n"
+            "assert abs(mse_test - mean_squared_error(y_test, y_pred)) < 1e-9\n"
             "assert len(TRAIN_VS_TEST) > 20\n"
             "print(mse_train, mse_test, TRAIN_VS_TEST)"
         ),
         md(
-            "## 3. Вызов\n\n"
+            "### B. Вызов\n\n"
+            "## 3. Baseline R²\n\n"
             "Если предсказывать везде среднее `y_train`, какой будет R² на test? "
             "(ожидание: около 0). Проверьте численно."
         ),
@@ -652,29 +778,66 @@ def add_lesson05() -> None:
     )
     sol = nb(
         md("# Решения: метрики\n\n" + SOL_BANNER),
-        code(pipeline),
-        md("## Урок"),
+        code(starter),
+        md("## Урок. 1. Split и модель"),
+        code(
+            "X = df[['distance_km']]\n"
+            "y = df['duration_min']\n"
+            "X_train, X_test, y_train, y_test = train_test_split(\n"
+            "    X, y, test_size=0.2, random_state=42\n"
+            ")\n"
+            "model = LinearRegression().fit(X_train, y_train)\n"
+            "y_pred = model.predict(X_test)\n"
+            "print(len(X_train), len(X_test))"
+        ),
+        md("## Урок. 2. MSE"),
         code(
             "mse = mean_squared_error(y_test, y_pred)\n"
+            "print('MSE', round(mse, 2))"
+        ),
+        md("## Урок. 3. R²"),
+        code(
             "r2 = r2_score(y_test, y_pred)\n"
+            "print('R2', round(r2, 3))"
+        ),
+        md("## Урок. 4. Таблица"),
+        code(
             "compare = pd.DataFrame({'fact': y_test.values, 'pred': y_pred})\n"
             "compare['error'] = compare['fact'] - compare['pred']\n"
-            "METRIC_NOTE = f'R²≈{r2:.2f}: модель объясняет часть разброса длительности на test'\n"
-            "print(mse, r2, METRIC_NOTE)\n"
             "print(compare.head())"
         ),
-        md("## ДЗ"),
+        md("## Урок. 5. Интерпретация"),
         code(
-            "import numpy as np\n"
+            "METRIC_NOTE = f'R²≈{r2:.2f}: модель объясняет часть разброса длительности на test'\n"
+            "print(METRIC_NOTE)"
+        ),
+        md("## ДЗ. 1. MAE"),
+        code(
+            "X = df[['distance_km']]\n"
+            "y = df['duration_min']\n"
+            "X_train, X_test, y_train, y_test = train_test_split(\n"
+            "    X, y, test_size=0.2, random_state=42\n"
+            ")\n"
+            "model = LinearRegression().fit(X_train, y_train)\n"
+            "y_pred = model.predict(X_test)\n"
             "mae = float(abs(y_test - y_pred).mean())\n"
+            "print(round(mae, 2))"
+        ),
+        md("## ДЗ. 2. train vs test"),
+        code(
             "mse_train = mean_squared_error(y_train, model.predict(X_train))\n"
             "mse_test = mean_squared_error(y_test, y_pred)\n"
             "TRAIN_VS_TEST = (\n"
             "    'На test ошибка важнее: так мы оцениваем обобщение на новые поездки, не заучивание train'\n"
             ")\n"
+            "print(mse_train, mse_test, TRAIN_VS_TEST)"
+        ),
+        md("## ДЗ. 3. Baseline R²"),
+        code(
+            "import numpy as np\n"
             "baseline_pred = np.full_like(y_test, float(y_train.mean()), dtype=float)\n"
             "r2_baseline = r2_score(y_test, baseline_pred)\n"
-            "print(mae, mse_train, mse_test, TRAIN_VS_TEST, r2_baseline)"
+            "print(round(r2_baseline, 4))"
         ),
     )
     NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
@@ -736,6 +899,7 @@ def add_lesson06() -> None:
     hw = nb(
         md("# ДЗ: устойчивая загрузка"),
         code("from pathlib import Path\nimport pandas as pd\n"),
+        md("### A. Закрепление"),
         md(
             "## 1. safe_load\n\n"
             "`safe_load(path)` возвращает DataFrame или `None` при `FileNotFoundError` "
@@ -758,7 +922,8 @@ def add_lesson06() -> None:
             "print(ok.shape)"
         ),
         md(
-            "## 3. Вызов\n\n"
+            "### B. Вызов\n\n"
+            "## 3. clean_trips и zone\n\n"
             "`clean_trips` не должен трогать строки, где NaN только в `zone` "
             "(ключевые — distance и duration)."
         ),
@@ -779,7 +944,7 @@ def add_lesson06() -> None:
     )
     sol = nb(
         md("# Решения: try/except\n\n" + SOL_BANNER),
-        md("## Урок"),
+        md("## Урок. 1. load_trips"),
         code(
             "from pathlib import Path\n"
             "import pandas as pd\n\n\n"
@@ -788,38 +953,58 @@ def add_lesson06() -> None:
             "        return pd.read_csv(path)\n"
             "    except FileNotFoundError:\n"
             "        raise FileNotFoundError(f'Файл не найден: {path}') from None\n\n\n"
-            "def clean_trips(raw: pd.DataFrame) -> pd.DataFrame:\n"
-            "    return raw.dropna(subset=['distance_km', 'duration_min'])\n\n\n"
             "TRIPS_PATH = next(\n"
             "    p.resolve()\n"
             "    for p in (Path('trips.csv'), Path('../../data/trips.csv'), Path('../data/trips.csv'))\n"
             "    if p.exists()\n"
             ")\n"
             "df = load_trips(TRIPS_PATH)\n"
+            "print(df.shape)"
+        ),
+        md("## Урок. 2. FileNotFoundError"),
+        code(
+            "caught = False\n"
+            "try:\n"
+            "    load_trips(Path('no_such_file.csv'))\n"
+            "except FileNotFoundError as e:\n"
+            "    caught = True\n"
+            "    print('Поймали:', e)\n"
+            "assert caught"
+        ),
+        md("## Урок. 3. clean_trips"),
+        code(
+            "def clean_trips(raw: pd.DataFrame) -> pd.DataFrame:\n"
+            "    return raw.dropna(subset=['distance_km', 'duration_min'])\n\n\n"
             "raw = df.copy()\n"
             "raw.loc[raw.index[0], 'duration_min'] = None\n"
             "assert len(clean_trips(raw)) == len(raw) - 1\n"
-            "print(df.shape)"
+            "print(len(raw), len(clean_trips(raw)))"
         ),
-        md("## ДЗ"),
+        md("## ДЗ. 1. safe_load"),
         code(
-            "from pathlib import Path\n"
-            "import pandas as pd\n\n\n"
             "def safe_load(path):\n"
             "    try:\n"
             "        return pd.read_csv(path)\n"
             "    except FileNotFoundError:\n"
             "        return None\n\n\n"
-            "def clean_trips(raw: pd.DataFrame) -> pd.DataFrame:\n"
-            "    return raw.dropna(subset=['distance_km', 'duration_min'])\n\n\n"
             "assert safe_load(Path('no_such_file.csv')) is None\n"
+            "print('ok')"
+        ),
+        md("## ДЗ. 2. Успешный путь"),
+        code(
+            "ok = safe_load(TRIPS_PATH)\n"
+            "assert ok is not None and len(ok) > 0\n"
+            "print(ok.shape)"
+        ),
+        md("## ДЗ. 3. zone NaN"),
+        code(
             "sample = pd.DataFrame({\n"
             "    'distance_km': [1.0, 2.0],\n"
             "    'duration_min': [10.0, 20.0],\n"
             "    'zone': [None, 'center'],\n"
             "})\n"
             "assert len(clean_trips(sample)) == 2\n"
-            "print('ok')"
+            "print(clean_trips(sample))"
         ),
     )
     NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
@@ -865,6 +1050,7 @@ def add_lesson07() -> None:
     hw = nb(
         md("# ДЗ: таблица сравнения"),
         code(LOAD_DATA + IMPORTS_SKLEARN),
+        md("### A. Закрепление"),
         md(
             "## 1. Таблица\n\n"
             "DataFrame со столбцами `feature`, `mse`, `r2` для `distance_km` и `hour`."
@@ -879,7 +1065,8 @@ def add_lesson07() -> None:
             "print(table)"
         ),
         md(
-            "## 2. Вызов\n\n"
+            "### B. Вызов\n\n"
+            "## 2. is_comfort\n\n"
             "Добавьте третий признак `vehicle_type`: сначала закодируйте "
             "`comfort→1`, иначе `0` в новый столбец `is_comfort`, затем `eval_feature('is_comfort')`. "
             "Лучше ли он distance по R²?"
@@ -896,7 +1083,7 @@ def add_lesson07() -> None:
     sol = nb(
         md("# Решения: сравнение признаков\n\n" + SOL_BANNER),
         code(LOAD_DATA + IMPORTS_SKLEARN),
-        md("## Урок + ДЗ"),
+        md("## Урок. 1. eval_feature на distance"),
         code(
             "def eval_feature(feature_name: str, random_state: int = 42):\n"
             "    X = df[[feature_name]]\n"
@@ -907,18 +1094,38 @@ def add_lesson07() -> None:
             "    pred = LinearRegression().fit(X_tr, y_tr).predict(X_te)\n"
             "    return mean_squared_error(y_te, pred), r2_score(y_te, pred)\n\n\n"
             "mse_d, r2_d = eval_feature('distance_km')\n"
+            "print('distance', round(mse_d, 2), round(r2_d, 3))"
+        ),
+        md("## Урок. 2. hour"),
+        code(
             "mse_h, r2_h = eval_feature('hour')\n"
+            "print('hour', round(mse_h, 2), round(r2_h, 3))"
+        ),
+        md("## Урок. 3. BETTER_FEATURE"),
+        code(
             "BETTER_FEATURE = 'distance_km' if r2_d >= r2_h else 'hour'\n"
+            "print(BETTER_FEATURE)"
+        ),
+        md("## Урок. 4. WHY"),
+        code(
             "WHY = (\n"
             "    f'По R² на test лучше {BETTER_FEATURE} '\n"
             "    f'(distance R²={r2_d:.3f}, hour R²={r2_h:.3f}). '\n"
             "    'Для отчёта фиксируем один признак и те же seed/test_size.'\n"
             ")\n"
+            "print(WHY)"
+        ),
+        md("## ДЗ. 1. Таблица"),
+        code(
             "rows = []\n"
             "for f in ('distance_km', 'hour'):\n"
             "    m, r = eval_feature(f)\n"
             "    rows.append({'feature': f, 'mse': m, 'r2': r})\n"
             "table = pd.DataFrame(rows)\n"
+            "print(table)"
+        ),
+        md("## ДЗ. 2. is_comfort"),
+        code(
             "df2 = df.copy()\n"
             "df2['is_comfort'] = (df2['vehicle_type'] == 'comfort').astype(int)\n"
             "\n"
@@ -932,8 +1139,7 @@ def add_lesson07() -> None:
             "    return mean_squared_error(y_te, pred), r2_score(y_te, pred)\n\n\n"
             "mse_c, r2_c = eval_feature_df(df2, 'is_comfort')\n"
             "beats_distance = r2_c > r2_d\n"
-            "print(table)\n"
-            "print(BETTER_FEATURE, WHY, r2_c, beats_distance)"
+            "print(r2_c, beats_distance)"
         ),
     )
     NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
@@ -985,6 +1191,7 @@ def add_lesson08() -> None:
     hw = nb(
         md("# ДЗ: обзор нескольких признаков"),
         code(LOAD_DATA + IMPORTS_SKLEARN),
+        md("### A. Закрепление"),
         md("## 1. MSE двух признаков\n\nMSE на test для distance+hour (seed 42, test 0.2)."),
         code(
             "mse_two = None\n"
@@ -992,7 +1199,8 @@ def add_lesson08() -> None:
             "print(round(mse_two, 2))"
         ),
         md(
-            "## 2. Вызов\n\n"
+            "### B. Вызов\n\n"
+            "## 2. Третий признак\n\n"
             "Добавьте `is_comfort` (0/1) к distance+hour. Вырос ли R² относительно двух признаков? "
             "Ответ bool + одна фраза ограничения обзора."
         ),
@@ -1007,7 +1215,7 @@ def add_lesson08() -> None:
     sol = nb(
         md("# Решения: несколько признаков\n\n" + SOL_BANNER),
         code(LOAD_DATA + IMPORTS_SKLEARN),
-        md("## Урок + ДЗ"),
+        md("## Урок. 1. Два признака"),
         code(
             "y = df['duration_min']\n"
             "X2 = df[['distance_km', 'hour']]\n"
@@ -1015,15 +1223,31 @@ def add_lesson08() -> None:
             "model = LinearRegression().fit(X2_tr, y_tr)\n"
             "pred2 = model.predict(X2_te)\n"
             "r2_two = r2_score(y_te, pred2)\n"
-            "mse_two = mean_squared_error(y_te, pred2)\n"
+            "print('coef', model.coef_, 'R2', round(r2_two, 3))"
+        ),
+        md("## Урок. 2. Сравнение с одним"),
+        code(
             "X1 = df[['distance_km']]\n"
             "X1_tr, X1_te, y1_tr, y1_te = train_test_split(X1, y, test_size=0.2, random_state=42)\n"
             "r2_one = r2_score(y1_te, LinearRegression().fit(X1_tr, y1_tr).predict(X1_te))\n"
             "two_better = r2_two > r2_one\n"
+            "print('one', round(r2_one, 3), 'two', round(r2_two, 3), 'two_better', two_better)"
+        ),
+        md("## Урок. 3. MULTI_NOTE"),
+        code(
             "MULTI_NOTE = (\n"
             "    'Второй признак стоит пробовать, но решение — по метрике на test: '\n"
             "    'лишний столбец может не помочь или чуть ухудшить R².'\n"
             ")\n"
+            "print(MULTI_NOTE)"
+        ),
+        md("## ДЗ. 1. MSE двух признаков"),
+        code(
+            "mse_two = mean_squared_error(y_te, pred2)\n"
+            "print(round(mse_two, 2))"
+        ),
+        md("## ДЗ. 2. is_comfort"),
+        code(
             "df3 = df.copy()\n"
             "df3['is_comfort'] = (df3['vehicle_type'] == 'comfort').astype(int)\n"
             "X3 = df3[['distance_km', 'hour', 'is_comfort']]\n"
@@ -1031,7 +1255,7 @@ def add_lesson08() -> None:
             "r2_three = r2_score(y3_te, LinearRegression().fit(X3_tr, y3_tr).predict(X3_te))\n"
             "improved = r2_three > r2_two\n"
             "LIMIT_NOTE = 'Обзорно: рост R² не заменяет проверку на test и осмысленность признаков'\n"
-            "print(r2_one, r2_two, two_better, mse_two, improved, LIMIT_NOTE)"
+            "print(improved, LIMIT_NOTE)"
         ),
     )
     NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
@@ -1087,6 +1311,7 @@ def add_lesson09() -> None:
     hw = nb(
         md("# ДЗ: доработать черновик"),
         code(LOAD_DATA + IMPORTS_SKLEARN),
+        md("### A. Закрепление"),
         md(
             "## 1. Сравнение признаков в тексте\n\n"
             "Добавьте в черновик 2 предложения: R² для distance и hour (seed 42)."
@@ -1097,6 +1322,7 @@ def add_lesson09() -> None:
             "assert 'hour' in COMPARE_DRAFT.lower()\n"
             "print(COMPARE_DRAFT)"
         ),
+        md("### B. Вызов"),
         md("## 2. Рекомендация ≥ 2 предложений\n\nЗаполните `REPORT_RECOMMENDATION`."),
         code(
             "REPORT_RECOMMENDATION = ''\n"
@@ -1107,23 +1333,39 @@ def add_lesson09() -> None:
     sol = nb(
         md("# Решения: черновик отчёта\n\n" + SOL_BANNER),
         code(LOAD_DATA + IMPORTS_SKLEARN),
-        md("## Урок + ДЗ"),
+        md("## Урок. 1. Данные"),
         code(
             "REPORT_DATA = (\n"
             "    f'Источник: {TRIPS_PATH.name}, строк: {len(df)}. '\n"
             "    'Цель: предсказать duration_min по признакам поездки.'\n"
             ")\n"
+            "print(REPORT_DATA)"
+        ),
+        md("## Урок. 2. EDA"),
+        code(
             "REPORT_EDA = (\n"
             "    'describe показывает разброс distance и duration; '\n"
             "    'на scatter distance→duration видна положительная связь.'\n"
             ")\n"
+            "print(REPORT_EDA)"
+        ),
+        md("## Урок. 3. Модель"),
+        code(
             "X = df[['distance_km']]\n"
             "y = df['duration_min']\n"
             "X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, random_state=42)\n"
             "pred = LinearRegression().fit(X_tr, y_tr).predict(X_te)\n"
             "report_mse = mean_squared_error(y_te, pred)\n"
             "report_r2 = r2_score(y_te, pred)\n"
-            "\n"
+            "print('MSE', report_mse, 'R2', report_r2)"
+        ),
+        md("## Урок. 4. Черновик рекомендации"),
+        code(
+            "REPORT_RECOMMENDATION = ''\n"
+            "print(REPORT_RECOMMENDATION or '(черновик пуст — доделать дома / на паре 20)')"
+        ),
+        md("## ДЗ. 1. Сравнение признаков"),
+        code(
             "def r2_of(col):\n"
             "    Xc = df[[col]]\n"
             "    tr, te, ytr, yte = train_test_split(Xc, y, test_size=0.2, random_state=42)\n"
@@ -1132,14 +1374,14 @@ def add_lesson09() -> None:
             "    f'distance_km R²≈{r2_of(\"distance_km\"):.3f}; '\n"
             "    f'hour R²≈{r2_of(\"hour\"):.3f} на том же test.'\n"
             ")\n"
+            "print(COMPARE_DRAFT)"
+        ),
+        md("## ДЗ. 2. Рекомендация"),
+        code(
             "REPORT_RECOMMENDATION = (\n"
             "    'Рекомендуем distance_km как основной признак: выше R² на test. '\n"
             "    'Ограничение: один признак и линейная модель; hour можно добавить обзорно.'\n"
             ")\n"
-            "print(REPORT_DATA)\n"
-            "print(REPORT_EDA)\n"
-            "print(report_mse, report_r2)\n"
-            "print(COMPARE_DRAFT)\n"
             "print(REPORT_RECOMMENDATION)"
         ),
     )
@@ -1197,7 +1439,12 @@ def add_lesson10() -> None:
     sol = nb(
         md("# Решения: сдача отчёта\n\n" + SOL_BANNER),
         code(LOAD_DATA + IMPORTS_SKLEARN),
-        md("## Урок"),
+        md("## Урок. 1. Чек-лист"),
+        code(
+            "CHECKLIST_OK = True\n"
+            "print(CHECKLIST_OK)"
+        ),
+        md("## Урок. 2. Финальные метрики"),
         code(
             "y = df['duration_min']\n"
             "\n"
@@ -1207,23 +1454,88 @@ def add_lesson10() -> None:
             "    pred = LinearRegression().fit(X_tr, y_tr).predict(X_te)\n"
             "    return mean_squared_error(y_te, pred), r2_score(y_te, pred)\n\n\n"
             "FINAL_MSE, FINAL_R2 = metrics(['distance_km'])\n"
+            "print(FINAL_MSE, FINAL_R2)"
+        ),
+        md("## Урок. 3. Сравнение признаков"),
+        code(
             "_, r2_h = metrics(['hour'])\n"
-            "CHECKLIST_OK = True\n"
             "FEATURE_COMPARE_NOTE = (\n"
             "    f'distance_km R²={FINAL_R2:.3f}, hour R²={r2_h:.3f} — выбираем distance_km'\n"
             ")\n"
+            "print(FEATURE_COMPARE_NOTE)"
+        ),
+        md("## Урок. 4. Рефлексия"),
+        code(
             "REFLECTION = (\n"
             "    'В модуле 1 predict был функцией на списках. '\n"
             "    'Здесь данные — таблица CSV и DataFrame. '\n"
             "    'sklearn даёт fit/predict и метрики на test вместо ручного коэффициента.'\n"
             ")\n"
-            "print(CHECKLIST_OK, FINAL_MSE, FINAL_R2)\n"
-            "print(FEATURE_COMPARE_NOTE)\n"
             "print(REFLECTION)"
         ),
     )
     NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
     NOTEBOOKS[f"{base}/solutions.ipynb"] = sol
+
+
+def add_report_starter() -> None:
+    starter = nb(
+        md("# Мини-отчёт: каршеринг «Дорога»"),
+        code(LOAD_DATA + IMPORTS_SKLEARN + IMPORTS_MPL),
+        md(
+            "## 1. Данные\n\n"
+            "2–3 предложения: источник файла, число строк, цель предсказания."
+        ),
+        code(
+            "REPORT_DATA = ''  # заполните\n"
+            "assert len(REPORT_DATA) > 20\n"
+            "assert str(len(df)) in REPORT_DATA\n"
+            "print(REPORT_DATA)"
+        ),
+        md("## 2. EDA\n\n`describe` и/или scatter для связи признака с `duration_min`."),
+        code(
+            "# ваш код EDA\n"
+            "REPORT_EDA = ''\n"
+            "assert len(REPORT_EDA) > 20\n"
+            "print(REPORT_EDA)"
+        ),
+        md(
+            "## 3. Модель\n\n"
+            "Train/test 0.2 / seed 42, `LinearRegression`, MSE и R² **на test**."
+        ),
+        code(
+            "report_mse = None\n"
+            "report_r2 = None\n"
+            "assert report_mse is not None and report_r2 is not None\n"
+            "assert report_mse >= 0\n"
+            "print('MSE', report_mse, 'R2', report_r2)"
+        ),
+        md(
+            "## 4. Сравнение признаков\n\n"
+            "Таблица или два блока: минимум `distance_km` и `hour`."
+        ),
+        code(
+            "FEATURE_COMPARE = None  # DataFrame или текст\n"
+            "assert FEATURE_COMPARE is not None\n"
+            "print(FEATURE_COMPARE)"
+        ),
+        md("## 5. Рекомендация\n\n1 абзац с числами и ограничениями модели."),
+        code(
+            "REPORT_RECOMMENDATION = ''\n"
+            "assert len(REPORT_RECOMMENDATION) > 40\n"
+            "print(REPORT_RECOMMENDATION)"
+        ),
+        md(
+            "## 6. Рефлексия\n\n"
+            "3 предложения: что изменилось после модуля 1 (списки → таблица → sklearn)?"
+        ),
+        code(
+            "REFLECTION = ''\n"
+            "assert len(REFLECTION) > 60\n"
+            "print(REFLECTION)"
+        ),
+    )
+    NOTEBOOKS["artifact/starter/report_starter.ipynb"] = starter
 
 
 def main() -> None:
@@ -1237,8 +1549,14 @@ def main() -> None:
     add_lesson08()
     add_lesson09()
     add_lesson10()
+    add_report_starter()
     for rel, notebook in NOTEBOOKS.items():
         write(rel, notebook)
+    src_csv = ROOT / "data" / "trips.csv"
+    dst_csv = ROOT / "artifact" / "starter" / "trips.csv"
+    if src_csv.exists():
+        shutil.copy(src_csv, dst_csv)
+        print("copied", dst_csv)
     print(f"total notebooks: {len(NOTEBOOKS)}")
 
 
