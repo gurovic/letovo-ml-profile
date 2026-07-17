@@ -79,3 +79,5 @@ modules/<grade>_<nn>_<slug>/
 Кратко сообщить: цель модуля, число уроков, артефакт, что сознательно вне scope.
 
 Рекомендуется прогон skill `test-teacher` по `UNIT.md` и ключевым `LESSON.md` перед формальным `review-edu-material`.
+
+- [ ] После успешного прохода по модулю: в `docs/AGENT_PASSES.md` поставить в ячейку (модуль × этот skill) текущее локальное время ISO `YYYY-MM-DDTHH:MM:SS+07:00`.

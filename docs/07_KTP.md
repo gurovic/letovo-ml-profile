@@ -37,7 +37,7 @@
 
 Строка КТП → `modules/<grade>_<nn>_<slug>/` (Unit Planner).
 
-**8 класс:** 11 модулей, 85 пар — индекс в [README.md](../README.md#модули-8-класса); КТП: [ktp/08.md](ktp/08.md).
+**8 класс:** 11 модулей, 85 пар — индекс в [README.md](../README.md#модули-8-класса); КТП: [ktp/08.md](ktp/08.md). Журнал последних проходов агентов по модулям: [AGENT_PASSES.md](AGENT_PASSES.md).
 
 Пример: пары 1–10 → [modules/08_01_functions_recursion/](../modules/08_01_functions_recursion/) (вводная + функции); пары 11–20 → [modules/08_02_carsharing_pandas_lr/](../modules/08_02_carsharing_pandas_lr/).
 

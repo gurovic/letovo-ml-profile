@@ -119,3 +119,5 @@ description: >-
 2. какие уроки затронуты;
 3. покрытие describe / transform / predict;
 4. что осталось вне scope.
+
+- [ ] После успешного прохода по модулю: в `docs/AGENT_PASSES.md` поставить в ячейку (модуль × этот skill) текущее локальное время ISO `YYYY-MM-DDTHH:MM:SS+07:00`.
