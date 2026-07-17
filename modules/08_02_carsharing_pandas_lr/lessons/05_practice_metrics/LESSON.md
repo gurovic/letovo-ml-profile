@@ -35,12 +35,12 @@
 
 | # | Этап | ~мин | Ученик | Учитель | Материал | Критерий закрытия |
 |---|---|---|---|---|---|---|
-| 1 | Split и модель | 15 | Собирает train/test + fit + `y_pred` | Тот же seed 42, что на паре 14 | `## 1. Split и модель` | `y_pred` на test есть |
-| 2 | MSE | 15 | `mean_squared_error` на test | Только test | `## 2. MSE` | `mse >= 0` |
-| 3 | R² | 15 | `r2_score` на test | Доля объяснённого разброса | `## 3. R²` | число в разумных пределах |
-| 4 | Таблица ошибок | 15 | DataFrame `compare`: fact / pred / error | Знак ошибки = fact − pred | `## 4. Таблица сравнения` | `compare.head()` на экране |
-| 5 | Интерпретация | 10 | Строка `METRIC_NOTE` про R² | «какую долю разброса объясняет» | `## 5. Интерпретация` | `len(METRIC_NOTE) > 15` |
-| 6 | Постановка ДЗ | 10 | Открывает homework (MAE, train vs test) | Связь с MAE модуля 1 | [homework.ipynb](homework.ipynb) | знает срок |
+| 1 | Split и модель | 10 | Собирает train/test + fit + `y_pred` | Seed 42 | `## 1. Split и модель` | `y_pred` на test |
+| 2 | MSE / R² | 15 | mse и r2 на test | Интуиция единиц / доли | `## 2`–`## 3` | числа |
+| 3 | Baseline | 10 | mean-predictor; r2_baseline ≈ 0 | Нижняя планка | `## 4. Baseline` | около 0 |
+| 4 | Train vs test + таблица | 15 | mse_train/test; compare | Смотрим на test | `## 5`–`## 6` | TRAIN_VS_TEST |
+| 5 | Интерпретация | 10 | METRIC_NOTE | MSE vs R² + baseline | `## 7. Интерпретация для отчёта` | текст |
+| 6 | Постановка ДЗ | 10 | MAE, baseline | Связь с модулем 1 | [homework.ipynb](homework.ipynb) | знает срок |
 
 ---
 

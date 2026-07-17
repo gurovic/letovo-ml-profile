@@ -8,6 +8,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -171,20 +172,33 @@ def _request(
         _log_request(method, req_url, data=data)
         body = urllib.parse.urlencode(data).encode("utf-8") if data is not None else None
         req = urllib.request.Request(req_url, data=body, headers=headers, method=method)
-        try:
-            with urllib.request.urlopen(req, timeout=60) as resp:
-                raw = resp.read().decode("utf-8")
-                link = resp.headers.get("Link", "")
+        raw = ""
+        link = ""
+        last_err: Exception | None = None
+        for attempt in range(4):
+            try:
+                with urllib.request.urlopen(req, timeout=90) as resp:
+                    raw = resp.read().decode("utf-8")
+                    link = resp.headers.get("Link", "")
+                    if _debug_enabled():
+                        _emit_debug(f"CANVAS <- {resp.status} ({len(raw)} bytes)")
+                last_err = None
+                break
+            except urllib.error.HTTPError as e:
+                detail = e.read().decode("utf-8", errors="replace")
                 if _debug_enabled():
-                    _emit_debug(f"CANVAS <- {resp.status} ({len(raw)} bytes)")
-        except urllib.error.HTTPError as e:
-            detail = e.read().decode("utf-8", errors="replace")
-            if _debug_enabled():
-                _emit_debug(f"CANVAS <- {e.code} ERROR: {detail[:500]}")
-            print(f"HTTP {e.code}: {detail}", file=sys.stderr)
-            if e.code == 401:
-                print(AUTH_401_HINT, file=sys.stderr)
-            sys.exit(1)
+                    _emit_debug(f"CANVAS <- {e.code} ERROR: {detail[:500]}")
+                print(f"HTTP {e.code}: {detail}", file=sys.stderr)
+                if e.code == 401:
+                    print(AUTH_401_HINT, file=sys.stderr)
+                sys.exit(1)
+            except (TimeoutError, urllib.error.URLError, OSError) as e:
+                last_err = e
+                if _debug_enabled():
+                    _emit_debug(f"CANVAS retry {attempt + 1}/4: {e}")
+                time.sleep(2 + attempt * 2)
+        if last_err is not None:
+            raise last_err
 
         payload = json.loads(raw) if raw else None
 

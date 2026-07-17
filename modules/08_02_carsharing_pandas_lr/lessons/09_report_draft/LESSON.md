@@ -33,11 +33,11 @@
 
 | # | Этап | ~мин | Ученик | Учитель | Материал | Критерий закрытия |
 |---|---|---|---|---|---|---|
-| 0 | Критерии | 10 | Смотрит чек-лист PROJECT | «Сдаём `report_starter.ipynb`; сегодня каркас в `lesson.ipynb`» | [PROJECT.md](../../artifact/PROJECT.md), [starter](../../artifact/starter/report_starter.ipynb) | знает файл сдачи |
-| 1 | Данные | 10 | `REPORT_DATA` | Источник, число строк, цель | `## 1. Данные` | строка с `len(df)` |
-| 2 | EDA | 15 | describe + `REPORT_EDA` | Связь с парой 13 | `## 2. EDA` | describe на экране; текст > 20 символов |
-| 3 | Модель | 25 | split + LR + метрики | Только test, seed 42 | `## 3. Модель` | `report_mse`, `report_r2` |
-| 4 | Рекомендация | 10 | Черновик `REPORT_RECOMMENDATION` | Добить в ДЗ / на паре 20 | `## 4. Рекомендация` | начат текст (пустой на паре 19 допустим в assert) |
+| 0 | Критерии | 8 | Смотрит чек-лист PROJECT | «Сдаём `report_starter.ipynb`; сегодня каркас в `lesson.ipynb`» | [PROJECT.md](../../artifact/PROJECT.md), [starter](../../artifact/starter/report_starter.ipynb) | знает файл сдачи |
+| 1 | Структура | 7 | STRUCTURE_OK | Порядок секций отчёта | `## 1. Структура отчёта` | True |
+| 2 | Данные + EDA | 15 | REPORT_DATA; REPORT_EDA | Число строк в тексте | `## 2`–`## 3` | тексты |
+| 3 | Модель + сравнение | 18 | report_mse/r2; COMPARE_DRAFT | Только test, seed 42 | `## 4`–`## 5` | числа + draft |
+| 4 | Рекомендация + limits | 12 | REPORT_RECOMMENDATION; LIMITATIONS | Добить в ДЗ / паре 20 | `## 6`–`## 7` | LIMITATIONS |
 | 5 | ДЗ | 10 | homework → потом starter | Сравнение hour + абзац рекомендации | [homework.ipynb](homework.ipynb) | знает срок |
 
 ---

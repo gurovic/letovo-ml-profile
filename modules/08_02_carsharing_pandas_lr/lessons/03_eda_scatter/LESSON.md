@@ -33,11 +33,12 @@
 
 | # | Этап | ~мин | Ученик | Учитель | Материал | Критерий закрытия |
 |---|---|---|---|---|---|---|
-| 1 | describe | 15 | Статистики двух столбцов | mean vs median — устно | `## 1. describe` | таблица describe |
-| 2 | info | 10 | Смотрит dtypes и non-null | Есть ли пропуски? | `## 2. info` | устный ответ |
-| 3 | Scatter | 30 | Строит график, подписывает оси | Не оценивать «красоту» — связь | `## 3. Scatter` | график на экране |
-| 4 | Вывод | 15 | Пишет EDA_CONCLUSION | Одна конкретная фраза | `## 4. Вывод` | строка не пустая |
-| 5 | Постановка ДЗ | 10 | Scatter hour | Сравнить с distance | [homework.ipynb](homework.ipynb) | знает срок |
+| 1 | describe + mean/median | 15 | describe; сравнивает mean/median | Хвост тянет среднее | `## 1`–`## 2` | MEAN_MEDIAN_NOTE |
+| 2 | info | 8 | non-null duration | Есть ли пропуски? | `## 3. info и пропуски` | число non-null |
+| 3 | Scatter + вывод | 20 | График с подписями; EDA_CONCLUSION | Pitfalls: оси, alpha | `## 4`–`## 5` | SCATTER_DONE; вывод |
+| 4 | hour + corr | 15 | hour scatter; corr + CORR_NOTE | corr ≠ причинность | `## 6`–`## 7` | CORR_NOTE |
+| 5 | Checkpoint признак | 7 | BETTER_FOR_LINEAR | Первый кандидат в модель | `## 8. Checkpoint` | выбор + WHY |
+| 6 | Постановка ДЗ | 10 | Scatter hour | Сравнить с distance | [homework.ipynb](homework.ipynb) | знает срок |
 
 ---
 

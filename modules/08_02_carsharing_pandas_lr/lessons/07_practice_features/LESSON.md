@@ -33,11 +33,11 @@
 
 | # | Этап | ~мин | Ученик | Учитель | Материал | Критерий закрытия |
 |---|---|---|---|---|---|---|
-| 1 | Функция + distance | 25 | Пишет `eval_feature`; проверяет на `distance_km` | Внутри: X=`df[[name]]`, split 0.2 / seed 42, return (mse, r2) | ## 1. Реализуйте `eval_feature` | assert mse ≥ 0, числа напечатаны |
-| 2 | hour | 15 | `eval_feature('hour')` | Тот же seed внутри функции | `## 2. hour` | числа напечатаны |
-| 3 | Сравнение | 15 | `BETTER_FEATURE` | По R² на test | `## 3. Сравнение` | assert имени |
-| 4 | Обоснование | 10 | `WHY` для аналитиков | Без слова «магия» | `## 4. Обоснование` | `len(WHY) > 40` |
-| 5 | Постановка ДЗ | 15 | Таблица сравнения в homework | Перенос в отчёт | [homework.ipynb](homework.ipynb) | знает срок |
+| 1 | Контракт + distance | 20 | Пишет `eval_feature`; метрики distance | Один seed внутри | `## 1`–`## 2` | mse ≥ 0 |
+| 2 | hour + таблица | 15 | hour; compare_table | Одинаковый протокол | `## 3`–`## 4` | таблица 2×3 |
+| 3 | Выбор + WHY | 15 | BETTER_FEATURE; WHY | Числа в обосновании | `## 5`–`## 6` | assert имени |
+| 4 | Checkpoint протокол | 10 | PROTOCOL_NOTE | Нельзя разный seed | `## 7. Checkpoint` | фраза |
+| 5 | Постановка ДЗ | 10 | Таблица + is_comfort | | [homework.ipynb](homework.ipynb) | знает срок |
 
 ---
 
