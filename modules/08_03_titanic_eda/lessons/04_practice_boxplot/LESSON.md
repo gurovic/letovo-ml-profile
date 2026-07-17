@@ -17,6 +17,12 @@
 | **Дальше** | sampling bias — [пара 25](../05_sampling_bias/LESSON.md) |
 | **Canvas** | Курс 6465, модуль 54690; [урок Colab](https://colab.research.google.com/gist/gurovic/b885fdbe408639efd6b8608745fb2396/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/b885fdbe408639efd6b8608745fb2396/homework.ipynb)) |
 
+### A. Чего хотим от пары
+
+Главное — построить boxplot и интерпретировать квартили и IQR: увидеть разброс `age` и `fare` по группам и посчитать выбросы. Ученик должен читать график как описание распределения, а не как «доказательство» выживаемости.
+
+Побочно критикуем график, который по одному fare boxplot делает вывод о survived. Sampling bias оставляем на следующую пару.
+
 ### Ориентир времени (не поминутный)
 
 | Блок | ~мин |

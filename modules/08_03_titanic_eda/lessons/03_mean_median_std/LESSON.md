@@ -17,6 +17,12 @@
 | **Дальше** | boxplot — [пара 24](../04_practice_boxplot/LESSON.md) |
 | **Canvas** | Курс 6465, модуль 54690; [урок Colab](https://colab.research.google.com/gist/gurovic/5ba1b63f70d7a9e3b28ac29b31b94542/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/5ba1b63f70d7a9e3b28ac29b31b94542/homework.ipynb)) |
 
+### A. Чего хотим от пары
+
+Главное — посчитать mean, median и std для `age` и `fare` вручную и через pandas и понять, когда медиана устойчивее среднего при выбросах. Ученик должен уметь выбрать меру центра и объяснить разницу mean vs median на fare.
+
+Побочно эксперимент с искусственным выбросом показывает, как mean уезжает, а median почти нет. Boxplot и квартили оставляем на следующую пару.
+
 ### Ориентир времени (не поминутный)
 
 | Блок | ~мин |

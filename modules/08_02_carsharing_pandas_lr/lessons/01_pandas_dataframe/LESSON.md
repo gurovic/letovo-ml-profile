@@ -17,6 +17,12 @@
 | **Дальше** | фильтры — [пара 12](../02_practice_filters/LESSON.md) |
 | **Canvas** | Модуль 54689: план скрыт; [урок Colab](https://colab.research.google.com/gist/gurovic/d19afee5ef0dcd2be593ea93d11ba26f/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/d19afee5ef0dcd2be593ea93d11ba26f/homework.ipynb)) |
 
+### A. Чего хотим от пары
+
+Главное — перейти от списков модуля 1 к таблице: загрузить CSV поездок каршеринга в DataFrame и явно назвать роли столбцов — цель (target), признаки (features) и служебный id. До любой модели ученик должен понимать, какая колонка что значит и чем числовой столбец отличается от текстового.
+
+Побочно осматриваем таблицу (`shape`, `head`, `dtypes`, `value_counts`) и формулируем, зачем DataFrame удобнее списка словарей. Фильтры и модель на этой паре не вводим.
+
 ### Ориентир времени (не поминутный)
 
 | Блок | ~мин |
