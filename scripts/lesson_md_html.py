@@ -141,6 +141,20 @@ def prepare_lesson_md_for_canvas_teacher(markdown_text: str) -> str:
             count=1,
             flags=re.MULTILINE,
         ).strip() + "\n"
+        # Only heading + prose paragraphs (no tables / калибровка / «Успех пары»).
+        prose: list[str] = []
+        for line in intro.splitlines():
+            if line.startswith("## "):
+                prose.append(line)
+                continue
+            if line.strip() == "---" or line.strip().startswith("|"):
+                break
+            if line.strip().lower().startswith("успех пары"):
+                break
+            if line.startswith("#"):
+                break
+            prose.append(line)
+        intro = "\n".join(prose).strip() + "\n"
 
     # Take B/C only from the source — ignore everything else (сценарий, D, E…).
     b_block = re.search(
