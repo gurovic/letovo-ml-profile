@@ -21,7 +21,7 @@ def main() -> None:
 
     lesson_dir = args.lesson_dir.resolve()
     files = []
-    for name in ("lesson.ipynb", "homework.ipynb", "solutions.ipynb", "trips.csv"):
+    for name in ("lesson.ipynb", "homework.ipynb", "solutions.ipynb", "trips.csv", "titanic.csv"):
         path = lesson_dir / name
         if path.exists():
             files.append(path)
