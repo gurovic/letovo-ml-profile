@@ -17,15 +17,11 @@
 | **Дальше** | transform — [пара 3](../03_parameters_and_return/LESSON.md) |
 | **Canvas** | Модуль 54688: план и решения скрыты; [урок (Colab)](https://colab.research.google.com/gist/gurovic/cfc377717ba193c512a9e88593405ab8/lesson.ipynb); ДЗ — Assignment «Домашнее задание» ([Colab в описании](https://colab.research.google.com/gist/gurovic/15255de29367ddc86fb8d141f63b5cfd/homework.ipynb)) |
 
-### Ориентир времени (не поминутный)
+### A. Чего хотим от пары
 
-| Блок | ~мин |
-|---|---|
-| `predict_price` + print vs return | 25 |
-| `batch_predict` + `mae` | 25 |
-| Перебор коэффициентов (§5) | 20 |
-| Постановка ДЗ + буфер | 10 |
-| **Итого** | **80** |
+Без именованной функции с `return`, batch и метрики выбор «модели» превращается в угадывание. На паре ученик превращает правило цены в `predict_price`, пишет `batch_predict` и `mae`, перебирает коэффициент по минимальному MAE на всей выборке.
+
+Успех пары: зелёные assert у трёх функций; в §5 записаны лучший коэффициент и MAE; устно — почему `print` нельзя подставить в метрику.
 
 ---
 

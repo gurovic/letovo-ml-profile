@@ -85,67 +85,91 @@ def strip_md_sections_matching(
     return "".join(kept)
 
 
-def prepare_lesson_md_for_canvas_teacher(markdown_text: str) -> str:
-    """Teacher plan for Canvas: conduct the pair, not design the course.
+def extract_md_subsection(markdown_text: str, heading: str) -> str:
+    """Return ``### heading`` block (including heading) or empty string.
 
-    Keeps zones A–C (scenario / flow / if stuck). Drops D (design) and E (§13 export).
-    Softens the Canvas ID row. Repo-only relative links (UNIT, KTP, other LESSON)
-    become plain labels so the wiki does not show broken paths.
+    Stops at the next ``#``–``###`` heading (same or higher level).
     """
-    md = markdown_text
-    # Draft 5: D / E
-    md = strip_md_sections_matching(md, r"[DE]\..*")
-    # Legacy orientation LESSON (pair 1): author blocks, not live teaching script
-    md = strip_md_sections(
-        md,
-        {
-            "2. Зачем существует урок",
-            "3. Центральная идея",
-            "5. Профессиональный контекст",
-            "7. Решения учащегося",
-        },
+    # Double braces: raw f-string must not interpolate ``{1,3}`` as an expression.
+    pattern = re.compile(
+        rf"(^### {re.escape(heading)}\s*\n.*?)(?=^#{{1,3}} |\Z)",
+        re.MULTILINE | re.DOTALL,
     )
+    m = pattern.search(markdown_text)
+    return m.group(1).strip() + "\n" if m else ""
 
-    out_lines: list[str] = []
+
+def _drop_table_column(md: str, column_name: str) -> str:
+    """Remove a markdown table column by header name (exact cell match)."""
+    lines_out: list[str] = []
+    col_idx: int | None = None
     for line in md.splitlines():
-        if re.match(r"\|\s*\*\*Canvas\*\*\s*\|", line) or re.match(
-            r"\|\s*Canvas\s*\|", line
-        ):
-            out_lines.append(
-                "| **В модуле** | Ниже плана: «Ноутбук урока» и «Домашнее задание» "
-                "(если есть). «Решения» — скрытый элемент только для преподавателя |"
-            )
+        if not line.strip().startswith("|"):
+            lines_out.append(line)
             continue
-        out_lines.append(line)
-    md = "\n".join(out_lines)
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if all(re.fullmatch(r":?-{3,}:?", c or "") for c in cells):
+            if col_idx is not None and 0 <= col_idx < len(cells):
+                cells = cells[:col_idx] + cells[col_idx + 1 :]
+            lines_out.append("| " + " | ".join(cells) + " |")
+            continue
+        if col_idx is None:
+            for i, c in enumerate(cells):
+                if c.replace("*", "") == column_name:
+                    col_idx = i
+                    break
+        if col_idx is not None and 0 <= col_idx < len(cells):
+            cells = cells[:col_idx] + cells[col_idx + 1 :]
+        lines_out.append("| " + " | ".join(cells) + " |")
+    return "\n".join(lines_out)
 
-    # Drop repo-relative links that are useless in Canvas (keep label).
-    # Keep bare filenames like lesson.ipynb — rewrite_notebook_links handles those.
-    md = re.sub(
-        r"\[([^\]]+)\]\((?:\.\./)+[^)]+\)",
-        r"\1",
-        md,
+
+def prepare_lesson_md_for_canvas_teacher(markdown_text: str) -> str:
+    """Teacher plan for Canvas: only A (чего хотим) + B + C.
+
+    Never includes: сценарий-таблица, D, E, «Ориентир времени», прочие ##.
+    """
+    intro_heading = "A. Чего хотим от пары"
+    intro = extract_md_subsection(markdown_text, intro_heading)
+    if not intro:
+        intro = extract_md_subsection(markdown_text, "Чего хотим от пары")
+    if intro:
+        intro = re.sub(
+            r"^### (?:A\.\s*)?Чего хотим от пары\s*$",
+            "## A. Чего хотим от пары",
+            intro,
+            count=1,
+            flags=re.MULTILINE,
+        ).strip() + "\n"
+
+    # Take B/C only from the source — ignore everything else (сценарий, D, E…).
+    b_block = re.search(
+        r"(^## B\..*?)(?=^## [A-ZА-Я]\.|\Z)",
+        markdown_text,
+        re.MULTILINE | re.DOTALL,
     )
-
-    # Teacher Canvas page should contain only conduct blocks.
-    # For Draft 5 lessons keep B/C; for legacy orientation (pair 1) fallback to
-    # operational blocks "6. Структура урока" and "9. Ожидаемые ошибки".
-    b_block = re.search(r"(^## B\..*?)(?=^## [A-ZА-Я]\.|\Z)", md, re.MULTILINE | re.DOTALL)
-    c_block = re.search(r"(^## C\..*?)(?=^## [A-ZА-Я]\.|\Z)", md, re.MULTILINE | re.DOTALL)
-    if b_block and c_block:
-        md = b_block.group(1).strip() + "\n\n" + c_block.group(1).strip() + "\n"
-    else:
-        s6 = re.search(r"(^## 6\..*?)(?=^## \d+\.|\Z)", md, re.MULTILINE | re.DOTALL)
-        s9 = re.search(r"(^## 9\..*?)(?=^## \d+\.|\Z)", md, re.MULTILINE | re.DOTALL)
-        chunks: list[str] = []
+    c_block = re.search(
+        r"(^## C\..*?)(?=^## [A-ZА-Я]\.|\Z)",
+        markdown_text,
+        re.MULTILINE | re.DOTALL,
+    )
+    chunks: list[str] = []
+    if b_block:
+        chunks.append(b_block.group(1).strip())
+    if c_block:
+        chunks.append(c_block.group(1).strip())
+    if not chunks:
+        s6 = re.search(r"(^## 6\..*?)(?=^## \d+\.|\Z)", markdown_text, re.MULTILINE | re.DOTALL)
+        s9 = re.search(r"(^## 9\..*?)(?=^## \d+\.|\Z)", markdown_text, re.MULTILINE | re.DOTALL)
         if s6:
             chunks.append("## B. Ход пары\n\n" + s6.group(1).split("\n", 1)[1].strip())
         if s9:
             chunks.append("## C. Если сбились\n\n" + s9.group(1).split("\n", 1)[1].strip())
-        if chunks:
-            md = "\n\n".join(chunks) + "\n"
+    md = ("\n\n".join(chunks) + "\n") if chunks else ""
 
-    # Do not publish the "Ориентир времени" table in Canvas teacher plans.
+    md = re.sub(r"\[([^\]]+)\]\((?:\.\./)+[^)]+\)", r"\1", md)
+
+    # Drop «Ориентир времени» if it leaked into B/C, and ~мин column (time budget).
     lines = md.splitlines()
     filtered: list[str] = []
     i = 0
@@ -160,18 +184,30 @@ def prepare_lesson_md_for_canvas_teacher(markdown_text: str) -> str:
             continue
         filtered.append(re.sub(r"\s*\(кратко\)", "", line, flags=re.IGNORECASE))
         i += 1
-    md = "\n".join(filtered)
-    return md
+    md = _drop_table_column("\n".join(filtered).strip(), "~мин")
 
-
-def extract_md_subsection(markdown_text: str, heading: str) -> str:
-    """Return ``### heading`` block (including heading) or empty string."""
-    pattern = re.compile(
-        rf"(^### {re.escape(heading)}\s*\n.*?)(?=^### |\Z)",
-        re.MULTILINE | re.DOTALL,
-    )
-    m = pattern.search(markdown_text)
-    return m.group(1).strip() + "\n" if m else ""
+    parts = [p for p in (intro.strip() if intro else "", md) if p]
+    result = "\n\n".join(parts) + "\n"
+    # Safety: never ship сценарий / D / E headings.
+    for banned in (
+        "Сценарий пары",
+        "Проектирование",
+        "Карточка урока",
+        "Ориентир времени",
+    ):
+        if banned.lower() in result.lower() and banned != "Ориентир времени":
+            # Strip any leftover ##/### section with banned title
+            result = strip_md_sections_matching(
+                result, rf".*{re.escape(banned)}.*"
+            )
+            # also ### level: crude drop
+            result = re.sub(
+                rf"(^### .*{re.escape(banned)}.*\n.*?)(?=^#{{1,3}} |\Z)",
+                "",
+                result,
+                flags=re.MULTILINE | re.DOTALL | re.IGNORECASE,
+            )
+    return result.strip() + "\n"
 
 
 def _add_inline_borders(html_body: str) -> str:

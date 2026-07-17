@@ -17,15 +17,11 @@
 | **Дальше** | артефакт — [пара 9](../09_artifact_build/LESSON.md) |
 | **Canvas** | Модуль 54688: [план](https://canvas.letovo.ru/courses/6465/pages/para-8-plan-uroka-dlia-priepodavatielia) (скрыт); [урок Colab](https://colab.research.google.com/gist/gurovic/83ac6b1d22b4385e6ee4a424a243f7dd/lesson.ipynb); ДЗ Assignment **198700** (последнее ДЗ модуля; пары 9–10 без ДЗ) |
 
-### Ориентир времени
+### A. Чего хотим от пары
 
-| Блок | ~мин |
-|---|---|
-| A. Рекурсия (A1–A2) | 25 |
-| B. Lambda (B1–B2) | 20 |
-| C. Pipeline (C1) | 25 |
-| Мост к PROJECT | 10 |
-| **Итого** | **80** |
+После введения рекурсии нужна серия; `lambda` в `filter`/`sorted` и `apply_pipeline` — мост к артефакту `text_stats`. На паре только практика известных приёмов: блоки A (рекурсия), B (lambda), C (pipeline); новую теорию не разворачивать.
+
+Успех пары: закрыты A1–A2, B1–B2, C1. Углубление A3/B3/C2 — в ДЗ (последнее ДЗ модуля).
 
 ### Калибровка (одарённое ядро)
 

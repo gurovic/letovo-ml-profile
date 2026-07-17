@@ -17,6 +17,12 @@
 | **Дальше** | серия метрик — [пара 6](../06_practice_metrics/LESSON.md) |
 | **Canvas** | Модуль 54688: [план](https://canvas.letovo.ru/courses/6465/pages/para-5-plan-uroka-dlia-priepodavatielia) (скрыт); [урок Colab](https://colab.research.google.com/gist/gurovic/02894e0df1c20220b44e6b451ba96f2d/lesson.ipynb); ДЗ Assignment 198693 |
 
+### A. Чего хотим от пары
+
+Метрика — отдельная функция с контрактом: ошибка scope или пропущенный `return` даёт ложный вывод о модели. На паре ученик пишет `my_accuracy` с нуля, разбирает баг без `return`, чинит `count_correct` без `global`, собирает рабочий `predict_pass`.
+
+Успех пары: accuracy совпадает с эталоном; счётчик без `global`; устно — почему `accuracy_buggy` возвращает `None`.
+
 ### Счётчики (справка для §6)
 
 | Код | Значение |
@@ -25,18 +31,6 @@
 | **fp** | pred=1, label=0 |
 | **fn** | pred=0, label=1 |
 | **tn** | pred=0, label=0 |
-
-### Ориентир времени (не поминутный)
-
-| Блок | ~мин |
-|---|---|
-| Эталон `accuracy` | 10 |
-| `my_accuracy` с нуля | 20 |
-| Баг без `return` | 15 |
-| `count_correct` без `global` | 20 |
-| `predict_pass` | 10 |
-| Постановка ДЗ | 5 |
-| **Итого** | **80** |
 
 ### Калибровка (одарённое ядро)
 

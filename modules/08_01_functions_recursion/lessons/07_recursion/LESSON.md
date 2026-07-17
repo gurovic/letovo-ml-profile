@@ -17,16 +17,11 @@
 | **Дальше** | серия рекурсии + pipeline — [пара 8](../08_practice_pipeline/LESSON.md) |
 | **Canvas** | Модуль 54688: [план](https://canvas.letovo.ru/courses/6465/pages/para-7-plan-uroka-dlia-priepodavatielia) (скрыт); [урок Colab](https://colab.research.google.com/gist/gurovic/a68c1a099865029657e58a81d56b91bc/lesson.ipynb); ДЗ Assignment 198697 |
 
-### Ориентир времени
+### A. Чего хотим от пары
 
-| Блок | ~мин |
-|---|---|
-| Trace flatten на доске | 15 |
-| `flatten` в ноутбуке | 25 |
-| `walk_categories` | 20 |
-| Fibonacci: recursive vs iterative | 15 |
-| Постановка ДЗ | 5 |
-| **Итого** | **80** |
+Вложенные списки и дерево категорий нельзя честно обойти одним плоским циклом без дополнительной структуры. На паре — введение: guided coding `flatten` и `walk_categories` с базовым случаем; Fibonacci — антипример сложности, не цель пары.
+
+Успех пары: assert у `flatten`; дерево с отступом; устно назван базовый случай flatten. Серия задач — на паре 8.
 
 ### Калибровка (одарённое ядро)
 

@@ -180,10 +180,12 @@ def upsert_lesson_page(
         lesson_colab_url=lesson_colab_url or None,
         homework_colab_url=homework_colab_url or None,
     )
+    # Wiki published so teachers can open the plan; module item stays unpublished
+    # (students do not see «План урока» in the module list — see 08_CANVAS §11.4).
     payload = {
         "wiki_page[title]": title,
         "wiki_page[body]": body,
-        "wiki_page[published]": "false",
+        "wiki_page[published]": "true",
         "wiki_page[editing_role]": "teachers",
     }
     if page_url:
@@ -1467,7 +1469,8 @@ def main() -> None:
         )
         page = upsert_lesson_page(
             args.course_id,
-            title=preset.page_title,
+            # Keep slug stable: wiki title = page_url (08_CANVAS §11.4).
+            title=preset.page_url,
             markdown_path=lesson_md_path,
             page_url=preset.page_url,
             lesson_colab_url=lesson_url,

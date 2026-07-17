@@ -17,16 +17,11 @@
 | **Дальше** | серия transform — [пара 4](../04_practice_transform/LESSON.md) |
 | **Canvas** | Модуль 54688: план [wiki](https://canvas.letovo.ru/courses/6465/pages/para-3-plan-uroka-dlia-priepodavatielia) (скрыт); [урок Colab](https://colab.research.google.com/gist/gurovic/005984c15b4303c3eeab4b593d58b32c/lesson.ipynb); ДЗ Assignment 198691 |
 
-### Ориентир времени (не поминутный)
+### A. Чего хотим от пары
 
-| Блок | ~мин |
-|---|---|
-| `describe_numbers` | 20 |
-| `min_max_scale` | 20 |
-| `clip_outlier` | 15 |
-| mutable default | 15 |
-| `grade_stats` + постановка ДЗ | 10 |
-| **Итого** | **80** |
+Умение написать `predict` недостаточно: шаги подготовки данных (описание, масштабирование, обрезка) тоже должны быть функциями с ясным контрактом — иначе preprocessing не собрать в pipeline. На паре ученик пишет `describe_numbers`, `min_max_scale`, `grade_stats` и чинит опасный mutable default.
+
+Успех пары: зелёные assert у трёх функций; два вызова `collect_outliers_ok` независимы; устно — зачем `return` кортежа, а не `print`.
 
 ---
 

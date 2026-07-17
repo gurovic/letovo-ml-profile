@@ -17,15 +17,11 @@
 | **Дальше** | сдача — [пара 10](../10_artifact_submit/LESSON.md) |
 | **Canvas** | Модуль 54688: план (скрыт); ученикам: [материалы](https://canvas.letovo.ru/courses/6465/pages/para-9-artifact-materialy), [задание](https://canvas.letovo.ru/courses/6465/pages/artifact-project), [шаги](https://canvas.letovo.ru/courses/6465/pages/artifact-starter-readme), [zip](https://canvas.letovo.ru/courses/6465/files/2913388/download?download_frd=1) |
 
-### Ориентир времени
+### A. Чего хотим от пары
 
-| Блок | ~мин |
-|---|---|
-| Разбор PROJECT + starter/README | 15 |
-| Шаги 1–3 (`tokenize` … `top_n`) | 25 |
-| Шаги 4–5 (`apply_pipeline`, `analyze_text`) | 30 |
-| Прогон тестов / разбор падений | 10 |
-| **Итого** | **80** |
+Интеграция модуля: навыки tokenize, частоты, pipeline, рекурсия — в один сдаваемый `text_stats.py` с автотестами. На паре разобрать PROJECT + starter, реализовать шаги 1–5; compare/classify и README — на паре 10.
+
+Успех пары: к концу ≥6 из 10 тестов `manual_tests.py` зелёные (шаги 1–5). Эталон solution ученикам не раздавать.
 
 ---
 

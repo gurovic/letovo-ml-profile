@@ -16,14 +16,11 @@
 | **Домашнее задание** | **нет** — сдача на паре; после артефакта ДЗ в модуле не ставить |
 | **Canvas** | Модуль 54688: [план](https://canvas.letovo.ru/courses/6465/pages/para-10-plan-uroka-dlia-priepodavatielia) (скрыт, учитель); ученикам: [материалы](https://canvas.letovo.ru/courses/6465/pages/para-10-artifact-materialy), [задание](https://canvas.letovo.ru/courses/6465/pages/artifact-project); Assignment **198699** |
 
-### Ориентир времени
+### A. Чего хотим от пары
 
-| Блок | ~мин |
-|---|---|
-| Добивка шагов 6–7 (compare, classify) | 35 |
-| README ученика | 25 |
-| Сдача + рефлексия модуля | 20 |
-| **Итого** | **80** |
+Закрытие модуля сдачей: не «ещё пописать код», а приёмка артефакта. На паре добить шаги 6–7 (`compare` / `naive_classify`), написать README по чек-листу PROJECT, прогнать все тесты и сдать Assignment.
+
+Успех пары: `All 10 manual tests passed.` + README с решениями ученика; краткая рефлексия модуля. После сдачи ДЗ в модуле не ставить.
 
 ---
 
