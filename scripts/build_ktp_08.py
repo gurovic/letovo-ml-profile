@@ -10,7 +10,7 @@ OUT = REPO / "docs" / "ktp" / "08.md"
 
 # 1 тема = 1 пара (2 академических часа). Итого: 85 пар.
 # Программные навыки: после введения — пары «Практика: …» (Foundation §5, Pedagogy §2).
-# Описания модулей (1–2 абзаца для учителя) — docs/ktp/08_module_descriptions.md (не здесь).
+# Описания модулей — 08_module_descriptions.md; стек «уметь+API» — 08_tech_stack_skills.md (не дублировать здесь).
 
 MODULES = [
     {
@@ -215,6 +215,8 @@ def render() -> str:
         "Индекс КТП: [07_KTP.md](../07_KTP.md).",
         "",
         "**Описания модулей** (1–2 абзаца для учителя): [08_module_descriptions.md](08_module_descriptions.md).",
+        "",
+        "**Стек после 8 класса** (уметь + API): [08_tech_stack_skills.md](08_tech_stack_skills.md).",
         "",
         "---",
         "",
