@@ -486,31 +486,37 @@ NOTEBOOKS = {
         code(
             "def extract_ids(nested):\n"
             "    pass\n\n\n"
-            "# print(extract_ids(NESTED_API_RESPONSE))\n"
+            "assert extract_ids(NESTED_API_RESPONSE) == [1, 2, 3]\n"
         ),
-        md("## A2. `walk_categories`"),
+        md("## A2. `walk_categories`\n\nТот же контракт, что на паре 7: `(name, children)`."),
         code(
             "def walk_categories(node, depth=0):\n"
             "    pass\n\n\n"
             "# walk_categories(CATEGORY_TREE)\n"
         ),
         md("## A3 (углубление). `count_leaves`"),
-        code("def count_leaves(node):\n    pass\n"),
+        code(
+            "def count_leaves(node):\n"
+            "    pass\n\n\n"
+            "# assert count_leaves(CATEGORY_TREE) == 3\n"
+        ),
         md("---\n\n# B. Lambda\n"),
         md("## B1. `filter` — аномалии (свой порог)"),
         code(
             "anomalies = list(filter(lambda s: s < 50 or s > 90, EXAM_SCORES))\n"
+            "assert set(anomalies) == {40, 48, 91, 95}\n"
             "print(anomalies)"
         ),
         md("## B2. Leaderboard `MODEL_RUNS`\n\nСортировка: f1 ↓; при равенстве — id ↑."),
         code(
             "leaderboard = sorted(MODEL_RUNS, key=lambda r: (-r['f1'], r['id']))\n"
+            "assert [r['id'] for r in leaderboard] == [25, 30, 305, 101, 200]\n"
             "print([r['id'] for r in leaderboard])\n"
-            "# ожидаемый порядок id: 25, 30, 305, 101, 200\n"
         ),
         md("## B3 (углубление). Farthest point"),
         code(
             "# farthest = max(FEATURE_POINTS, key=lambda p: ...)\n"
+            "# assert farthest == [55, 12]\n"
             "# print(farthest)\n"
         ),
         md("---\n\n# C. Pipeline\n"),
@@ -532,6 +538,7 @@ NOTEBOOKS = {
             "    return PRICE_INTERCEPT + PRICE_COEF_AREA * (scaled_area * 60)\n\n\n"
             "apt_pipeline = [extract_area, scale_area, predict_from_scaled]\n"
             "pred = apply_pipeline(FEATURE_ROWS[0], apt_pipeline)\n"
+            "assert abs(pred - (PRICE_INTERCEPT + PRICE_COEF_AREA * 28)) < 1e-9\n"
             "print('predicted mln:', pred)"
         ),
         md(
@@ -546,6 +553,8 @@ NOTEBOOKS = {
             "    lambda s: s.split(),\n"
             "    lambda tokens: [t for t in tokens if len(t) >= 4],\n"
             "]\n\n"
+            "assert apply_pipeline('  Data science ML course  ', text_pipeline) == "
+            "['data', 'science', 'course']\n"
             "print(apply_pipeline('  Data science ML course  ', text_pipeline))"
         ),
         md(
@@ -1013,25 +1022,42 @@ SOLUTIONS = {
         md("## 1. Опора\n\nСкопируйте с пары минимум A1–A2, B1–B2, C1 (если ещё не сделано)."),
         code("# extract_ids, walk_categories, apply_pipeline + шаги pipeline\n"),
         md("## 2. A3. `count_leaves`"),
-        code("def count_leaves(node):\n    pass\n\n\n# assert count_leaves(CATEGORY_TREE) >= 4\n"),
+        code(
+            "def count_leaves(node):\n"
+            "    pass\n\n\n"
+            "assert count_leaves(CATEGORY_TREE) == 3\n"
+        ),
         md("## 3. B3. Farthest point\n\n`max(FEATURE_POINTS, key=…)` — точка с максимальной суммой квадратов координат."),
-        code("# farthest = max(FEATURE_POINTS, key=lambda p: ...)\n# print(farthest)\n"),
+        code(
+            "farthest = max(FEATURE_POINTS, key=lambda p: p[0] ** 2 + p[1] ** 2)\n"
+            "assert farthest == [55, 12]\n"
+            "print(farthest)\n"
+        ),
         md(
             "## 4. C2. Текстовый pipeline\n\n"
             "Соберите pipeline: strip → lower → split → оставить токены длиной ≥ 4. "
             "Проверьте на строке `'  Data science ML course  '`."
         ),
         code(
+            "def apply_pipeline(data, steps):\n"
+            "    result = data\n"
+            "    for step in steps:\n"
+            "        result = step(result)\n"
+            "    return result\n\n\n"
             "text_pipeline = [\n"
             "    lambda s: s.strip().lower(),\n"
             "    lambda s: s.split(),\n"
             "    lambda tokens: [t for t in tokens if len(t) >= 4],\n"
             "]\n"
-            "# print(apply_pipeline('  Data science ML course  ', text_pipeline))\n"
+            "assert apply_pipeline('  Data science ML course  ', text_pipeline) == "
+            "['data', 'science', 'course']\n"
         ),
     ),
     "lessons/08_practice_pipeline/solutions.ipynb": nb(
-        md("# Решения: практика pipeline\n\n**Для преподавателя.**"),
+        md(
+            "# Решения: практика pipeline\n\n"
+            "**Для преподавателя.** Все задачи из `lesson.ipynb` и `homework.ipynb`."
+        ),
         code(DATA_IMPORT),
         md("## A1. extract_ids"),
         code(
@@ -1051,25 +1077,25 @@ SOLUTIONS = {
         md("## A2. walk_categories"),
         code(
             "def walk_categories(node, depth=0):\n"
-            "    if isinstance(node, str):\n"
-            "        print('  ' * depth + node)\n"
-            "        return\n"
-            "    name = node[0]\n"
-            "    print('  ' * depth + str(name))\n"
-            "    for child in node[1:]:\n"
+            "    name, children = node\n"
+            "    print('  ' * depth + name)\n"
+            "    for child in children:\n"
             "        walk_categories(child, depth + 1)\n\n\n"
             "# walk_categories(CATEGORY_TREE)"
         ),
         md("## A3. count_leaves"),
         code(
             "def count_leaves(node):\n"
-            "    if isinstance(node, str):\n"
-            "        return 1\n"
-            "    children = node[1:]\n"
+            "    name, children = node\n"
             "    if not children:\n"
             "        return 1\n"
             "    return sum(count_leaves(child) for child in children)\n\n\n"
-            "assert count_leaves(CATEGORY_TREE) >= 4"
+            "assert count_leaves(CATEGORY_TREE) == 3"
+        ),
+        md("## B1. anomalies"),
+        code(
+            "anomalies = list(filter(lambda s: s < 50 or s > 90, EXAM_SCORES))\n"
+            "assert set(anomalies) == {40, 48, 91, 95}"
         ),
         md("## B2. leaderboard"),
         code(
@@ -1079,6 +1105,7 @@ SOLUTIONS = {
         md("## B3. farthest point"),
         code(
             "farthest = max(FEATURE_POINTS, key=lambda p: p[0] ** 2 + p[1] ** 2)\n"
+            "assert farthest == [55, 12]\n"
             "print(farthest)"
         ),
         md("## C1. apply_pipeline"),
@@ -1096,6 +1123,7 @@ SOLUTIONS = {
             "    return PRICE_INTERCEPT + PRICE_COEF_AREA * (scaled_area * 60)\n\n\n"
             "apt_pipeline = [extract_area, scale_area, predict_from_scaled]\n"
             "pred = apply_pipeline(FEATURE_ROWS[0], apt_pipeline)\n"
+            "assert abs(pred - (PRICE_INTERCEPT + PRICE_COEF_AREA * 28)) < 1e-9\n"
             "print('predicted mln:', pred)"
         ),
         md("## C2. text pipeline"),
@@ -1105,7 +1133,8 @@ SOLUTIONS = {
             "    lambda s: s.split(),\n"
             "    lambda tokens: [t for t in tokens if len(t) >= 4],\n"
             "]\n"
-            "assert apply_pipeline('  Data science ML course  ', text_pipeline) == ['data', 'science', 'course']"
+            "assert apply_pipeline('  Data science ML course  ', text_pipeline) == "
+            "['data', 'science', 'course']"
         ),
     ),
 }

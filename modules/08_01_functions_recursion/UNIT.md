@@ -191,9 +191,9 @@
 
 | Тип | Трудность | Адресация |
 |---|---|---|
-| ML | «fit и predict — не функции» | урок 1: predict вручную |
-| ML | Путают metric и predict | урок 3: accuracy отдельной функцией |
-| Data | Scaling до/после extract | пара 9: порядок шагов в `apply_pipeline` |
+| ML | «fit и predict — не функции» | пара 2: predict вручную |
+| ML | Путают metric и predict | пара 5: accuracy отдельной функцией |
+| Data | Scaling до/после extract | пара 8: порядок шагов в `apply_pipeline` |
 
 ---
 
@@ -203,7 +203,7 @@
 - sklearn fit (только концепт Pipeline)
 - train/test split, cross-validation
 - TF-IDF, embeddings
-- **dict** в учебных ноутбуках модуля 1 — до модуля «структуры данных» (КТП ~65); табличные микроданные — **параллельные списки** или кортежи; `data/module_datasets.py` может хранить dict для канона и артефакта
+- **dict** как тема (hash map, методы словаря) — до модуля «структуры данных» (КТП ~65); **доступ** `row['key']` на паре 8 и в артефакте — пререквизит (§4), не новая теория; табличные микроданные на парах 2–6 — **параллельные списки** или кортежи; `data/module_datasets.py` может хранить dict для канона
 
 Карта инструментов 8 класса: [docs/ktp/08.md § Карта инструментов](../../docs/ktp/08.md#карта-инструментов).
 
@@ -241,7 +241,7 @@
 | Этап | Содержание |
 |---|---|
 | До начала модуля | Достаточно ли пререквизитов 7 класса для связи f(x) → predict? Риск: учащиеся воспринимают MAE как «ещё одну формулу». |
-| Во время модуля | Урок 3 (scope) часто дольше плана — закладывать буфер. Lambda без контекста данных даёт пустое упражнение. |
+| Во время модуля | Пара 5 (scope) часто дольше плана — закладывать буфер. Lambda без контекста данных даёт пустое упражнение. |
 | После модуля | Проверить: переход к pandas/sklearn без повторного объяснения pipeline. `text_stats` — достаточен ли как мост к NLP? |
 
 ---
@@ -259,7 +259,7 @@
 | Preprocessing | Цепочка transform-шагов до предсказания |
 | MAE | Средняя абсолютная ошибка предсказания: среднее \|y − ŷ\| |
 | Accuracy | Доля верных предсказаний среди всех объектов |
-| confusion_counts | Четыре числа: tp, fp, fn, tn — сколько угадали/ошиблись по типам (см. урок 03) |
+| confusion_counts | Четыре числа: tp, fp, fn, tn — сколько угадали/ошиблись по типам (см. пару 6) |
 | Min-max scaling | Линейное приведение признака к диапазону [0, 1] |
 | Scope | Область видимости имён; влияет на отладку метрик |
 | Рекурсия | Вызов функцией самой себя; базовый случай обязателен |
@@ -274,7 +274,7 @@
 
 ## 19. Чек-лист модуля
 
-- [x] у каждой пары КТП — карточка §13 (`LESSON.md` или [artifact/PROJECT.md](artifact/PROJECT.md) для 9–10)
+- [x] у каждой пары КТП — карточка §13 в `LESSON.md` (пары 9–10 — в [09](lessons/09_artifact_build/LESSON.md) / [10](lessons/10_artifact_submit/LESSON.md); ссылки также в [PROJECT.md](artifact/PROJECT.md))
 - [x] рефлексия автора (§17), глоссарий модуля (§18)
 - [x] концептуальная рамка согласована с уроками
 - [x] метапредметные навыки привязаны к урокам
@@ -288,7 +288,7 @@
 
 ## 20. Экспорт в школьный unit planner
 
-Маппинг полей: [reference/SCHOOL_UNIT_PLANNER.md](../../reference/SCHOOL_UNIT_PLANNER.md). Карточки уроков — `LESSON.md` §13; пары 9–10 — [artifact/PROJECT.md](artifact/PROJECT.md) §13.
+Маппинг полей: [reference/SCHOOL_UNIT_PLANNER.md](../../reference/SCHOOL_UNIT_PLANNER.md). Карточки уроков — `LESSON.md` §13 по всем 10 парам.
 
 ---
 
@@ -299,8 +299,8 @@
 | Canvas | Наш модуль |
 |---|---|
 | Функции, pre-assessment | Пары 2–5 |
-| Lambda-контест | Пара 9 + `lessons/09_practice_pipeline/canvas_practice.md` |
-| Рекурсия-контест | Пара 8 + `lessons/08_recursion/canvas_practice.md` (binary_search — модуль 7 КТП) |
+| Lambda-контест | Пара 8 + `lessons/08_practice_pipeline/canvas_practice.md` |
+| Рекурсия-контест | Пара 7 + `lessons/07_recursion/canvas_practice.md` (binary_search — модуль 7 КТП) |
 | mergesort, itertools, binary_search, декораторы, фракталы | Модули 4 и 7 по КТП; вне scope этого модуля |
 
 Подробная таблица: [reference/CANVAS_MAPPING.md](reference/CANVAS_MAPPING.md)

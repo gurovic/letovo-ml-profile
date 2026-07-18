@@ -10,7 +10,7 @@
 | 2 | M1. Функции и inference pipeline | Функция-предсказатель | — | — | predict; MAE; batch predict; выбор параметра модели | — | def; return; zip | — | — | — |
 | 3 | M1. Функции и inference pipeline | Параметры и return | describe; min-max scale; clip | — | transform; бинарная метка | — | default-параметры; кортеж return | — | — | — |
 | 4 | M1. Функции и inference pipeline | Практика: transform | — | describe; scale; clip; цепочка transform | — | apply transform | — | transform на новых данных | — | композиция шагов |
-| 5 | M1. Функции и inference pipeline | Scope и отладка | — | — | accuracy; матрица ошибок | — | scope; return vs print; отладка | — | — | — |
+| 5 | M1. Функции и inference pipeline | Scope и отладка | — | — | accuracy | — | scope; return vs print; отладка | — | — | — |
 | 6 | M1. Функции и inference pipeline | Практика: метрики | — | — | — | матрица ошибок; журнал отладки | — | отладка метрик | — | — |
 | 7 | M1. Функции и inference pipeline | Рекурсия на данных | вложенные структуры | — | — | — | рекурсия | — | дерево; flatten; обход дерева | — |
 | 8 | M1. Функции и inference pipeline | Практика: pipeline | — | — | — | pipeline; сравнение моделей | — | lambda; HOF; sorted(key=) | — | рекурсия |

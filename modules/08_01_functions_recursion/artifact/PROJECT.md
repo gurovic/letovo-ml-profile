@@ -91,9 +91,9 @@ naive_classify("отличный фильм рекомендую", TEXTS_POSITIV
 | Пары | В артефакте |
 |---|---|
 | 2–3 | `def`, `return`, docstring |
-| 6–7 | отладка `naive_classify` |
-| 8 | `count_char_recursive` |
-| 9 | `lambda` в pipeline, `apply_pipeline` |
+| 5–6 | отладка метрик / журнал — тот же навык при отладке `naive_classify` |
+| 7 | `count_char_recursive` |
+| 8 | `lambda` в pipeline, `apply_pipeline` |
 
 ---
 
@@ -110,18 +110,18 @@ naive_classify("отличный фильм рекомендую", TEXTS_POSITIV
 
 ## Для учителя (пары 9–10)
 
-Планы пар и карточки §13: [10_artifact_build/LESSON.md](../lessons/10_artifact_build/LESSON.md), [11_artifact_submit/LESSON.md](../lessons/11_artifact_submit/LESSON.md).
+Планы пар и карточки §13: [09_artifact_build/LESSON.md](../lessons/09_artifact_build/LESSON.md), [10_artifact_submit/LESSON.md](../lessons/10_artifact_submit/LESSON.md).
 
 | | |
 |---|---|
 | **Выдать** | папку [starter/](starter/) целиком; ученики **не** трогают `solution/` |
 | **Инструкция ученику** | [starter/README.md](starter/README.md) — порядок функций и шаблон README |
-| **Пара 10** | разбор PROJECT; шаги 1–5 из [starter/README](starter/README.md) |
-| **Пара 11** | шаги 6–8; сдача `text_stats.py` + README + 10 тестов |
+| **Пара 9** | разбор PROJECT; шаги 1–5 из [starter/README](starter/README.md) |
+| **Пара 10** | шаги 6–8; сдача `text_stats.py` + README + 10 тестов |
 | **Проверка** | из `artifact/starter/`: `python manual_tests.py` → `All 10 manual tests passed.` |
 | **Зачёт** | 10 тестов + README ученика (5 своих фраз для `naive_classify`, из них ≥4 верных) |
 | **Эталон (не раздавать)** | [solution/](solution/) — ответы и разбор маркеров |
-| **Первая фраза** | «Вы собираете библиотеку из функций, которые мы тренировали 9 пар — тесты скажут, что готово» |
+| **Первая фраза** | «Вы собираете библиотеку из функций, которые мы тренировали 8 пар — тесты скажут, что готово» |
 
 ### Если тест упал
 
@@ -139,5 +139,5 @@ naive_classify("отличный фильм рекомендую", TEXTS_POSITIV
 
 Перенесены в LESSON пар 9–10 (одна пара = один LESSON.md):
 
-- [§13 пара 10](../lessons/10_artifact_build/LESSON.md#13-карточка-урока)
+- [§13 пара 9](../lessons/09_artifact_build/LESSON.md#13-карточка-урока)
 - [§13 пара 10](../lessons/10_artifact_submit/LESSON.md#13-карточка-урока)

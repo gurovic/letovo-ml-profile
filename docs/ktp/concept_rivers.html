@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Реки семейств — абстракции M / P / L</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:opsz,wght@9..144,500;9..144,650;9..144,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #eef1f0;
+      --ink: #14201c;
+      --muted: #4d5a55;
+      --line: #c5cec9;
+      --paper: #f7f9f8;
+      --math: #1f6b45;
+      --prog: #155f8c;
+      --ml: #9a3412;
+      --math-soft: rgba(31, 107, 69, 0.1);
+      --prog-soft: rgba(21, 95, 140, 0.1);
+      --ml-soft: rgba(154, 52, 18, 0.1);
+      --focus: #0f3d32;
+      --channel: #dfe6e2;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: "DM Sans", system-ui, sans-serif;
+      color: var(--ink);
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(ellipse 90% 55% at 0% 0%, rgba(31, 107, 69, 0.08), transparent 55%),
+        radial-gradient(ellipse 70% 45% at 100% 0%, rgba(21, 95, 140, 0.07), transparent 50%);
+    }
+    .shell { max-width: 1220px; margin: 0 auto; padding: 28px 18px 72px; }
+    .eyebrow {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted); margin: 0 0 8px;
+    }
+    .eyebrow a { color: inherit; font-weight: 700; }
+    h1 {
+      font-family: Fraunces, Georgia, serif; font-weight: 650;
+      font-size: clamp(28px, 4vw, 40px); line-height: 1.1; margin: 0 0 10px;
+      letter-spacing: -0.02em;
+    }
+    .lead {
+      margin: 0 0 14px; max-width: 70ch; font-size: 16.5px; line-height: 1.45; color: var(--muted);
+    }
+    .lead strong { color: var(--ink); font-weight: 600; }
+    .howto {
+      margin: 0 0 16px; padding: 12px 14px; background: var(--paper);
+      border: 1px solid var(--line); border-radius: 12px; font-size: 13.5px; line-height: 1.45;
+    }
+    .howto ol { margin: 6px 0 0; padding-left: 1.2em; color: var(--muted); }
+    .howto b { color: var(--ink); }
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 12px;
+    }
+    .chip, .btn {
+      border: 1px solid var(--line); background: var(--paper); border-radius: 999px;
+      padding: 7px 12px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+    }
+    .chip.on { border-color: var(--ink); background: #e4ebe7; }
+    .chip.on.math { border-color: var(--math); color: var(--math); background: var(--math-soft); }
+    .chip.on.prog { border-color: var(--prog); color: var(--prog); background: var(--prog-soft); }
+    .chip.on.ml { border-color: var(--ml); color: var(--ml); background: var(--ml-soft); }
+    .search {
+      flex: 1 1 200px; min-width: 160px; border: 1px solid var(--line); background: var(--paper);
+      border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 13px;
+    }
+    .search:focus { outline: 2px solid var(--focus); outline-offset: 1px; }
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 10px 18px; font-size: 12.5px; color: var(--muted);
+      margin: 0 0 14px;
+    }
+    .legend b { color: var(--ink); }
+
+    .ruler {
+      display: grid;
+      grid-template-columns: 200px repeat(5, 1fr);
+      gap: 8px;
+      margin-bottom: 8px;
+      position: sticky; top: 0; z-index: 5;
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      backdrop-filter: blur(6px);
+      padding: 8px 0 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    @media (max-width: 900px) {
+      .ruler { grid-template-columns: 140px repeat(5, 1fr); }
+    }
+    .ruler .corner {
+      font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase;
+      letter-spacing: 0.05em; align-self: end; padding-bottom: 4px;
+    }
+    .ruler .g {
+      text-align: center; background: var(--paper); border: 1px solid var(--line);
+      border-radius: 12px; padding: 8px 6px;
+    }
+    .ruler .g strong {
+      display: block; font-family: Fraunces, Georgia, serif; font-size: 20px; font-weight: 700;
+    }
+    .ruler .g span {
+      display: block; font-size: 10.5px; color: var(--muted); line-height: 1.25; margin-top: 2px;
+      min-height: 2.5em;
+    }
+
+    .river {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 0;
+      margin: 0 0 10px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    @media (max-width: 900px) {
+      .river { grid-template-columns: 140px 1fr; }
+    }
+    .river.dim { opacity: 0.28; }
+    .river.hi { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
+    .river-label {
+      padding: 12px 12px 12px 14px;
+      border-right: 1px solid var(--line);
+      display: flex; flex-direction: column; gap: 4px; justify-content: flex-start;
+    }
+    .river.math .river-label { background: var(--math-soft); }
+    .river.prog .river-label { background: var(--prog-soft); }
+    .river.ml .river-label { background: var(--ml-soft); }
+    .river-label .subj {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .river.math .river-label .subj { color: var(--math); }
+    .river.prog .river-label .subj { color: var(--prog); }
+    .river.ml .river-label .subj { color: var(--ml); }
+    .river-label .title {
+      font-family: Fraunces, Georgia, serif; font-size: 16px; font-weight: 650;
+      line-height: 1.2; margin: 0;
+    }
+    .river-label .blurb { font-size: 11.5px; color: var(--muted); line-height: 1.3; margin: 0; }
+    .river-label .count { font-size: 11px; font-weight: 600; color: var(--muted); margin-top: 2px; }
+
+    .channel {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      align-items: start;
+      padding: 10px 6px 12px;
+      min-height: 0;
+    }
+
+    .cell {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      justify-content: flex-start;
+      align-items: stretch;
+      padding: 0 5px;
+    }
+    .cell + .cell { border-left: 1px dashed #d2dad5; }
+    .cell.empty-note {
+      min-height: 2.5em;
+      justify-content: flex-start;
+      padding-top: 8px;
+      font-size: 11px;
+      color: #8a968f;
+      font-weight: 500;
+    }
+
+    .node {
+      display: block; width: 100%;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 10px;
+      padding: 6px 7px;
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+      transition: border-color .15s, background .15s, transform .15s;
+    }
+    .node:hover { border-color: #8a968f; transform: translateY(-1px); }
+    .node.on { border-color: var(--ink); background: #eef3f0; box-shadow: 0 0 0 1px var(--ink); }
+    .node .code { display: block; font-size: 11px; font-weight: 800; }
+    .node.math .code { color: var(--math); }
+    .node.prog .code { color: var(--prog); }
+    .node.ml .code { color: var(--ml); }
+    .node .name {
+      display: block; font-size: 11.5px; font-weight: 600; line-height: 1.25;
+      color: var(--ink); margin-top: 1px;
+    }
+    .node .tag {
+      display: block; font-size: 10px; color: var(--muted); margin-top: 2px; font-weight: 600;
+    }
+    .node.born.math { border-color: var(--math); background: color-mix(in srgb, var(--math-soft) 70%, #fff); }
+    .node.born.prog { border-color: var(--prog); background: color-mix(in srgb, var(--prog-soft) 70%, #fff); }
+    .node.born.ml { border-color: var(--ml); background: color-mix(in srgb, var(--ml-soft) 70%, #fff); }
+    .node.echo { border-style: dashed; }
+
+    .search-hits {
+      display: none; background: var(--paper); border: 1px solid var(--line);
+      border-radius: 12px; padding: 8px; margin-bottom: 12px; max-height: 160px; overflow: auto;
+    }
+    .search-hits.open { display: block; }
+    .hit {
+      display: block; width: 100%; text-align: left; border: none; background: transparent;
+      padding: 7px 8px; border-radius: 8px; cursor: pointer; font: inherit; font-size: 13px;
+    }
+    .hit:hover { background: #eef2f0; }
+
+    .detail {
+      display: none; background: var(--paper); border: 1px solid var(--line);
+      border-radius: 18px; padding: 18px 16px; margin-top: 16px;
+    }
+    .detail.open { display: block; }
+    .detail-head {
+      display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: flex-start;
+    }
+    .detail .code {
+      font-family: Fraunces, Georgia, serif; font-size: 32px; font-weight: 700; margin: 0; line-height: 1;
+    }
+    .detail .name { font-size: 20px; font-weight: 650; margin: 4px 0 6px; }
+    .detail .sum { margin: 0; font-size: 14px; color: var(--muted); line-height: 1.4; max-width: 56ch; }
+    .pills { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0 0; }
+    .pill {
+      font-size: 11px; font-weight: 700; border-radius: 999px; padding: 3px 8px; border: 1px solid var(--line);
+    }
+    .pill.math { color: var(--math); border-color: var(--math); background: var(--math-soft); }
+    .pill.prog { color: var(--prog); border-color: var(--prog); background: var(--prog-soft); }
+    .pill.ml { color: var(--ml); border-color: var(--ml); background: var(--ml-soft); }
+    .life {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 14px 0 8px; position: relative;
+    }
+    .life::before {
+      content: ""; position: absolute; left: 8%; right: 8%; top: 28px; height: 3px;
+      background: #d5dcd8; border-radius: 99px; z-index: 0;
+    }
+    .life-seg { position: relative; z-index: 1; text-align: center; }
+    .life-seg .g { font-family: Fraunces, Georgia, serif; font-size: 18px; font-weight: 700; }
+    .life-seg .mark {
+      width: 16px; height: 16px; border-radius: 50%; margin: 8px auto 6px; background: #d5dcd8;
+      border: 2px solid var(--paper);
+    }
+    .life-seg .role { font-size: 11px; font-weight: 600; color: var(--muted); min-height: 2.4em; }
+    .life-seg .cnt { font-size: 12px; color: var(--muted); }
+    .grid2 { display: grid; grid-template-columns: 1.1fr 1fr; gap: 16px; margin-top: 12px; }
+    @media (max-width: 800px) { .grid2 { grid-template-columns: 1fr; } }
+    .panel h3 {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--muted); margin: 0 0 8px;
+    }
+    .snip {
+      font-size: 12.5px; line-height: 1.4; color: var(--muted);
+      border-left: 2px solid var(--line); padding-left: 8px; margin: 0 0 7px;
+    }
+    .modules {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 6px;
+    }
+    .mod {
+      border: 1px solid var(--line); background: #f0f3f2; border-radius: 10px;
+      padding: 8px 6px; text-align: center; font-size: 11px; font-weight: 600;
+      color: var(--muted); min-height: 48px; display: flex; align-items: center; justify-content: center;
+    }
+    .mod.on { color: var(--ink); }
+    .mod.on.math { background: var(--math-soft); border-color: var(--math); }
+    .mod.on.prog { background: var(--prog-soft); border-color: var(--prog); }
+    .mod.on.ml { background: var(--ml-soft); border-color: var(--ml); }
+    .foot { margin-top: 18px; font-size: 12px; color: var(--muted); }
+    .foot code { font-size: 11px; background: #e2e8e5; padding: 1px 5px; border-radius: 4px; }
+    .foot a { color: inherit; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <p class="eyebrow">Методическая визуализация · реки семейств · также: <a href="concept_catalog.html">каталог</a> · <a href="concept_years.html">карта годов</a></p>
+    <h1>Реки семейств</h1>
+    <p class="lead">
+      Каждая <strong>горизонтальная река — одно семейство</strong> абстракций.
+      Слева — название и смысл; по классам 7→11 — <strong>подписанные карточки</strong>
+      (код + имя). Цветная сплошная рамка = <strong>рождение</strong>, пунктир = <strong>возврат</strong> в темах года.
+    </p>
+    <div class="howto">
+      <b>Читать так</b>
+      <ol>
+        <li>Сначала названия рек слева — система семейств.</li>
+        <li>Вправо по классам: чем семейство пополняется и что возвращается.</li>
+        <li>Клик по карточке — детали, пререквизиты, модули нашего 8 класса.</li>
+      </ol>
+    </div>
+
+    <div class="toolbar">
+      <button type="button" class="chip on" data-subj="all">Все реки</button>
+      <button type="button" class="chip math" data-subj="mathematics">Математика</button>
+      <button type="button" class="chip prog" data-subj="programming">Программирование</button>
+      <button type="button" class="chip ml" data-subj="ml">ML</button>
+      <label class="chip" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+        <input type="checkbox" id="showEcho" checked /> показывать возвраты
+      </label>
+      <input class="search" id="search" type="search" placeholder="Найти: L05, функция…" />
+    </div>
+    <div class="search-hits" id="searchHits"></div>
+
+    <div class="legend">
+      <span><b>Рождение</b> — сплошная цветная карточка</span>
+      <span><b>Возврат</b> — пунктир (снова в темах класса)</span>
+      <span>«—» — семейство в этом классе молчит</span>
+    </div>
+
+    <div class="ruler" id="ruler"></div>
+    <div id="rivers"></div>
+    <section class="detail" id="detail" aria-live="polite"></section>
+
+    <p class="foot">
+      Таксономия: <code>concept_taxonomy.json</code>. Данные:
+      <code>python scripts/build_concept_rivers_data.py</code>.
+      Другой вид: <a href="concept_years.html">карта годов</a>.
+    </p>
+  </div>
+
+  <script src="concept_rivers_data.js"></script>
+  <script>
+    const DATA = window.CONCEPT_RIVERS;
+    const SUBJ = { mathematics: "math", programming: "prog", ml: "ml" };
+    const COLOR = { mathematics: "#1f6b45", programming: "#155f8c", ml: "#9a3412" };
+    const LABEL = { mathematics: "Математика", programming: "Программирование", ml: "ML" };
+    const GRADES = DATA.grades;
+
+    let subjectFilter = "all";
+    let showEcho = true;
+    let selected = null;
+    let query = "";
+
+    function byCode(code) {
+      return DATA.concepts.find((c) => c.code === code);
+    }
+
+    function shortName(name) {
+      if (!name) return "";
+      return name.length > 42 ? name.slice(0, 40) + "…" : name;
+    }
+
+    function select(code) {
+      selected = code;
+      paint();
+      document.getElementById("detail").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    function clearSel() {
+      selected = null;
+      paint();
+    }
+
+    function roleInGrade(c, g) {
+      const inten = c.intensity[String(g)] || 0;
+      if (g === c.first) return "рождение";
+      if (inten > 0) return "возвращается";
+      if (g < c.first) return "ещё нет";
+      return "тишина";
+    }
+
+    function matchesQuery(c) {
+      if (!query) return true;
+      const q = query.toLowerCase();
+      return (
+        c.code.toLowerCase().includes(q) ||
+        c.name.toLowerCase().includes(q) ||
+        (c.family || "").toLowerCase().includes(q) ||
+        (c.summary || "").toLowerCase().includes(q)
+      );
+    }
+
+    function renderRuler() {
+      document.getElementById("ruler").innerHTML =
+        `<div class="corner">Семейство →</div>` +
+        GRADES.map((g) => {
+          const st = DATA.stages.find((s) => s.grade === g) || {};
+          return `<div class="g"><strong>${g}</strong><span>${st.level || ""}</span></div>`;
+        }).join("");
+    }
+
+    function nodesInCell(fam, g) {
+      // Order = order in taxonomy (fam.codes), not prereq-layer scramble.
+      const born = [];
+      const echo = [];
+      (fam.codes || []).forEach((code) => {
+        const c = byCode(code);
+        if (!c || !matchesQuery(c)) return;
+        if (subjectFilter !== "all" && c.subject !== subjectFilter) return;
+        if (c.first === g) born.push(c);
+        else if (showEcho && (c.intensity[String(g)] || 0) > 0) echo.push(c);
+      });
+      return { born, echo };
+    }
+
+    function renderRivers() {
+      const root = document.getElementById("rivers");
+      const fams = (DATA.families || []).filter(
+        (f) => subjectFilter === "all" || f.subject === subjectFilter
+      );
+
+      root.innerHTML = fams
+        .map((f) => {
+          const cls = SUBJ[f.subject];
+          const cells = GRADES.map((g) => {
+            const { born, echo } = nodesInCell(f, g);
+            if (!born.length && !echo.length) {
+              return `<div class="cell empty-note">—</div>`;
+            }
+            // Births first (taxonomy order), then returns (same order).
+            const cards = [
+              ...born.map((c) => ({ c, kind: "born" })),
+              ...echo.map((c) => ({ c, kind: "echo" })),
+            ]
+              .map(({ c, kind }) => {
+                const on = selected === c.code ? " on" : "";
+                const inten = c.intensity[String(g)] || 0;
+                const tag = kind === "born" ? "рождение" : "возврат" + (inten ? " · ×" + inten : "");
+                return `<button type="button" class="node ${cls} ${kind}${on}" data-code="${c.code}" title="${c.code}: ${c.name}">
+                  <span class="code">${c.code}</span>
+                  <span class="name">${shortName(c.name)}</span>
+                  <span class="tag">${tag}</span>
+                </button>`;
+              })
+              .join("");
+            return `<div class="cell">${cards}</div>`;
+          }).join("");
+
+          const anyHit = GRADES.some((g) => {
+            const n = nodesInCell(f, g);
+            return n.born.length || n.echo.length;
+          });
+          const dim = query && !anyHit ? " dim" : "";
+          const hi = selected && (f.codes || []).includes(selected) ? " hi" : "";
+
+          return `<article class="river ${cls}${dim}${hi}">
+            <div class="river-label">
+              <div class="subj">${LABEL[f.subject]}</div>
+              <p class="title">${f.title}</p>
+              <p class="blurb">${f.blurb || ""}</p>
+              <div class="count">${f.codes.length} абстракций</div>
+            </div>
+            <div class="channel">${cells}</div>
+          </article>`;
+        })
+        .join("");
+
+      root.querySelectorAll(".node").forEach((btn) =>
+        btn.addEventListener("click", () => select(btn.dataset.code))
+      );
+    }
+
+    function renderDetail() {
+      const el = document.getElementById("detail");
+      const c = selected ? byCode(selected) : null;
+      if (!c) {
+        el.className = "detail";
+        el.innerHTML = "";
+        return;
+      }
+      const cls = SUBJ[c.subject];
+      const color = COLOR[c.subject];
+      const life = GRADES.map((g) => {
+        const role = roleInGrade(c, g);
+        const inten = c.intensity[String(g)] || 0;
+        const active = role === "рождение" || role === "возвращается";
+        const size = role === "рождение" ? 20 : 10 + Math.min(14, inten * 2);
+        return `<div class="life-seg">
+          <div class="g">${g}</div>
+          <div class="mark" style="width:${size}px;height:${size}px;background:${active ? color : "#d5dcd8"}"></div>
+          <div class="role">${role}</div>
+          <div class="cnt">${inten ? "×" + inten + " в темах" : "—"}</div>
+        </div>`;
+      }).join("");
+
+      const prereq = (c.prereqs || [])
+        .map((p) => {
+          const r = byCode(p);
+          return `<button type="button" class="chip" data-jump="${p}">${p}${r ? " · " + r.name : ""}</button>`;
+        })
+        .join("") || "<span style='color:var(--muted);font-size:13px'>нет явных</span>";
+
+      const snips = Object.entries(c.snippets || {})
+        .flatMap(([g, arr]) => arr.map((t) => `<p class="snip"><b>${g} кл.</b> ${t}</p>`))
+        .slice(0, 5)
+        .join("") || "<p class='snip'>нет сниппетов</p>";
+
+      const mods = DATA.our_modules
+        .map((m) => {
+          const on = c.our_modules.includes(m.id);
+          return `<div class="mod ${on ? "on " + cls : ""}">${m.short}</div>`;
+        })
+        .join("");
+
+      el.className = "detail open";
+      el.innerHTML = `
+        <div class="detail-head">
+          <div>
+            <div class="pills">
+              <span class="pill ${cls}">${LABEL[c.subject]}</span>
+              <span class="pill">${c.family}</span>
+              <span class="pill">с ${c.first} класса</span>
+            </div>
+            <p class="code" style="color:${color}">${c.code}</p>
+            <p class="name">${c.name}</p>
+            <p class="sum">${c.summary || ""}</p>
+            <p class="sum" style="margin-top:6px"><b>Река:</b> ${c.family_blurb || c.family}</p>
+          </div>
+          <button type="button" class="btn" id="clearSel">Закрыть</button>
+        </div>
+        <div class="life">${life}</div>
+        <div class="grid2">
+          <div class="panel">
+            <h3>Темы в reference</h3>
+            ${snips}
+            <h3 style="margin-top:14px">Пререквизиты</h3>
+            <div class="pills">${prereq}</div>
+          </div>
+          <div class="panel">
+            <h3>Наш 8 класс</h3>
+            <div class="modules">${mods}</div>
+          </div>
+        </div>`;
+      document.getElementById("clearSel").addEventListener("click", clearSel);
+      el.querySelectorAll("[data-jump]").forEach((btn) =>
+        btn.addEventListener("click", () => select(btn.getAttribute("data-jump")))
+      );
+    }
+
+    function renderSearch(q) {
+      const box = document.getElementById("searchHits");
+      query = q;
+      if (!q || q.length < 2) {
+        box.className = "search-hits";
+        box.innerHTML = "";
+        paint();
+        return;
+      }
+      const qq = q.toLowerCase();
+      const hits = DATA.concepts
+        .filter(
+          (c) =>
+            (subjectFilter === "all" || c.subject === subjectFilter) &&
+            (c.code.toLowerCase().includes(qq) ||
+              c.name.toLowerCase().includes(qq) ||
+              (c.family || "").toLowerCase().includes(qq))
+        )
+        .slice(0, 10);
+      box.className = "search-hits open";
+      box.innerHTML = hits.length
+        ? hits
+            .map(
+              (c) =>
+                `<button type="button" class="hit" data-code="${c.code}"><b style="color:${COLOR[c.subject]}">${c.code}</b> · ${c.name} <span style="color:var(--muted)">· ${c.family}</span></button>`
+            )
+            .join("")
+        : "<div style='padding:8px;color:var(--muted);font-size:13px'>Ничего не найдено</div>";
+      box.querySelectorAll(".hit").forEach((b) =>
+        b.addEventListener("click", () => {
+          document.getElementById("search").value = "";
+          query = "";
+          box.className = "search-hits";
+          select(b.dataset.code);
+        })
+      );
+      paint();
+    }
+
+    function paint() {
+      renderRuler();
+      renderRivers();
+      renderDetail();
+    }
+
+    document.querySelectorAll("[data-subj]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        subjectFilter = btn.getAttribute("data-subj");
+        document.querySelectorAll("[data-subj]").forEach((b) => b.classList.remove("on"));
+        btn.classList.add("on");
+        paint();
+      });
+    });
+    document.getElementById("showEcho").addEventListener("change", (e) => {
+      showEcho = e.target.checked;
+      paint();
+    });
+    document.getElementById("search").addEventListener("input", (e) => {
+      renderSearch(e.target.value.trim());
+    });
+
+    paint();
+  </script>
+</body>
+</html>

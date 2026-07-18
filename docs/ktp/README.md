@@ -20,6 +20,14 @@
 
 **Стек после 8 класса:** [08_tech_stack_skills.md](08_tech_stack_skills.md) — структурированный чеклист «уметь + API» к концу года.
 
+**Визуализация абстракций** (данные общие): [concept_taxonomy.json](concept_taxonomy.json), пересборка `python scripts/build_concept_rivers_data.py`.
+
+| Вид | Файл | Зачем |
+|---|---|---|
+| Каталог | [concept_catalog.html](concept_catalog.html) | семейства столбцами, абстракции в порядке таксономии (M → P → L) |
+| Карта годов | [concept_years.html](concept_years.html) | классы как колонки, семейства внутри года |
+| Реки семейств | [concept_rivers.html](concept_rivers.html) | семейство = горизонтальная река с подписанными карточками |
+
 Карта доступных инструментов (Python, данные, ML, математика): [08.md § Карта инструментов](08.md#карта-инструментов).
 
 ## Пересборка 8 класса

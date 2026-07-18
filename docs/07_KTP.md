@@ -81,6 +81,18 @@
 | Отличие от карты | Карта — с какой пары **можно** вводить; стек — чем **должен** владеть к концу |
 | Когда обновлять | Новый обязательный API в ноутбуках модуля → строка в стеке в том же цикле |
 
+### Реки концепций (визуализация)
+
+Интерактив (данные из `reference/program_data.json` + [concept_taxonomy.json](ktp/concept_taxonomy.json)):
+
+| Вид | Файл |
+|---|---|
+| Каталог семейств (столбцы) | [ktp/concept_catalog.html](ktp/concept_catalog.html) |
+| Карта годов (колонки классов) | [ktp/concept_years.html](ktp/concept_years.html) |
+| Реки семейств (горизонтальные реки) | [ktp/concept_rivers.html](ktp/concept_rivers.html) |
+
+Пересборка: `python scripts/build_concept_rivers_data.py`. Не канон содержания (reference только для сравнения).
+
 ---
 
 ## Карта инструментов

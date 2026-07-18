@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Каталог абстракций — семейства</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:opsz,wght@9..144,500;9..144,650;9..144,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #eef1f0;
+      --ink: #14201c;
+      --muted: #4d5a55;
+      --line: #c5cec9;
+      --paper: #f7f9f8;
+      --math: #1f6b45;
+      --prog: #155f8c;
+      --ml: #9a3412;
+      --math-soft: rgba(31, 107, 69, 0.1);
+      --prog-soft: rgba(21, 95, 140, 0.1);
+      --ml-soft: rgba(154, 52, 18, 0.1);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: "DM Sans", system-ui, sans-serif;
+      color: var(--ink);
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(ellipse 90% 55% at 0% 0%, rgba(31, 107, 69, 0.08), transparent 55%),
+        radial-gradient(ellipse 70% 45% at 100% 0%, rgba(21, 95, 140, 0.07), transparent 50%);
+    }
+    .shell { max-width: 1200px; margin: 0 auto; padding: 28px 18px 64px; }
+    .eyebrow {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted); margin: 0 0 8px;
+    }
+    .eyebrow a { color: inherit; font-weight: 700; }
+    h1 {
+      font-family: Fraunces, Georgia, serif; font-weight: 650;
+      font-size: clamp(28px, 4vw, 38px); line-height: 1.1; margin: 0 0 8px;
+      letter-spacing: -0.02em;
+    }
+    .lead {
+      margin: 0 0 20px; max-width: 62ch; font-size: 16px; line-height: 1.45; color: var(--muted);
+    }
+    .lead strong { color: var(--ink); }
+
+    .subject {
+      margin: 0 0 28px;
+    }
+    .subject-head {
+      display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+      margin: 0 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--line);
+    }
+    .subject-head h2 {
+      font-family: Fraunces, Georgia, serif; font-size: 24px; font-weight: 650;
+      margin: 0;
+    }
+    .subject.math .subject-head h2 { color: var(--math); }
+    .subject.prog .subject-head h2 { color: var(--prog); }
+    .subject.ml .subject-head h2 { color: var(--ml); }
+    .subject-head .meta {
+      font-size: 13px; color: var(--muted); font-weight: 600;
+    }
+
+    .cols {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      align-items: start;
+    }
+
+    .fam {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 12px 10px;
+      min-width: 0;
+    }
+    .subject.math .fam { border-top: 3px solid var(--math); }
+    .subject.prog .fam { border-top: 3px solid var(--prog); }
+    .subject.ml .fam { border-top: 3px solid var(--ml); }
+
+    .fam h3 {
+      font-family: Fraunces, Georgia, serif;
+      font-size: 16px; font-weight: 650;
+      margin: 0 0 4px; line-height: 1.25;
+    }
+    .fam .blurb {
+      font-size: 12px; color: var(--muted); line-height: 1.35;
+      margin: 0 0 10px;
+    }
+
+    .list {
+      list-style: none; margin: 0; padding: 0;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .list li {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 7px 8px;
+      background: #fff;
+    }
+    .list .code {
+      display: block;
+      font-size: 11px; font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+    .subject.math .list .code { color: var(--math); }
+    .subject.prog .list .code { color: var(--prog); }
+    .subject.ml .list .code { color: var(--ml); }
+    .list .name {
+      display: block;
+      font-size: 13px; font-weight: 600;
+      line-height: 1.3; margin-top: 2px;
+    }
+    .list .first {
+      display: block;
+      font-size: 10.5px; color: var(--muted); font-weight: 600;
+      margin-top: 3px;
+    }
+
+    .foot {
+      margin-top: 8px; font-size: 12px; color: var(--muted);
+    }
+    .foot code { font-size: 11px; background: #e2e8e5; padding: 1px 5px; border-radius: 4px; }
+    .foot a { color: inherit; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <p class="eyebrow">
+      Каталог · также:
+      <a href="concept_years.html">карта годов</a> ·
+      <a href="concept_rivers.html">реки семейств</a>
+    </p>
+    <h1>Каталог абстракций</h1>
+    <p class="lead">
+      Порядок <strong>семейств</strong> и <strong>абстракций внутри семейства</strong> —
+      как в <code>concept_taxonomy.json</code>.
+      Сначала математика (каждый столбец — семейство), затем программирование, затем ML.
+    </p>
+    <div id="root"></div>
+    <p class="foot">
+      Источник порядка: <code>concept_taxonomy.json</code> →
+      <code>python scripts/build_concept_rivers_data.py</code>.
+    </p>
+  </div>
+
+  <script src="concept_rivers_data.js"></script>
+  <script>
+    const DATA = window.CONCEPT_RIVERS;
+    const BLOCKS = [
+      { subject: "mathematics", cls: "math", title: "Математика" },
+      { subject: "programming", cls: "prog", title: "Программирование" },
+      { subject: "ml", cls: "ml", title: "ML" },
+    ];
+
+    function byCode(code) {
+      return DATA.concepts.find((c) => c.code === code);
+    }
+
+    const root = document.getElementById("root");
+    root.innerHTML = BLOCKS.map((block) => {
+      const fams = (DATA.families || [])
+        .filter((f) => f.subject === block.subject)
+        .slice()
+        .sort((a, b) => a.order - b.order);
+
+      const nAbs = fams.reduce((s, f) => s + (f.codes || []).length, 0);
+
+      const cols = fams
+        .map((f) => {
+          // taxonomy order of codes — do not re-sort by layer/code alphabet
+          const items = (f.codes || [])
+            .map((code) => byCode(code))
+            .filter(Boolean)
+            .map((c) => {
+              return `<li>
+                <span class="code">${c.code}</span>
+                <span class="name">${c.name}</span>
+                <span class="first">с ${c.first} класса</span>
+              </li>`;
+            })
+            .join("");
+
+          return `<section class="fam">
+            <h3>${f.title}</h3>
+            <p class="blurb">${f.blurb || ""}</p>
+            <ol class="list">${items}</ol>
+          </section>`;
+        })
+        .join("");
+
+      return `<section class="subject ${block.cls}">
+        <div class="subject-head">
+          <h2>${block.title}</h2>
+          <span class="meta">${fams.length} семейств · ${nAbs} абстракций</span>
+        </div>
+        <div class="cols">${cols}</div>
+      </section>`;
+    }).join("");
+  </script>
+</body>
+</html>

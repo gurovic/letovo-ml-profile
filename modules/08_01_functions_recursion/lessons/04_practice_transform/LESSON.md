@@ -96,7 +96,7 @@
 |---|---|
 | Центральная идея | Один контракт transform работает на **любом** списке; параметры (порог, цепочка fn) — решение аналитика |
 | Что поддерживает, но не отвлекает | Композиция fn → задел к pipeline; два числовых признака → задел к таблице |
-| Данные урока | `LAB_SCORES`, `AREAS_SQM`, `ROOMS_COUNTS` inline; канон — [data/module_datasets.py](../../data/module_datasets.py) |
+| Данные урока | `LAB_SCORES`, `AREAS_SQM`, `ROOMS_COUNTS` — **inline** в ноутбуке (новая выборка для отработки); сюжет квартир/баллов — [data/module_datasets.py](../../data/module_datasets.py) |
 
 ### Результаты обучения
 
