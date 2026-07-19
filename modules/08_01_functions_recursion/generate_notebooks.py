@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate lesson notebooks: one pair KTP = one lesson.ipynb (pairs 2–9)."""
+"""Generate lesson notebooks: one pair KTP = one lesson.ipynb (pairs 2–7)."""
 
 import json
 from pathlib import Path
@@ -422,148 +422,8 @@ NOTEBOOKS = {
             "(функция | симптом | причина | исправление)."
         ),
     ),
-    "lessons/07_recursion/lesson.ipynb": nb(
-        md("# Рекурсия на данных — flatten и дерево"),
-        code(LESSON_07_DATA),
-        md(
-            "## 1. flatten\n\n"
-            "Базовый случай: элемент **не** список. Шаг: если список — обойти элементы рекурсивно."
-        ),
-        code(
-            "def flatten(nested):\n"
-            '    """Список любой вложенности → плоский список."""\n'
-            "    pass\n\n\n"
-            "assert flatten(NESTED_LIST) == [1, 2, 3, 4, 5]"
-        ),
-        md(
-            "## 2. walk_categories\n\n"
-            "Дерево `(name, children)`. Печать с отступом `depth` пробелов. "
-            "Сначала имя узла, затем рекурсия по `children`."
-        ),
-        code(
-            "def walk_categories(node, depth=0):\n"
-            "    pass\n\n\n"
-            "# walk_categories(CATEGORY_TREE)\n"
-        ),
-        md(
-            "## 3. Fibonacci — антипример\n\n"
-            "Сравните время `fib_recursive(25)` и `fib_iterative(25)`. "
-            "Рекурсия уместна для **структур** (списки, деревья), а не для «просто посчитать число»."
-        ),
-        code(
-            "import time\n\n\n"
-            "def fib_recursive(n):\n"
-            "    if n <= 1:\n"
-            "        return n\n"
-            "    return fib_recursive(n - 1) + fib_recursive(n - 2)\n\n\n"
-            "def fib_iterative(n):\n"
-            "    a, b = 0, 1\n"
-            "    for _ in range(n):\n"
-            "        a, b = b, a + b\n"
-            "    return a\n\n\n"
-            "N = 25\n"
-            "t0 = time.perf_counter()\n"
-            "fib_recursive(N)\n"
-            "t_rec = time.perf_counter() - t0\n"
-            "t0 = time.perf_counter()\n"
-            "fib_iterative(N)\n"
-            "t_iter = time.perf_counter() - t0\n"
-            "print(f'recursive: {t_rec:.3f}s, iterative: {t_iter:.3f}s')\n"
-            "assert fib_recursive(10) == fib_iterative(10)"
-        ),
-    ),
-    "lessons/08_practice_pipeline/lesson.ipynb": nb(
-        md(
-            "# Практика: рекурсия, lambda, pipeline\n\n"
-            "**Пара КТП 8** (2 ч) — отработка.\n\n"
-            "Минимум сдачи: A1–A2, B1–B2, C1. Опора — [пара 7](../07_recursion/lesson.ipynb).\n\n"
-            "**Данные:** `NESTED_API_RESPONSE`, `CATEGORY_TREE`, `EXAM_SCORES`, "
-            "`MODEL_RUNS`, `FEATURE_ROWS`, `FEATURE_POINTS`."
-        ),
-        code(DATA_IMPORT),
-        md("---\n\n# A. Рекурсия\n"),
-        md("## A1. `extract_ids`"),
-        code(
-            "def extract_ids(nested):\n"
-            "    pass\n\n\n"
-            "assert extract_ids(NESTED_API_RESPONSE) == [1, 2, 3]\n"
-        ),
-        md("## A2. `walk_categories`\n\nТот же контракт, что на паре 7: `(name, children)`."),
-        code(
-            "def walk_categories(node, depth=0):\n"
-            "    pass\n\n\n"
-            "# walk_categories(CATEGORY_TREE)\n"
-        ),
-        md("## A3 (углубление). `count_leaves`"),
-        code(
-            "def count_leaves(node):\n"
-            "    pass\n\n\n"
-            "# assert count_leaves(CATEGORY_TREE) == 3\n"
-        ),
-        md("---\n\n# B. Lambda\n"),
-        md("## B1. `filter` — аномалии (свой порог)"),
-        code(
-            "anomalies = list(filter(lambda s: s < 50 or s > 90, EXAM_SCORES))\n"
-            "assert set(anomalies) == {40, 48, 91, 95}\n"
-            "print(anomalies)"
-        ),
-        md("## B2. Leaderboard `MODEL_RUNS`\n\nСортировка: f1 ↓; при равенстве — id ↑."),
-        code(
-            "leaderboard = sorted(MODEL_RUNS, key=lambda r: (-r['f1'], r['id']))\n"
-            "assert [r['id'] for r in leaderboard] == [25, 30, 305, 101, 200]\n"
-            "print([r['id'] for r in leaderboard])\n"
-        ),
-        md("## B3 (углубление). Farthest point"),
-        code(
-            "# farthest = max(FEATURE_POINTS, key=lambda p: ...)\n"
-            "# assert farthest == [55, 12]\n"
-            "# print(farthest)\n"
-        ),
-        md("---\n\n# C. Pipeline\n"),
-        md("## C1. `apply_pipeline`"),
-        code(
-            "def apply_pipeline(data, steps):\n"
-            "    result = data\n"
-            "    for step in steps:\n"
-            "        result = step(result)\n"
-            "    return result\n"
-        ),
-        md("## C1. Цепочка для одной квартиры\n\n`dict → area → scale → predict`"),
-        code(
-            "def extract_area(row):\n"
-            "    return row['area_sqm']\n\n\n"
-            "def scale_area(area, max_area=60):\n"
-            "    return area / max_area\n\n\n"
-            "def predict_from_scaled(scaled_area):\n"
-            "    return PRICE_INTERCEPT + PRICE_COEF_AREA * (scaled_area * 60)\n\n\n"
-            "apt_pipeline = [extract_area, scale_area, predict_from_scaled]\n"
-            "pred = apply_pipeline(FEATURE_ROWS[0], apt_pipeline)\n"
-            "assert abs(pred - (PRICE_INTERCEPT + PRICE_COEF_AREA * 28)) < 1e-9\n"
-            "print('predicted mln:', pred)"
-        ),
-        md(
-            "## Эксперимент: порядок шагов\n\n"
-            "Что будет, если вызвать scale до extract? Запишите ошибку/вывод."
-        ),
-        code("# эксперимент\n"),
-        md("## C2 (углубление). Текстовый pipeline"),
-        code(
-            "text_pipeline = [\n"
-            "    lambda s: s.strip().lower(),\n"
-            "    lambda s: s.split(),\n"
-            "    lambda tokens: [t for t in tokens if len(t) >= 4],\n"
-            "]\n\n"
-            "assert apply_pipeline('  Data science ML course  ', text_pipeline) == "
-            "['data', 'science', 'course']\n"
-            "print(apply_pipeline('  Data science ML course  ', text_pipeline))"
-        ),
-        md(
-            "## Мост к артефакту\n\n"
-            "Пары 9–10: [artifact/PROJECT.md](../../artifact/PROJECT.md) и "
-            "[LESSON пары 9](../09_artifact_build/LESSON.md)."
-        ),
-        md("## Итог\n\n**Pipeline = композиция функций.** Дальше — итоговый модуль `text_stats`."),
-    ),
+
+
 }
 
 
@@ -974,169 +834,9 @@ SOLUTIONS = {
             "    print(f'MAE={error:.3f}, intercept={intercept}, coef={coef:.2f}')"
         ),
     ),
-    "lessons/07_recursion/solutions.ipynb": nb(
-        md("# Решения: рекурсия\n\n**Для преподавателя.**"),
-        code(LESSON_07_DATA),
-        md("## Урок. flatten"),
-        code(
-            "def flatten(nested):\n"
-            "    flat = []\n"
-            "    for item in nested:\n"
-            "        if isinstance(item, list):\n"
-            "            flat.extend(flatten(item))\n"
-            "        else:\n"
-            "            flat.append(item)\n"
-            "    return flat\n\n\n"
-            "assert flatten(NESTED_LIST) == [1, 2, 3, 4, 5]"
-        ),
-        md("## Урок. walk_categories"),
-        code(
-            "def walk_categories(node, depth=0):\n"
-            "    name, children = node\n"
-            "    print('  ' * depth + name)\n"
-            "    for child in children:\n"
-            "        walk_categories(child, depth + 1)\n\n\n"
-            "# walk_categories(CATEGORY_TREE)"
-        ),
-        md("## ДЗ. count_leaves"),
-        code(
-            "def count_leaves(node):\n"
-            "    name, children = node\n"
-            "    if not children:\n"
-            "        return 1\n"
-            "    return sum(count_leaves(child) for child in children)\n\n\n"
-            "assert count_leaves(CATEGORY_TREE) == 3"
-        ),
-        md("## ДЗ. flatten_extra"),
-        code(
-            "EXTRA = [0, [10, [20, 30]], 40]\n"
-            "assert flatten(EXTRA) == [0, 10, 20, 30, 40]"
-        ),
-    ),
-    "lessons/08_practice_pipeline/homework.ipynb": nb(
-        md(
-            "# Домашнее задание: углубление серии (пара 8)\n\n"
-            "Если на паре не успели — дорешайте **A3, B3, C2** из `lesson.ipynb`."
-        ),
-        code(DATA_IMPORT),
-        md("## 1. Опора\n\nСкопируйте с пары минимум A1–A2, B1–B2, C1 (если ещё не сделано)."),
-        code("# extract_ids, walk_categories, apply_pipeline + шаги pipeline\n"),
-        md("## 2. A3. `count_leaves`"),
-        code(
-            "def count_leaves(node):\n"
-            "    pass\n\n\n"
-            "assert count_leaves(CATEGORY_TREE) == 3\n"
-        ),
-        md("## 3. B3. Farthest point\n\n`max(FEATURE_POINTS, key=…)` — точка с максимальной суммой квадратов координат."),
-        code(
-            "farthest = max(FEATURE_POINTS, key=lambda p: p[0] ** 2 + p[1] ** 2)\n"
-            "assert farthest == [55, 12]\n"
-            "print(farthest)\n"
-        ),
-        md(
-            "## 4. C2. Текстовый pipeline\n\n"
-            "Соберите pipeline: strip → lower → split → оставить токены длиной ≥ 4. "
-            "Проверьте на строке `'  Data science ML course  '`."
-        ),
-        code(
-            "def apply_pipeline(data, steps):\n"
-            "    result = data\n"
-            "    for step in steps:\n"
-            "        result = step(result)\n"
-            "    return result\n\n\n"
-            "text_pipeline = [\n"
-            "    lambda s: s.strip().lower(),\n"
-            "    lambda s: s.split(),\n"
-            "    lambda tokens: [t for t in tokens if len(t) >= 4],\n"
-            "]\n"
-            "assert apply_pipeline('  Data science ML course  ', text_pipeline) == "
-            "['data', 'science', 'course']\n"
-        ),
-    ),
-    "lessons/08_practice_pipeline/solutions.ipynb": nb(
-        md(
-            "# Решения: практика pipeline\n\n"
-            "**Для преподавателя.** Все задачи из `lesson.ipynb` и `homework.ipynb`."
-        ),
-        code(DATA_IMPORT),
-        md("## A1. extract_ids"),
-        code(
-            "def extract_ids(nested):\n"
-            "    ids = []\n"
-            "    if isinstance(nested, dict):\n"
-            "        if 'id' in nested:\n"
-            "            ids.append(nested['id'])\n"
-            "        for value in nested.values():\n"
-            "            ids.extend(extract_ids(value))\n"
-            "    elif isinstance(nested, list):\n"
-            "        for item in nested:\n"
-            "            ids.extend(extract_ids(item))\n"
-            "    return ids\n\n\n"
-            "assert extract_ids(NESTED_API_RESPONSE) == [1, 2, 3]"
-        ),
-        md("## A2. walk_categories"),
-        code(
-            "def walk_categories(node, depth=0):\n"
-            "    name, children = node\n"
-            "    print('  ' * depth + name)\n"
-            "    for child in children:\n"
-            "        walk_categories(child, depth + 1)\n\n\n"
-            "# walk_categories(CATEGORY_TREE)"
-        ),
-        md("## A3. count_leaves"),
-        code(
-            "def count_leaves(node):\n"
-            "    name, children = node\n"
-            "    if not children:\n"
-            "        return 1\n"
-            "    return sum(count_leaves(child) for child in children)\n\n\n"
-            "assert count_leaves(CATEGORY_TREE) == 3"
-        ),
-        md("## B1. anomalies"),
-        code(
-            "anomalies = list(filter(lambda s: s < 50 or s > 90, EXAM_SCORES))\n"
-            "assert set(anomalies) == {40, 48, 91, 95}"
-        ),
-        md("## B2. leaderboard"),
-        code(
-            "leaderboard = sorted(MODEL_RUNS, key=lambda r: (-r['f1'], r['id']))\n"
-            "assert [r['id'] for r in leaderboard] == [25, 30, 305, 101, 200]"
-        ),
-        md("## B3. farthest point"),
-        code(
-            "farthest = max(FEATURE_POINTS, key=lambda p: p[0] ** 2 + p[1] ** 2)\n"
-            "assert farthest == [55, 12]\n"
-            "print(farthest)"
-        ),
-        md("## C1. apply_pipeline"),
-        code(
-            "def apply_pipeline(data, steps):\n"
-            "    result = data\n"
-            "    for step in steps:\n"
-            "        result = step(result)\n"
-            "    return result\n\n\n"
-            "def extract_area(row):\n"
-            "    return row['area_sqm']\n\n\n"
-            "def scale_area(area, max_area=60):\n"
-            "    return area / max_area\n\n\n"
-            "def predict_from_scaled(scaled_area):\n"
-            "    return PRICE_INTERCEPT + PRICE_COEF_AREA * (scaled_area * 60)\n\n\n"
-            "apt_pipeline = [extract_area, scale_area, predict_from_scaled]\n"
-            "pred = apply_pipeline(FEATURE_ROWS[0], apt_pipeline)\n"
-            "assert abs(pred - (PRICE_INTERCEPT + PRICE_COEF_AREA * 28)) < 1e-9\n"
-            "print('predicted mln:', pred)"
-        ),
-        md("## C2. text pipeline"),
-        code(
-            "text_pipeline = [\n"
-            "    lambda s: s.strip().lower(),\n"
-            "    lambda s: s.split(),\n"
-            "    lambda tokens: [t for t in tokens if len(t) >= 4],\n"
-            "]\n"
-            "assert apply_pipeline('  Data science ML course  ', text_pipeline) == "
-            "['data', 'science', 'course']"
-        ),
-    ),
+
+
+
 }
 
 
@@ -1378,39 +1078,14 @@ HOMEWORKS = {
             "# заполните и выведите top3\n"
         ),
     ),
-    "lessons/07_recursion/homework.ipynb": nb(
-        md("# Домашнее задание: рекурсия на дереве"),
-        code(LESSON_07_DATA),
-        md(
-            "## 1. Опора\n\n"
-            "Скопируйте с пары: `flatten`, `walk_categories`."
-        ),
-        code("# flatten, walk_categories\n"),
-        md(
-            "## 2. `count_leaves`\n\n"
-            "Лист — узел с пустым `children`. Верните число листьев в `CATEGORY_TREE`."
-        ),
-        code(
-            "def count_leaves(node):\n"
-            "    pass\n\n\n"
-            "# assert count_leaves(CATEGORY_TREE) == 3\n"
-        ),
-        md(
-            "## 3. Другой вложенный список\n\n"
-            "Проверьте `flatten` на `EXTRA = [0, [10, [20, 30]], 40]`."
-        ),
-        code(
-            "EXTRA = [0, [10, [20, 30]], 40]\n"
-            "# assert flatten(EXTRA) == [0, 10, 20, 30, 40]\n"
-        ),
-        md(
-            "## 4. Когда рекурсия (markdown)\n\n"
-            "По результатам §3 урока (Fibonacci): **2–3 предложения** — когда рекурсия уместна "
-            "в data/ML, а когда лучше цикл."
-        ),
-    ),
+
 }
 
+
+# Pair 7 (merged recursion+pipeline): source of truth = ipynb on disk (edit files, then regenerate).
+NOTEBOOKS['lessons/07_recursion_pipeline/lesson.ipynb'] = json.loads((ROOT / 'lessons/07_recursion_pipeline/lesson.ipynb').read_text(encoding='utf-8'))
+HOMEWORKS['lessons/07_recursion_pipeline/homework.ipynb'] = json.loads((ROOT / 'lessons/07_recursion_pipeline/homework.ipynb').read_text(encoding='utf-8'))
+SOLUTIONS['lessons/07_recursion_pipeline/solutions.ipynb'] = json.loads((ROOT / 'lessons/07_recursion_pipeline/solutions.ipynb').read_text(encoding='utf-8'))
 
 if __name__ == "__main__":
     for rel, notebook in NOTEBOOKS.items():

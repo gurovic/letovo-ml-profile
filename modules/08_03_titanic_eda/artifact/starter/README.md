@@ -6,4 +6,4 @@
 - папку `figures/` для графиков;
 - файл `report.md` по структуре из [PROJECT.md](../PROJECT.md).
 
-На парах 28–29 опирайтесь на ноутбуки `08_report_draft` и `09_report_submit`.
+На паре 23 опирайтесь на ноутбуки `07_eda_report`.

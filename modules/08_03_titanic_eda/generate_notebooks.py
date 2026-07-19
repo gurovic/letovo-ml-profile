@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate lesson notebooks for module 08_03 (KTP pairs 21–29).
+"""Generate lesson notebooks for module 08_03 (KTP pairs 17–23).
 
 Source of truth for .ipynb: edit this file, then run it.
 Data: checked-in standard Titanic CSV (seaborn.load_dataset('titanic') export).
@@ -337,7 +337,7 @@ def add_lesson02() -> None:
     lesson = nb(
         md(
             "# Практика: осмотр таблицы Titanic\n\n"
-            "Закрепляем срезы, фильтры и частоты — без статистики mean/median (это пара 23)."
+            "Закрепляем срезы, фильтры и частоты — без статистики mean/median (это пара 19)."
         ),
         code(LOAD_DATA),
         md(
@@ -875,15 +875,15 @@ def add_lesson04() -> None:
     NOTEBOOKS[f"{base}/homework.ipynb"] = hw
     NOTEBOOKS[f"{base}/solutions.ipynb"] = sol
 
-
 def add_lesson05() -> None:
-    base = "lessons/05_sampling_bias"
+    """Pair 21: sampling bias + CLT + missing (old 25+26)."""
+    base = "lessons/05_bias_clt_missing"
     lesson = nb(
         md(
-            "# Выборка, репрезентативность, sampling bias\n\n"
-            "Подвыборка может врать о «всех пассажирах». Учимся ловить bias."
+            "# Sampling bias; ЦПТ; пропуски\n\n"
+            "Три темы одной пары: смещённая подвыборка, колокол средних, стратегия чистки."
         ),
-        code(LOAD_DATA),
+        code(LOAD_DATA + "\n" + IMPORTS_MPL + "import numpy as np\n"),
         md(
             "## 1. Истинная доля выживших\n\n"
             "`true_rate = df['survived'].mean()` — эталон «полной» таблицы урока."
@@ -894,31 +894,21 @@ def add_lesson05() -> None:
             "print(round(true_rate, 3))"
         ),
         md(
-            "## 2. Смещённая подвыборка: только 1 класс\n\n"
-            "Доля выживших среди `pclass == 1` -> `rate_first`. Насколько выше `true_rate`?"
+            "## 2. Смещённые подвыборки\n\n"
+            "`rate_first` (pclass==1) и `rate_male`. Запишите `BIAS_MALE` — почему опрос только мужчин врёт."
         ),
         code(
             "rate_first = None\n"
-            "assert rate_first is not None and isinstance(rate_first, float)\n"
-            "assert rate_first > true_rate\n"
-            "print(round(rate_first, 3), 'vs', round(true_rate, 3))"
-        ),
-        md(
-            "## 3. Смещённая подвыборка: только мужчины\n\n"
-            "`rate_male` vs `true_rate`. Запишите `BIAS_MALE` — почему общество ошибётся, "
-            "если опросит только мужчин."
-        ),
-        code(
             "rate_male = None\n"
             "BIAS_MALE = ''\n"
+            "assert rate_first is not None and float(rate_first) > true_rate\n"
             "assert rate_male is not None and float(rate_male) < true_rate\n"
             "assert len(BIAS_MALE) > 30\n"
-            "print(round(float(rate_male), 3), BIAS_MALE)"
+            "print(round(float(rate_first), 3), round(float(rate_male), 3), BIAS_MALE)"
         ),
         md(
-            "## 4. Случайная выборка n=50\n\n"
-            "`df.sample(50, random_state=0)['survived'].mean()` -> `rate_s50`. "
-            "Повторите с `random_state=1` -> `rate_s50_b`. Разброс?"
+            "## 3. Случайная выборка n=50\n\n"
+            "Два `sample(50)` с `random_state` 0 и 1 → `rate_s50`, `rate_s50_b`."
         ),
         code(
             "rate_s50 = None\n"
@@ -927,45 +917,68 @@ def add_lesson05() -> None:
             "print(rate_s50, rate_s50_b, abs(float(rate_s50) - float(rate_s50_b)))"
         ),
         md(
-            "## 5. Репрезентативность\n\n"
-            "Сравните долю женщин во всей таблице и в `pclass==1`. -> `share_f_all`, `share_f_first`.\n\n"
-            "**Идея:** bias по классу тянет за собой bias по полу."
-        ),
-        code(
-            "share_f_all = None\n"
-            "share_f_first = None\n"
-            "assert share_f_all is not None and share_f_first is not None\n"
-            "assert float(share_f_first) > float(share_f_all)\n"
-            "print(round(float(share_f_all), 3), round(float(share_f_first), 3))"
-        ),
-        md(
-            "## 6. Ложный вывод\n\n"
-            "Аналитик взял только пассажиров с известным `deck` (мало NA). "
-            "Посчитайте долю выживших на этой подвыборке -> `rate_known_deck`.\n\n"
-            "Почему это не «все пассажиры»? -> `DECK_BIAS`."
+            "## 4. Known deck + LIMITATIONS\n\n"
+            "`rate_known_deck` на строках с известным deck; абзац `LIMITATIONS` (≥120 символов) "
+            "для отчёта обществу."
         ),
         code(
             "rate_known_deck = None\n"
-            "DECK_BIAS = ''\n"
+            "LIMITATIONS = ''\n"
             "assert rate_known_deck is not None\n"
-            "assert len(DECK_BIAS) > 40\n"
-            "print(round(float(rate_known_deck), 3), DECK_BIAS)"
+            "assert len(LIMITATIONS) > 120\n"
+            "print(round(float(rate_known_deck), 3), LIMITATIONS[:80], '...')"
         ),
         md(
-            "## 7. Checkpoint для отчёта\n\n"
-            "Напишите абзац `LIMITATIONS` (4–6 предложений): кого нет в таблице "
-            "(команда?), какие группы перепредставлены в удобных срезах, "
-            "почему нельзя обобщать на «всех людей 1912»."
+            "## 5. Гистограмма age и ЦПТ на средних fare\n\n"
+            "1) hist age → `figures/age_hist.png`, комментарий `AGE_SHAPE`.\n"
+            "2) 200 выборок размера 40 из `fare`, mean каждой → hist → `figures/clt_fare_means.png`.\n\n"
+            "**Идея:** колокол — у *средних*, не обязательно у сырого fare. `CLT_LIMIT`."
         ),
         code(
-            "LIMITATIONS = ''\n"
-            "assert len(LIMITATIONS) > 120\n"
-            "print(LIMITATIONS)"
+            "from pathlib import Path as _P\n"
+            "_P('figures').mkdir(exist_ok=True)\n"
+            "AGE_SHAPE = ''\n"
+            "means = None  # list длины 200\n"
+            "clt_path = None\n"
+            "CLT_LIMIT = ''\n"
+            "assert len(AGE_SHAPE) > 15\n"
+            "assert means is not None and len(means) == 200\n"
+            "assert clt_path is not None and _P(clt_path).exists()\n"
+            "assert len(CLT_LIMIT) > 30\n"
+            "print(AGE_SHAPE, round(float(np.mean(means)), 2), CLT_LIMIT)"
+        ),
+        md(
+            "## 6. Пропуски и стратегии\n\n"
+            "`TOP_NA` (топ-3); `n_drop` строк с известным age (=714); "
+            "`age_filled_median`; почему ноль плох — `ZERO_BAD`."
+        ),
+        code(
+            "TOP_NA = []\n"
+            "n_drop = None\n"
+            "age_filled_median = None\n"
+            "ZERO_BAD = ''\n"
+            "assert len(TOP_NA) == 3 and 'deck' in TOP_NA and 'age' in TOP_NA\n"
+            "assert n_drop is not None and int(n_drop) == 714\n"
+            "assert age_filled_median is not None and int(pd.Series(age_filled_median).isna().sum()) == 0\n"
+            "assert len(ZERO_BAD) > 25\n"
+            "print(TOP_NA, n_drop, ZERO_BAD)"
+        ),
+        md(
+            "## 7. dropna по всей таблице + журнал\n\n"
+            "`n_all_drop` после `df.dropna()`; `DROP_ALL_RISK`; `CLEAN_LOG` (deck/age/duplicates)."
+        ),
+        code(
+            "n_all_drop = None\n"
+            "DROP_ALL_RISK = ''\n"
+            "CLEAN_LOG = ''\n"
+            "assert n_all_drop is not None and int(n_all_drop) < 300\n"
+            "assert len(DROP_ALL_RISK) > 30\n"
+            "assert len(CLEAN_LOG) > 80\n"
+            "print(n_all_drop, DROP_ALL_RISK, CLEAN_LOG[:80], '...')"
         ),
         md(
             "## 8. Расширение: стратификация\n\n"
-            "Идея: выборка с той же долей `pclass`, что в полной таблице. "
-            "Одной фразой `STRATA_IDEA` — зачем это лучше, чем sample из одного класса."
+            "`STRATA_IDEA` — зачем выборка с той же долей pclass лучше sample из одного класса."
         ),
         code(
             "STRATA_IDEA = ''\n"
@@ -974,8 +987,8 @@ def add_lesson05() -> None:
         ),
     )
     hw = nb(
-        md("# ДЗ: sampling bias"),
-        code(LOAD_DATA),
+        md("# ДЗ: bias, ЦПТ, пропуски"),
+        code(LOAD_DATA + "\nimport numpy as np\n"),
         md("### A. Закрепление"),
         md("## 1. rate только female и только pclass==3"),
         code(
@@ -986,32 +999,30 @@ def add_lesson05() -> None:
             "assert float(rate_f) > true_rate and float(rate_p3) < true_rate\n"
             "print(rate_f, rate_p3, true_rate)"
         ),
+        md("## 2. 100 средних age (sample n=25) — std этих средних"),
+        code(
+            "std_of_means = None\n"
+            "assert std_of_means is not None and float(std_of_means) > 0\n"
+            "print(std_of_means)"
+        ),
         md(
             "### B. Вызов\n\n"
-            "## 2. Симуляция: 20 выборок по 30 строк\n\n"
-            "Список из 20 mean(survived) с random_state=0..19. "
-            "Запишите min и max списка -> `sim_min`, `sim_max`."
+            "## 3. rate_all vs rate_age_known + `AGE_NA_BIAS`\n\n"
+            "## 4. «Большая выборка всегда репрезентативна» → `BIG_N_MYTH`"
         ),
         code(
-            "sim_min = None\n"
-            "sim_max = None\n"
-            "assert sim_min is not None and sim_max is not None\n"
-            "assert float(sim_min) < float(sim_max)\n"
-            "print(sim_min, sim_max)"
-        ),
-        md(
-            "## 3. Опровержение\n\n"
-            "«Большая выборка всегда репрезентативна». Почему на примере Titanic это неверно? -> `BIG_N_MYTH`."
-        ),
-        code(
+            "rate_all = float(df['survived'].mean())\n"
+            "rate_age_known = None\n"
+            "AGE_NA_BIAS = ''\n"
             "BIG_N_MYTH = ''\n"
-            "assert len(BIG_N_MYTH) > 40\n"
-            "print(BIG_N_MYTH)"
+            "assert rate_age_known is not None\n"
+            "assert len(AGE_NA_BIAS) > 30 and len(BIG_N_MYTH) > 40\n"
+            "print(rate_all, rate_age_known, AGE_NA_BIAS, BIG_N_MYTH)"
         ),
     )
     sol = nb(
-        md("# Решения: sampling bias\n\n" + SOL_BANNER),
-        code(LOAD_DATA),
+        md("# Решения: bias + CLT + missing\n\n" + SOL_BANNER),
+        code(LOAD_DATA + "\n" + IMPORTS_MPL + "import numpy as np\nfrom pathlib import Path as _P\n_P('figures').mkdir(exist_ok=True)\n"),
         md("## Урок"),
         code(
             "true_rate = float(df['survived'].mean())\n"
@@ -1020,184 +1031,12 @@ def add_lesson05() -> None:
             "BIAS_MALE = 'Мужчины выживали реже; опрос только мужчин занизит долю выживших'\n"
             "rate_s50 = float(df.sample(50, random_state=0)['survived'].mean())\n"
             "rate_s50_b = float(df.sample(50, random_state=1)['survived'].mean())\n"
-            "share_f_all = float((df['sex'] == 'female').mean())\n"
-            "share_f_first = float((df.loc[df['pclass'] == 1, 'sex'] == 'female').mean())\n"
             "rate_known_deck = float(df.dropna(subset=['deck'])['survived'].mean())\n"
-            "DECK_BIAS = 'Известный deck чаще у 1 класса — подвыборка богаче и с другой выживаемостью'\n"
             "LIMITATIONS = (\n"
             "    'Таблица — пассажиры из учебного набора, не полный список всех на борту. '\n"
             "    'Команда и часть документов отсутствуют. Срезы по deck/1 классу перепредставляют состоятельных. '\n"
             "    'Нельзя переносить доли на всё население 1912 года. Вывод — об этой таблице и её ограничениях.'\n"
             ")\n"
-            "STRATA_IDEA = 'Страты по pclass сохраняют структуру классов и меньше тянут bias'\n"
-            "print(true_rate, rate_first, rate_male, rate_known_deck)"
-        ),
-        md("## ДЗ"),
-        code(
-            "rate_f = float(df.loc[df['sex'] == 'female', 'survived'].mean())\n"
-            "rate_p3 = float(df.loc[df['pclass'] == 3, 'survived'].mean())\n"
-            "rates = [float(df.sample(30, random_state=i)['survived'].mean()) for i in range(20)]\n"
-            "sim_min, sim_max = min(rates), max(rates)\n"
-            "BIG_N_MYTH = 'Можно взять много мужчин 3 класса — n большое, но структура всё ещё смещена'\n"
-            "print(rate_f, rate_p3, sim_min, sim_max)"
-        ),
-    )
-    NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
-    NOTEBOOKS[f"{base}/homework.ipynb"] = hw
-    NOTEBOOKS[f"{base}/solutions.ipynb"] = sol
-
-
-def add_lesson06() -> None:
-    base = "lessons/06_normal_missing"
-    lesson = nb(
-        md(
-            "# Нормальное распределение, ЦПТ (интуитивно); пропуски и дубликаты\n\n"
-            "Две темы одной пары: форма распределения средних и чистота таблицы."
-        ),
-        code(LOAD_DATA + "\n" + IMPORTS_MPL + "import numpy as np\n"),
-        md(
-            "## 1. Гистограмма age\n\n"
-            "`df['age'].dropna().hist(bins=20)`. Похоже ли на колокол? -> `AGE_SHAPE`."
-        ),
-        code(
-            "from pathlib import Path as _P\n"
-            "_P('figures').mkdir(exist_ok=True)\n"
-            "# hist + save figures/age_hist.png\n"
-            "AGE_SHAPE = ''\n"
-            "assert len(AGE_SHAPE) > 15\n"
-            "print(AGE_SHAPE)"
-        ),
-        md(
-            "## 2. ЦПТ на пальцах\n\n"
-            "Сделайте 200 выборок размера 40 из `fare`, для каждой — mean. "
-            "Постройте гистограмму этих 200 средних. -> сохраните `figures/clt_fare_means.png`.\n\n"
-            "**Идея:** распределение *средних* ближе к колоколу, чем сырой fare."
-        ),
-        code(
-            "means = None  # list/array длины 200\n"
-            "clt_path = None\n"
-            "assert means is not None and len(means) == 200\n"
-            "assert clt_path is not None\n"
-            "from pathlib import Path as _P\n"
-            "assert _P(clt_path).exists()\n"
-            "print(round(float(np.mean(means)), 2))"
-        ),
-        md(
-            "## 3. Ограничение ЦПТ\n\n"
-            "ЦПТ не говорит, что *сырой* fare нормален. Запишите `CLT_LIMIT`."
-        ),
-        code(
-            "CLT_LIMIT = ''\n"
-            "assert len(CLT_LIMIT) > 30\n"
-            "print(CLT_LIMIT)"
-        ),
-        md(
-            "## 4. Карта пропусков\n\n"
-            "`df.isna().sum()` — выпишите топ-3 столбца по числу NA -> `TOP_NA` (список имён)."
-        ),
-        code(
-            "TOP_NA = []\n"
-            "assert len(TOP_NA) == 3\n"
-            "assert 'deck' in TOP_NA and 'age' in TOP_NA\n"
-            "print(TOP_NA)"
-        ),
-        md(
-            "## 5. Стратегии для age\n\n"
-            "Сравните три подхода (только числа, без «лучшего навсегда»):\n"
-            "1) dropna по age — сколько строк останется `n_drop`;\n"
-            "2) заполнить медианой — `age_filled_median` (Series);\n"
-            "3) зачем плохо заполнять нулём — `ZERO_BAD`."
-        ),
-        code(
-            "n_drop = None\n"
-            "age_filled_median = None\n"
-            "ZERO_BAD = ''\n"
-            "assert n_drop is not None and int(n_drop) == 714\n"
-            "assert age_filled_median is not None and int(pd.Series(age_filled_median).isna().sum()) == 0\n"
-            "assert len(ZERO_BAD) > 25\n"
-            "print(n_drop, ZERO_BAD)"
-        ),
-        md(
-            "## 6. Дубликаты\n\n"
-            "`df.duplicated().sum()` -> `n_dup`. Удалите полные дубликаты: `n_after`."
-        ),
-        code(
-            "n_dup = None\n"
-            "n_after = None\n"
-            "assert n_dup is not None and int(n_dup) > 50\n"
-            "assert n_after is not None and int(n_after) == 891 - int(n_dup)\n"
-            "print(n_dup, n_after)"
-        ),
-        md(
-            "## 7. Журнал решений\n\n"
-            "Заполните `CLEAN_LOG` (markdown-строка): что делаете с deck / age / duplicates "
-            "и почему (для отчёта обществу)."
-        ),
-        code(
-            "CLEAN_LOG = ''\n"
-            "assert len(CLEAN_LOG) > 80\n"
-            "print(CLEAN_LOG)"
-        ),
-        md(
-            "## 8. Checkpoint: dropna по всем столбцам\n\n"
-            "Сколько строк останется после `df.dropna()`? -> `n_all_drop`. "
-            "Почему это опасно для вывода о выживаемости? -> `DROP_ALL_RISK`."
-        ),
-        code(
-            "n_all_drop = None\n"
-            "DROP_ALL_RISK = ''\n"
-            "assert n_all_drop is not None and int(n_all_drop) < 300\n"
-            "assert len(DROP_ALL_RISK) > 30\n"
-            "print(n_all_drop, DROP_ALL_RISK)"
-        ),
-    )
-    hw = nb(
-        md("# ДЗ: ЦПТ и пропуски"),
-        code(LOAD_DATA + "\nimport numpy as np\n"),
-        md("### A. Закрепление"),
-        md("## 1. 100 средних age (sample n=25) — std этих средних"),
-        code(
-            "std_of_means = None\n"
-            "assert std_of_means is not None and float(std_of_means) > 0\n"
-            "print(std_of_means)"
-        ),
-        md("## 2. Число NA в embark_town и embarked — совпадают ли?"),
-        code(
-            "na_et = None\n"
-            "na_e = None\n"
-            "SAME = None  # bool\n"
-            "assert na_et is not None and na_e is not None and SAME is not None\n"
-            "assert bool(SAME) is True\n"
-            "print(na_et, na_e, SAME)"
-        ),
-        md(
-            "### B. Вызов\n\n"
-            "## 3. Сравнение долей survived: полный df vs dropna(age)\n\n"
-            "`rate_all` vs `rate_age_known`. Разница и комментарий `AGE_NA_BIAS`."
-        ),
-        code(
-            "rate_all = float(df['survived'].mean())\n"
-            "rate_age_known = None\n"
-            "AGE_NA_BIAS = ''\n"
-            "assert rate_age_known is not None\n"
-            "assert len(AGE_NA_BIAS) > 30\n"
-            "print(rate_all, rate_age_known, AGE_NA_BIAS)"
-        ),
-        md(
-            "## 4. Почему дубликаты в seaborn-Titanic возможны\n\n"
-            "`DUP_NOTE` — 2–3 предложения (агрегация полей / учебная версия)."
-        ),
-        code(
-            "DUP_NOTE = ''\n"
-            "assert len(DUP_NOTE) > 40\n"
-            "print(DUP_NOTE)"
-        ),
-    )
-    sol = nb(
-        md("# Решения: normal + missing\n\n" + SOL_BANNER),
-        code(LOAD_DATA + "\n" + IMPORTS_MPL + "import numpy as np\nfrom pathlib import Path as _P\n_P('figures').mkdir(exist_ok=True)\n"),
-        md("## Урок"),
-        code(
             "plt.figure(); df['age'].dropna().hist(bins=20); plt.tight_layout()\n"
             "plt.savefig('figures/age_hist.png'); plt.close()\n"
             "AGE_SHAPE = 'возраст скошен, не идеальный колокол'\n"
@@ -1211,34 +1050,36 @@ def add_lesson06() -> None:
             "n_drop = int(df['age'].notna().sum())\n"
             "age_filled_median = df['age'].fillna(df['age'].median())\n"
             "ZERO_BAD = 'Возраст 0 путается с младенцами и ломает mean/модель'\n"
-            "n_dup = int(df.duplicated().sum())\n"
-            "n_after = int(len(df.drop_duplicates()))\n"
+            "n_all_drop = int(len(df.dropna()))\n"
+            "DROP_ALL_RISK = 'Остаются в основном строки с известным deck — смещение к 1 классу'\n"
             "CLEAN_LOG = (\n"
             "    'deck: не импутируем (слишком много NA). age: для описательных таблиц — median fill или анализ с NA отдельно. '\n"
             "    'duplicates: drop_duplicates перед агрегатами. embarked: 2 NA — можно dropna точечно.'\n"
             ")\n"
-            "n_all_drop = int(len(df.dropna()))\n"
-            "DROP_ALL_RISK = 'Остаются в основном строки с известным deck — смещение к 1 классу'\n"
-            "print(TOP_NA, n_drop, n_dup, n_all_drop)"
+            "STRATA_IDEA = 'Страты по pclass сохраняют структуру классов и меньше тянут bias'\n"
+            "print(true_rate, TOP_NA, n_all_drop)"
         ),
         md("## ДЗ"),
         code(
+            "rate_f = float(df.loc[df['sex'] == 'female', 'survived'].mean())\n"
+            "rate_p3 = float(df.loc[df['pclass'] == 3, 'survived'].mean())\n"
             "ages = df['age'].dropna().to_numpy()\n"
             "rng = np.random.default_rng(1)\n"
             "std_of_means = float(np.std([rng.choice(ages, 25, replace=True).mean() for _ in range(100)]))\n"
-            "na_et = int(df['embark_town'].isna().sum()); na_e = int(df['embarked'].isna().sum()); SAME = na_et == na_e\n"
             "rate_age_known = float(df.dropna(subset=['age'])['survived'].mean())\n"
             "AGE_NA_BIAS = 'Пропуски age не случайны по классу/кто — доля survived может сдвинуться'\n"
-            "DUP_NOTE = 'Учебный seaborn-набор схлопывает поля; полные дубликаты строк возможны без уникального id'\n"
-            "print(std_of_means, SAME, rate_age_known)"
+            "BIG_N_MYTH = 'Можно взять много мужчин 3 класса — n большое, но структура всё ещё смещена'\n"
+            "print(rate_f, rate_p3, std_of_means, rate_age_known)"
         ),
     )
     NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
     NOTEBOOKS[f"{base}/homework.ipynb"] = hw
     NOTEBOOKS[f"{base}/solutions.ipynb"] = sol
 
-def add_lesson07() -> None:
-    base = "lessons/07_practice_groups"
+
+def add_lesson06() -> None:
+    """Pair 22: practice groups (old 27)."""
+    base = "lessons/06_practice_groups"
     lesson = nb(
         md(
             "# Практика: гистограммы, группы, стратегии пропусков\n\n"
@@ -1439,12 +1280,13 @@ def add_lesson07() -> None:
     NOTEBOOKS[f"{base}/solutions.ipynb"] = sol
 
 
-def add_lesson08() -> None:
-    base = "lessons/08_report_draft"
+def add_lesson07() -> None:
+    """Pair 23: EDA report draft + submit (old 28+29)."""
+    base = "lessons/07_eda_report"
     lesson = nb(
         md(
-            "# Черновик EDA-отчёта (без модели)\n\n"
-            "Сборка ответа историческому обществу: факты, графики, ограничения."
+            "# EDA-отчёт: сборка и сдача (без модели)\n\n"
+            "Одна пара: каркас ответа обществу + чек-лист PROJECT + рефлексия. **Без** sklearn / fit."
         ),
         code(LOAD_DATA + "\n" + IMPORTS_MPL + "from pathlib import Path as _P\n_P('figures').mkdir(exist_ok=True)\n"),
         md(
@@ -1491,61 +1333,68 @@ def add_lesson08() -> None:
             "print(fig1, fig2)"
         ),
         md(
-            "## 5. Пропуски и чистка\n\n"
-            "Краткий `MISSING_SECTION` (что NA, что сделали / не сделали)."
+            "## 5. Пропуски, bias, черновик вывода\n\n"
+            "`MISSING_SECTION`, `BIAS_SECTION`, `DRAFT_CONCLUSION` (без fit/sklearn)."
         ),
         code(
             "MISSING_SECTION = ''\n"
-            "assert len(MISSING_SECTION) > 60\n"
-            "print(MISSING_SECTION)"
-        ),
-        md(
-            "## 6. Ограничения и bias\n\n"
-            "`BIAS_SECTION` — минимум sampling bias + «не причинность»."
-        ),
-        code(
             "BIAS_SECTION = ''\n"
-            "assert len(BIAS_SECTION) > 60\n"
-            "print(BIAS_SECTION)"
-        ),
-        md(
-            "## 7. Черновик вывода\n\n"
-            "`DRAFT_CONCLUSION` — 1 абзац: кто выживал чаще (с числами), без fit, с оговоркой."
-        ),
-        code(
             "DRAFT_CONCLUSION = ''\n"
+            "assert len(MISSING_SECTION) > 60 and len(BIAS_SECTION) > 60\n"
             "assert len(DRAFT_CONCLUSION) > 100\n"
             "assert 'fit' not in DRAFT_CONCLUSION.lower() and 'sklearn' not in DRAFT_CONCLUSION.lower()\n"
             "print(DRAFT_CONCLUSION)"
         ),
         md(
-            "## 8. Чек-лист черновика\n\n"
-            "Список булевых флагов `checks`: has_numbers, has_figure_refs, has_limits, no_model."
+            "## 6. Запрет модели и чек-лист артефакта\n\n"
+            "`USED_MODEL = False`. Флаги `artifact_ok` из PROJECT.md: "
+            "numbers, figures, missing, bias, conclusion, no_causality_overclaim."
         ),
         code(
-            "checks = {}\n"
-            "assert all(checks.get(k) for k in ('has_numbers', 'has_figure_refs', 'has_limits', 'no_model'))\n"
-            "print(checks)"
+            "USED_MODEL = True  # поставьте False\n"
+            "artifact_ok = {\n"
+            "    'numbers': False,\n"
+            "    'figures': False,\n"
+            "    'missing': False,\n"
+            "    'bias': False,\n"
+            "    'conclusion': False,\n"
+            "    'no_causality_overclaim': False,\n"
+            "}\n"
+            "assert USED_MODEL is False\n"
+            "assert all(artifact_ok.values())\n"
+            "print(artifact_ok)"
+        ),
+        md(
+            "## 7. Финальные числа и список figures\n\n"
+            "`final_rates` (≥5 ключей); `figure_files` — ≥2 имени `.png`."
+        ),
+        code(
+            "final_rates = {}\n"
+            "figure_files = []\n"
+            "assert len(final_rates) >= 5\n"
+            "assert len(figure_files) >= 2\n"
+            "assert all(isinstance(x, str) and x.endswith('.png') for x in figure_files)\n"
+            "print({k: round(float(v), 3) for k, v in final_rates.items()}, figure_files)"
+        ),
+        md(
+            "## 8. Рефлексия, мост к M4, READY\n\n"
+            "`REFLECTION` (≥100 символов); `NEXT_MODULE` — риск kNN без EDA; "
+            "`READY = True` только если отчёт + figures готовы к сдаче."
+        ),
+        code(
+            "REFLECTION = ''\n"
+            "NEXT_MODULE = ''\n"
+            "READY = False\n"
+            "assert len(REFLECTION) > 100 and len(NEXT_MODULE) > 30\n"
+            "assert READY is True\n"
+            "print(REFLECTION, NEXT_MODULE)"
         ),
     )
     hw = nb(
-        md("# ДЗ: дописать черновик отчёта"),
+        md("# ДЗ: полировка EDA-отчёта"),
         code(LOAD_DATA),
         md("### A. Закрепление"),
-        md("## 1. Добавьте в headline сравнение who=child vs adult_male"),
-        code(
-            "rate_child = None\n"
-            "rate_am = None\n"
-            "assert rate_child is not None and rate_am is not None\n"
-            "assert float(rate_child) > float(rate_am)\n"
-            "print(rate_child, rate_am)"
-        ),
-        md(
-            "### B. Вызов\n\n"
-            "## 2. Markdown-черновик `report_md`\n\n"
-            "Строка с заголовками ## Данные / ## Находки / ## Ограничения / ## Вывод "
-            "(можно без реальных картинок inline — укажите имена файлов figures/)."
-        ),
+        md("## 1. Markdown-черновик `report_md` с ## Данные / ## Находки / ## Ограничения / ## Вывод"),
         code(
             "report_md = ''\n"
             "assert '## Данные' in report_md and '## Вывод' in report_md\n"
@@ -1553,19 +1402,30 @@ def add_lesson08() -> None:
             "assert len(report_md) > 300\n"
             "print(report_md[:500])"
         ),
+        md("## 2. Точные overall и female rates (3 знака)"),
+        code(
+            "overall = None\n"
+            "female = None\n"
+            "assert overall is not None and female is not None\n"
+            "assert 0.3 < float(overall) < 0.5\n"
+            "assert float(female) > float(overall)\n"
+            "print(round(float(overall), 3), round(float(female), 3))"
+        ),
         md(
-            "## 3. Запрет модели\n\n"
-            "Найдите и удалите из своего текста любые намёки на обучение классификатора. "
-            "`NO_MODEL_CONFIRM = True` только если текст чист."
+            "### B. Вызов\n\n"
+            "## 3. Перепишите одно место с риском причинности → `FIXED_SENTENCE`.\n\n"
+            "`NO_MODEL_CONFIRM = True` только если текст чист от намёков на обучение классификатора."
         ),
         code(
+            "FIXED_SENTENCE = ''\n"
             "NO_MODEL_CONFIRM = False\n"
+            "assert len(FIXED_SENTENCE) > 40\n"
             "assert NO_MODEL_CONFIRM is True\n"
-            "print('ok')"
+            "print(FIXED_SENTENCE)"
         ),
     )
     sol = nb(
-        md("# Решения: report draft\n\n" + SOL_BANNER),
+        md("# Решения: EDA report\n\n" + SOL_BANNER),
         code(LOAD_DATA + "\n" + IMPORTS_MPL + "from pathlib import Path as _P\n_P('figures').mkdir(exist_ok=True)\n"),
         md("## Урок"),
         code(
@@ -1591,160 +1451,9 @@ def add_lesson08() -> None:
             "    f\"1 класс выше 3 ({headline_rates['pclass1']:.0%} vs {headline_rates['pclass3']:.0%}). \"\n"
             "    'Вывод описательный по данной таблице; модель не строилась; есть пропуски и риск bias.'\n"
             ")\n"
-            "checks = {'has_numbers': True, 'has_figure_refs': True, 'has_limits': True, 'no_model': True}\n"
-            "print(headline_rates, DRAFT_CONCLUSION)"
-        ),
-        md("## ДЗ"),
-        code(
-            "rate_child = float(df.loc[df['who']=='child','survived'].mean())\n"
-            "rate_am = float(df.loc[df['adult_male']==True,'survived'].mean())\n"
-            "report_md = '''## Данные\\nИсточник: seaborn Titanic, 891×15. Цель описания: survived.\\n\\n'\n"
-            "'''## Находки\\nЖенщины и 1 класс — выше доля survived. См. figures/report_surv_sex.png.\\n\\n'\n"
-            "'''## Ограничения\\nПропуски age/deck; sampling bias на срезах; нет причинности.\\n\\n'\n"
-            "'''## Вывод\\nОтвет обществу — описательный, без обученной модели.'''\n"
-            "NO_MODEL_CONFIRM = True\n"
-            "print(rate_child, rate_am, len(report_md))"
-        ),
-    )
-    NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
-    NOTEBOOKS[f"{base}/homework.ipynb"] = hw
-    NOTEBOOKS[f"{base}/solutions.ipynb"] = sol
-
-
-def add_lesson09() -> None:
-    base = "lessons/09_report_submit"
-    lesson = nb(
-        md(
-            "# Сдача EDA-отчёта и рефлексия модуля\n\n"
-            "Финальная сверка чек-листа артефакта. **Без** `sklearn` / `fit`."
-        ),
-        code(LOAD_DATA),
-        md(
-            "## 1. Запрет модели\n\n"
-            "Убедитесь, что в финальном ноутбуке/отчёте нет обучения классификатора. "
-            "`USED_MODEL = False`."
-        ),
-        code(
-            "USED_MODEL = True  # поставьте False\n"
-            "assert USED_MODEL is False\n"
-            "print('no model')"
-        ),
-        md(
-            "## 2. Воспроизводимость\n\n"
-            "Путь к CSV существует; число строк 891. `n_rows`."
-        ),
-        code(
-            "n_rows = len(df)\n"
-            "assert n_rows == 891\n"
-            "assert TITANIC_PATH.exists()\n"
-            "print(TITANIC_PATH, n_rows)"
-        ),
-        md(
-            "## 3. Чек-лист артефакта\n\n"
-            "Пройдите флаги из PROJECT.md: numbers, figures, missing, bias, conclusion, no_causality_overclaim."
-        ),
-        code(
-            "artifact_ok = {\n"
-            "    'numbers': False,\n"
-            "    'figures': False,\n"
-            "    'missing': False,\n"
-            "    'bias': False,\n"
-            "    'conclusion': False,\n"
-            "    'no_causality_overclaim': False,\n"
-            "}\n"
-            "# отметьте True после самопроверки отчёта\n"
-            "assert all(artifact_ok.values())\n"
-            "print(artifact_ok)"
-        ),
-        md(
-            "## 4. Финальные числа (вставить в отчёт)\n\n"
-            "Пересчитайте overall / female / male / pclass1 / pclass3 — словарь `final_rates`."
-        ),
-        code(
-            "final_rates = {}\n"
-            "assert len(final_rates) >= 5\n"
-            "print({k: round(float(v), 3) for k, v in final_rates.items()})"
-        ),
-        md(
-            "## 5. Список файлов figures\n\n"
-            "Перечислите имена графиков, которые сдаёте -> `figure_files` (list[str])."
-        ),
-        code(
-            "figure_files = []\n"
-            "assert len(figure_files) >= 2\n"
-            "assert all(isinstance(x, str) and x.endswith('.png') for x in figure_files)\n"
-            "print(figure_files)"
-        ),
-        md(
-            "## 6. Рефлексия модуля\n\n"
-            "`REFLECTION`: что изменилось в том, как вы смотрите на таблицу до модели "
-            "(3–5 предложений)."
-        ),
-        code(
-            "REFLECTION = ''\n"
-            "assert len(REFLECTION) > 100\n"
-            "print(REFLECTION)"
-        ),
-        md(
-            "## 7. Мост к модулю 4\n\n"
-            "Одной фразой `NEXT_MODULE`: какой риск, если сразу взять survived как y в kNN "
-            "без EDA."
-        ),
-        code(
-            "NEXT_MODULE = ''\n"
-            "assert len(NEXT_MODULE) > 30\n"
-            "print(NEXT_MODULE)"
-        ),
-        md(
-            "## 8. Готово к сдаче\n\n"
-            "`READY = True` только если отчёт + figures лежат по структуре artifact/PROJECT.md."
-        ),
-        code(
-            "READY = False\n"
-            "assert READY is True\n"
-            "print('submit')"
-        ),
-    )
-    # pair 29: homework optional light — still provide short HW for consistency with design-lesson
-    hw = nb(
-        md("# ДЗ: финальная полировка отчёта"),
-        code(LOAD_DATA),
-        md("### A. Закрепление"),
-        md("## 1. Вставьте в отчёт точные overall и female rates (3 знака)"),
-        code(
-            "overall = None\n"
-            "female = None\n"
-            "assert overall is not None and female is not None\n"
-            "assert 0.3 < float(overall) < 0.5\n"
-            "assert float(female) > float(overall)\n"
-            "print(round(float(overall), 3), round(float(female), 3))"
-        ),
-        md(
-            "### B. Вызов\n\n"
-            "## 2. Peer-review себе\n\n"
-            "Найдите одно место, где легко скатиться в причинность — перепишите. `FIXED_SENTENCE`."
-        ),
-        code(
-            "FIXED_SENTENCE = ''\n"
-            "assert len(FIXED_SENTENCE) > 40\n"
-            "print(FIXED_SENTENCE)"
-        ),
-    )
-    sol = nb(
-        md("# Решения: submit\n\n" + SOL_BANNER),
-        code(LOAD_DATA),
-        md("## Урок"),
-        code(
             "USED_MODEL = False\n"
-            "n_rows = len(df)\n"
             "artifact_ok = {k: True for k in ('numbers','figures','missing','bias','conclusion','no_causality_overclaim')}\n"
-            "final_rates = {\n"
-            "    'overall': float(df['survived'].mean()),\n"
-            "    'female': float(df.loc[df['sex']=='female','survived'].mean()),\n"
-            "    'male': float(df.loc[df['sex']=='male','survived'].mean()),\n"
-            "    'pclass1': float(df.loc[df['pclass']==1,'survived'].mean()),\n"
-            "    'pclass3': float(df.loc[df['pclass']==3,'survived'].mean()),\n"
-            "}\n"
+            "final_rates = dict(headline_rates)\n"
             "figure_files = ['report_surv_sex.png', 'report_age_pclass.png']\n"
             "REFLECTION = (\n"
             "    'До модуля таблица казалась готовой к fit. Теперь сначала доли, пропуски, bias и формулировки без причинности. '\n"
@@ -1753,14 +1462,21 @@ def add_lesson09() -> None:
             ")\n"
             "NEXT_MODULE = 'Без EDA kNN получит мусорные признаки и смещённую оценку качества'\n"
             "READY = True\n"
-            "print(final_rates)"
+            "print(final_rates, READY)"
         ),
         md("## ДЗ"),
         code(
+            "report_md = (\n"
+            "    '## Данные\\nИсточник: seaborn Titanic, 891x15. Цель описания: survived.\\n\\n'\n"
+            "    '## Находки\\nЖенщины и 1 класс — выше доля survived. См. figures/report_surv_sex.png.\\n\\n'\n"
+            "    '## Ограничения\\nПропуски age/deck; sampling bias на срезах; нет причинности.\\n\\n'\n"
+            "    '## Вывод\\nОтвет обществу — описательный, без обученной модели.'\n"
+            ")\n"
             "overall = float(df['survived'].mean())\n"
             "female = float(df.loc[df['sex']=='female','survived'].mean())\n"
             "FIXED_SENTENCE = 'Наблюдается более высокая доля выживших среди женщин в этой таблице; причина из EDA не установлена'\n"
-            "print(overall, female, FIXED_SENTENCE)"
+            "NO_MODEL_CONFIRM = True\n"
+            "print(len(report_md), overall, female)"
         ),
     )
     NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
@@ -1770,10 +1486,7 @@ def add_lesson09() -> None:
 
 def main() -> None:
     if not DATA_CSV.exists():
-        raise SystemExit(
-            f"Missing {DATA_CSV}. Export seaborn Titanic:\n"
-            "  python -c \"import seaborn as sns; sns.load_dataset('titanic').to_csv('data/titanic.csv', index=False)\""
-        )
+        raise SystemExit(f"Missing {DATA_CSV}. See data/README.md for Titanic CSV export.")
     add_lesson01()
     add_lesson02()
     add_lesson03()
@@ -1781,24 +1494,20 @@ def main() -> None:
     add_lesson05()
     add_lesson06()
     add_lesson07()
-    add_lesson08()
-    add_lesson09()
     lesson_dirs = [
         "lessons/01_load_inspect_paths",
         "lessons/02_practice_inspect",
         "lessons/03_mean_median_std",
         "lessons/04_practice_boxplot",
-        "lessons/05_sampling_bias",
-        "lessons/06_normal_missing",
-        "lessons/07_practice_groups",
-        "lessons/08_report_draft",
-        "lessons/09_report_submit",
+        "lessons/05_bias_clt_missing",
+        "lessons/06_practice_groups",
+        "lessons/07_eda_report",
     ]
     for rel, notebook in NOTEBOOKS.items():
         write(rel, notebook)
     for d in lesson_dirs:
         copy_csv(d)
-    print(f"done: {len(NOTEBOOKS)} notebooks")
+    print(f"done: {len(NOTEBOOKS)} notebooks in {len(lesson_dirs)} lessons")
 
 
 if __name__ == "__main__":

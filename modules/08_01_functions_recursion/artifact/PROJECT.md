@@ -1,7 +1,7 @@
 # Артефакт модуля: библиотека `text_stats`
 
 **Тип:** Python-модуль + README учащегося  
-**Срок:** пары КТП **9–10** (по **2** академических часа на пару, **4 ч** всего + доработка дома при необходимости)  
+**Срок:** пара КТП **8** (**2** академических часа + доработка дома при необходимости)  
 **Для учителя:** это **итоговая сдача** модуля; минимум — `manual_tests.py` без ошибок (10 проверок)
 
 **Смысл для класса:** частоты слов в текстах двух классов отзывов; простой классификатор «позитив / негатив» без pandas и sklearn.
@@ -34,7 +34,7 @@
 | `top_n(freq, n=5)` | top-n пар `(слово, count)` по убыванию частоты | самые частые слова |
 | `count_char_recursive(s, ch)` | рекурсивный подсчёт `ch` в `s` | рекурсия (пара 7) |
 | `analyze_text(text)` | `{"word_count", "unique_words", "top3"}` | краткое описание одного текста |
-| `apply_pipeline(data, steps)` | последовательно применить функции из `steps` | цепочка шагов (пара 8) |
+| `apply_pipeline(data, steps)` | последовательно применить функции из `steps` | цепочка шагов (пара 7) |
 | `aggregate_frequencies(texts)` | суммарные частоты по списку текстов класса | нужна для сравнения классов; **отдельного теста нет** — проверяется через `compare_class_frequencies` |
 | `compare_class_frequencies(texts_a, texts_b, ratio=2.0)` | `{слово: "positive"\|"negative"}` при перевесе ≥ `ratio` | маркерные слова класса |
 | `naive_classify(text, texts_a, texts_b)` | `"positive"` / `"negative"` / `"unknown"` | предсказание класса текста |
@@ -92,8 +92,8 @@ naive_classify("отличный фильм рекомендую", TEXTS_POSITIV
 |---|---|
 | 2–3 | `def`, `return`, docstring |
 | 5–6 | отладка метрик / журнал — тот же навык при отладке `naive_classify` |
-| 7 | `count_char_recursive` |
-| 8 | `lambda` в pipeline, `apply_pipeline` |
+| 7 | `count_char_recursive`; `lambda` в pipeline, `apply_pipeline` |
+| 8 | сборка `text_stats` + сдача |
 
 ---
 
@@ -108,20 +108,19 @@ naive_classify("отличный фильм рекомендую", TEXTS_POSITIV
 
 ---
 
-## Для учителя (пары 9–10)
+## Для учителя (пара 8)
 
-Планы пар и карточки §13: [09_artifact_build/LESSON.md](../lessons/09_artifact_build/LESSON.md), [10_artifact_submit/LESSON.md](../lessons/10_artifact_submit/LESSON.md).
+План пары и карточка §13: [08_artifact/LESSON.md](../lessons/08_artifact/LESSON.md).
 
 | | |
 |---|---|
 | **Выдать** | папку [starter/](starter/) целиком; ученики **не** трогают `solution/` |
 | **Инструкция ученику** | [starter/README.md](starter/README.md) — порядок функций и шаблон README |
-| **Пара 9** | разбор PROJECT; шаги 1–5 из [starter/README](starter/README.md) |
-| **Пара 10** | шаги 6–8; сдача `text_stats.py` + README + 10 тестов |
+| **Пара 8** | разбор PROJECT; шаги 1–8; сдача `text_stats.py` + README + 10 тестов |
 | **Проверка** | из `artifact/starter/`: `python manual_tests.py` → `All 10 manual tests passed.` |
 | **Зачёт** | 10 тестов + README ученика (5 своих фраз для `naive_classify`, из них ≥4 верных) |
 | **Эталон (не раздавать)** | [solution/](solution/) — ответы и разбор маркеров |
-| **Первая фраза** | «Вы собираете библиотеку из функций, которые мы тренировали 8 пар — тесты скажут, что готово» |
+| **Первая фраза** | «Собираете библиотеку из функций модуля — тесты и README решают, готово ли к сдаче» |
 
 ### Если тест упал
 
@@ -135,9 +134,8 @@ naive_classify("отличный фильм рекомендую", TEXTS_POSITIV
 
 ---
 
-## Карточки урока (§13)
+## Карточка урока (§13)
 
-Перенесены в LESSON пар 9–10 (одна пара = один LESSON.md):
+В LESSON пары 8 (одна пара = один LESSON.md):
 
-- [§13 пара 9](../lessons/09_artifact_build/LESSON.md#13-карточка-урока)
-- [§13 пара 10](../lessons/10_artifact_submit/LESSON.md#13-карточка-урока)
+- [§13 пара 8](../lessons/08_artifact/LESSON.md#e-карточка-урока-13)

@@ -48,7 +48,7 @@
 | 2 | Другая выборка | 15 | `describe_numbers(LAB_SCORES)`; сравнивает min/max с ожиданием | «Тот же контракт — другие числа; что меняется в mean?» | `## 2. Другая выборка` | Кортеж выведен; устно: count и mean |
 | 3 | Два признака | 15 | Scale `AREAS_SQM` и `ROOMS_COUNTS`; assert [0,1] на обоих | «Почему нельзя сложить сырую площадь и число комнат?» | `## 3. Два признака` | Оба assert зелёные |
 | 4 | Порог как решение | 20 | Находит `pass_threshold`, при котором **ровно 4** сдавших на `LAB_SCORES` | Не подсказывать порог; отличие от «≈50%» в ДЗ пары 3 | `## 4. Порог: ровно k` | Запись: `порог = …, passed = 4` |
-| 5 | Цепочка transform | 20 | Пишет `apply_transform(values, fn)`; describe после `min_max_scale` | Задел к `apply_pipeline` (пара 8) | `## 5. Цепочка transform` | assert на scale→describe |
+| 5 | Цепочка transform | 20 | Пишет `apply_transform(values, fn)`; describe после `min_max_scale` | Задел к `apply_pipeline` (пара 7) | `## 5. Цепочка transform` | assert на scale→describe |
 | 6 | Постановка ДЗ | 5 | Открывает `homework.ipynb` | Кортеж с строкой района — мост к «строке» без dict | [homework.ipynb](homework.ipynb) | Знает файл и срок |
 
 Обязательные этапы для минимума сдачи: **2–5**. Этап 1 — проверка опоры; этап 6 — ДЗ.

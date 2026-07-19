@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate lesson notebooks for module 08_02 (KTP pairs 11–20).
+"""Generate lesson notebooks for module 08_02 (KTP pairs 9–16).
 
 Source of truth for .ipynb: edit this file, then run it.
 Pattern (как в модуле 1): stubs + asserts в lesson/homework; полный solutions.
@@ -16,13 +16,13 @@ ROOT = Path(__file__).resolve().parent
 LOAD_DATA = (
     "from pathlib import Path\n"
     "import pandas as pd\n\n\n"
-    "def find_trips_csv() -> Path:\n"
-    "    for p in (Path('trips.csv'), Path('../../data/trips.csv'), Path('../data/trips.csv')):\n"
+    "def find_listings_csv() -> Path:\n"
+    "    for p in (Path('listings.csv'), Path('../../data/listings.csv'), Path('../data/listings.csv')):\n"
     "        if p.exists():\n"
     "            return p.resolve()\n"
-    "    raise FileNotFoundError('trips.csv не найден')\n\n\n"
-    "TRIPS_PATH = find_trips_csv()\n"
-    "df = pd.read_csv(TRIPS_PATH)\n"
+    "    raise FileNotFoundError('listings.csv не найден')\n\n\n"
+    "LISTINGS_PATH = find_listings_csv()\n"
+    "df = pd.read_csv(LISTINGS_PATH)\n"
 )
 
 IMPORTS_MPL = "import matplotlib.pyplot as plt\n"
@@ -78,16 +78,16 @@ def add_lesson01() -> None:
     base = "lessons/01_pandas_dataframe"
     lesson = nb(
         md(
-            "# pandas: таблица поездок каршеринга\n\n"
-            "Отдел аналитики «Дорога» хранит поездки в CSV. В модуле 1 `predict` работал на "
-            "парах чисел; здесь **сотни строк** и **несколько полей** на поездку — нужен `DataFrame`."
+            "# pandas: таблица объявлений краткосрочной аренды\n\n"
+            "Отдел аналитики «StayLocal» хранит объявления в CSV. В модуле 1 `predict` работал на "
+            "парах чисел; здесь **сотни строк** и **несколько полей** на объявление — нужен `DataFrame`."
         ),
         code(LOAD_DATA),
         md(
             "## 1. Зачем таблица\n\n"
-            "Одна **строка** = одна поездка; один **столбец** = одно поле (расстояние, час, зона…). "
+            "Одна **строка** = одно объявление; один **столбец** = одно поле (вместимость, отзывы, район…). "
             "Выведите число строк и столбцов, первые 5 строк и список имён столбцов.\n\n"
-            "**Вопрос:** сколько поездок в файле и сколько полей у каждой?\n\n"
+            "**Вопрос:** сколько объявлений в файле и сколько полей у каждой?\n\n"
             "**Pitfall:** `print(df)` на больших данных заливает экран — для осмотра хватает "
             "`shape`, `head`, `columns`."
         ),
@@ -104,34 +104,34 @@ def add_lesson01() -> None:
             "## 2. dtypes: число vs текст\n\n"
             "Вызовите `df.dtypes` (или `df.info()`). Числовые столбцы нужны для `fit`; "
             "`object` — строки/категории, их нельзя сразу подать в `LinearRegression`.\n\n"
-            "**How:** `df['distance_km'].dtype` vs `df['zone'].dtype`.\n\n"
-            "**Checkpoint:** почему `distance_km` не `object`?"
+            "**How:** `df['accommodates'].dtype` vs `df['neighbourhood'].dtype`.\n\n"
+            "**Checkpoint:** почему `accommodates` не `object`?"
         ),
         code(
             "# print(df.dtypes)\n"
-            "distance_dtype = None  # str(df['distance_km'].dtype)\n"
-            "zone_dtype = None  # str(df['zone'].dtype)\n"
-            "assert distance_dtype is not None and zone_dtype is not None\n"
-            "assert 'object' not in str(distance_dtype).lower() or 'float' in str(distance_dtype).lower() or 'int' in str(distance_dtype).lower()\n"
-            "assert 'object' in str(zone_dtype).lower() or str(zone_dtype) == 'object'\n"
-            "print('distance:', distance_dtype, '| zone:', zone_dtype)"
+            "accommodates_dtype = None  # str(df['accommodates'].dtype)\n"
+            "neighbourhood_dtype = None  # str(df['neighbourhood'].dtype)\n"
+            "assert accommodates_dtype is not None and neighbourhood_dtype is not None\n"
+            "assert 'object' not in str(accommodates_dtype).lower() or 'float' in str(accommodates_dtype).lower() or 'int' in str(accommodates_dtype).lower()\n"
+            "assert 'object' in str(neighbourhood_dtype).lower() or str(neighbourhood_dtype) == 'object'\n"
+            "print('accommodates:', accommodates_dtype, '| neighbourhood:', neighbourhood_dtype)"
         ),
         md(
             "## 3. Одна ячейка через iloc\n\n"
-            "Расстояние первой поездки: `df.iloc[0]['distance_km']` (или `df.iloc[0, …]`). "
-            "Запишите в `first_distance`.\n\n"
+            "Вместимость первого объявления: `df.iloc[0]['accommodates']` (или `df.iloc[0, …]`). "
+            "Запишите в `first_accommodates`.\n\n"
             "**Зачем:** модель потом читает признаки **построчно**.\n\n"
-            "**Pitfall:** `iloc` — по **позиции** (0, 1, 2…), не по `trip_id`."
+            "**Pitfall:** `iloc` — по **позиции** (0, 1, 2…), не по `listing_id`."
         ),
         code(
-            "first_distance = None\n"
-            "assert first_distance is not None\n"
-            "assert isinstance(first_distance, (int, float)) and first_distance > 0\n"
-            "print('первая поездка, км:', first_distance)"
+            "first_accommodates = None\n"
+            "assert first_accommodates is not None\n"
+            "assert isinstance(first_accommodates, (int, float)) and first_accommodates > 0\n"
+            "print('первый listing, accommodates:', first_accommodates)"
         ),
         md(
             "## 4. loc vs iloc — нюанс\n\n"
-            "Возьмите первые 3 строки столбцов `distance_km` и `duration_min` "
+            "Возьмите первые 3 строки столбцов `accommodates` и `price` "
             "двумя способами: `.loc` (имена) и `.iloc` (позиции). Значения должны совпасть.\n\n"
             "**Why:** после фильтра индекс строк может быть не 0…n; "
             "`iloc[0]` — «первая видимая», `loc[0]` — «строка с меткой 0» (может отсутствовать)."
@@ -141,7 +141,7 @@ def add_lesson01() -> None:
             "by_pos = None  # .iloc\n"
             "assert by_name is not None and by_pos is not None\n"
             "assert by_name.shape == (3, 2) and by_pos.shape == (3, 2)\n"
-            "assert list(by_name.columns) == ['distance_km', 'duration_min']\n"
+            "assert list(by_name.columns) == ['accommodates', 'price']\n"
             "assert (by_name.values == by_pos.values).all()\n"
             "print(by_name)\n"
             "print(by_pos)"
@@ -149,7 +149,7 @@ def add_lesson01() -> None:
         md(
             "## 5. Признак, цель, служебный столбец\n\n"
             "Для ML явно назовите роли:\n"
-            "- **цель** — что предсказываем (`duration_min`);\n"
+            "- **цель** — что предсказываем (`price`);\n"
             "- **признаки** — числа/категории для модели;\n"
             "- **id** — служебный ключ, **не** признак.\n\n"
             "Заполните переменные ниже."
@@ -162,33 +162,33 @@ def add_lesson01() -> None:
             "assert TARGET not in FEATURES\n"
             "assert ID_COL in df.columns\n"
             "assert ID_COL not in FEATURES\n"
-            "assert 'distance_km' in FEATURES\n"
+            "assert 'accommodates' in FEATURES\n"
             "assert set(FEATURES).issubset(df.columns)\n"
             "assert df[TARGET].dtype.kind in 'iuf'"
         ),
         md(
-            "## 6. value_counts: зоны\n\n"
-            "Сколько поездок в каждой `zone`? Используйте `value_counts()` "
+            "## 6. value_counts: районы\n\n"
+            "Сколько объявлений в каждом `neighbourhood`? Используйте `value_counts()` "
             "(частоты категорий — база для EDA и фильтров).\n\n"
-            "Запишите число **уникальных** зон в `n_zones`."
+            "Запишите число **уникальных** зон в `n_neighbourhoods`."
         ),
         code(
-            "zone_counts = None  # df['zone'].value_counts()\n"
-            "# print(zone_counts)\n"
-            "n_zones = None\n"
-            "assert zone_counts is not None\n"
-            "assert n_zones is not None\n"
-            "assert isinstance(n_zones, (int, float)) and 2 <= n_zones <= 20\n"
-            "print('уникальных zone:', n_zones)\n"
-            "print(zone_counts)"
+            "neighbourhood_counts = None  # df['neighbourhood'].value_counts()\n"
+            "# print(neighbourhood_counts)\n"
+            "n_neighbourhoods = None\n"
+            "assert neighbourhood_counts is not None\n"
+            "assert n_neighbourhoods is not None\n"
+            "assert isinstance(n_neighbourhoods, (int, float)) and 2 <= n_neighbourhoods <= 20\n"
+            "print('уникальных neighbourhood:', n_neighbourhoods)\n"
+            "print(neighbourhood_counts)"
         ),
         md(
             "## 7. Checkpoint: почему не list of dicts\n\n"
             "В модуле 1 данные жили в списках. Здесь — таблица.\n\n"
             "Напишите 2–3 предложения в `WHY_DATAFRAME`: зачем `DataFrame` вместо "
-            "`list[dict]` для сотен поездок (фильтр, столбец целиком, dtypes, "
+            "`list[dict]` для сотен объявлений (фильтр, столбец целиком, dtypes, "
             "готовность к `sklearn`).\n\n"
-            "**How:** подумайте про `df['distance_km']` vs цикл по словарям."
+            "**How:** подумайте про `df['accommodates']` vs цикл по словарям."
         ),
         code(
             "WHY_DATAFRAME = ''\n"
@@ -197,35 +197,35 @@ def add_lesson01() -> None:
             "print(WHY_DATAFRAME)"
         ),
         md(
-            "## 8. Расширение: поездка по id\n\n"
-            "Найдите длительность поездки `T0001` через `.loc` и маску по `trip_id`.\n\n"
+            "## 8. Расширение: объявление по id\n\n"
+            "Найдите цену объявления `L0001` через `.loc` и маску по `listing_id`.\n\n"
             "**Зачем:** id нужен для поиска строки, но в `X` для `fit` его не кладут."
         ),
         code(
-            "duration_t0001 = None\n"
-            "assert duration_t0001 is not None\n"
-            "assert isinstance(duration_t0001, (int, float)) and duration_t0001 > 0\n"
-            "print('T0001 duration:', duration_t0001)"
+            "price_l0001 = None\n"
+            "assert price_l0001 is not None\n"
+            "assert isinstance(price_l0001, (int, float)) and price_l0001 > 0\n"
+            "print('L0001 price:', price_l0001)"
         ),
     )
     hw = nb(
         md("# ДЗ: осмотр таблицы"),
         code(LOAD_DATA),
         md("### A. Закрепление"),
-        md("## 1. Срез столбцов\n\nПервые 10 строк только `distance_km`, `duration_min`, `hour`."),
+        md("## 1. Срез столбцов\n\nПервые 10 строк только `accommodates`, `price`, `number_of_reviews`."),
         code(
             "subset = None  # DataFrame 10×3\n"
             "assert subset is not None\n"
-            "assert list(subset.columns) == ['distance_km', 'duration_min', 'hour']\n"
+            "assert list(subset.columns) == ['accommodates', 'price', 'number_of_reviews']\n"
             "assert len(subset) == 10\n"
             "print(subset)"
         ),
-        md("## 2. Одна поездка\n\nДлительность поездки с `trip_id == 'T0001'`."),
+        md("## 2. Одно объявление\n\nЦена объявления с `listing_id == 'L0001'`."),
         code(
-            "duration_t0001 = None  # число\n"
-            "assert duration_t0001 is not None\n"
-            "assert isinstance(duration_t0001, (int, float)) and duration_t0001 > 0\n"
-            "print(duration_t0001)"
+            "price_l0001 = None  # число\n"
+            "assert price_l0001 is not None\n"
+            "assert isinstance(price_l0001, (int, float)) and price_l0001 > 0\n"
+            "print(price_l0001)"
         ),
         md("## 3. Два способа длины\n\nПроверьте, что `len(df)` и `df.shape[0]` совпадают."),
         code(
@@ -236,31 +236,31 @@ def add_lesson01() -> None:
         ),
         md(
             "### B. Вызов\n\n"
-            "## 4. Средняя comfort\n\n"
-            "Средняя `duration_min` только для `vehicle_type == 'comfort'` "
+            "## 4. Средняя entire\n\n"
+            "Средняя `price` только для `room_type == 'entire'` "
             "(округлите до 1 знака). Сравните со средним по всей таблице — одной фразой."
         ),
         code(
-            "mean_comfort = None  # float\n"
+            "mean_entire = None  # float\n"
             "mean_all = None  # float, округлить до 1 знака\n"
             "COMPARE_NOTE = ''  # одна фраза\n"
-            "assert mean_comfort is not None and mean_all is not None\n"
-            "assert isinstance(mean_comfort, (int, float)) and mean_comfort > 0\n"
+            "assert mean_entire is not None and mean_all is not None\n"
+            "assert isinstance(mean_entire, (int, float)) and mean_entire > 0\n"
             "assert isinstance(mean_all, (int, float)) and mean_all > 0\n"
             "assert len(COMPARE_NOTE) > 10\n"
-            "print(mean_comfort, mean_all, COMPARE_NOTE)"
+            "print(mean_entire, mean_all, COMPARE_NOTE)"
         ),
         md(
             "## 5. value_counts в ДЗ\n\n"
-            "Топ-частота `vehicle_type` (какое значение встречается чаще всего). "
-            "Запишите имя в `top_vehicle`."
+            "Топ-частота `room_type` (какое значение встречается чаще всего). "
+            "Запишите имя в `top_room_type`."
         ),
         code(
-            "top_vehicle = None  # str\n"
-            "assert top_vehicle is not None\n"
-            "assert isinstance(top_vehicle, str) and len(top_vehicle) > 0\n"
-            "assert top_vehicle in set(df['vehicle_type'])\n"
-            "print(top_vehicle)"
+            "top_room_type = None  # str\n"
+            "assert top_room_type is not None\n"
+            "assert isinstance(top_room_type, str) and len(top_room_type) > 0\n"
+            "assert top_room_type in set(df['room_type'])\n"
+            "print(top_room_type)"
         ),
     )
     sol = nb(
@@ -275,59 +275,59 @@ def add_lesson01() -> None:
         ),
         md("## Урок. 2. dtypes"),
         code(
-            "distance_dtype = str(df['distance_km'].dtype)\n"
-            "zone_dtype = str(df['zone'].dtype)\n"
-            "print('distance:', distance_dtype, '| zone:', zone_dtype)"
+            "accommodates_dtype = str(df['accommodates'].dtype)\n"
+            "neighbourhood_dtype = str(df['neighbourhood'].dtype)\n"
+            "print('accommodates:', accommodates_dtype, '| neighbourhood:', neighbourhood_dtype)"
         ),
         md("## Урок. 3. Одна ячейка"),
         code(
-            "first_distance = float(df.iloc[0]['distance_km'])\n"
-            "print('первая поездка, км:', first_distance)"
+            "first_accommodates = float(df.iloc[0]['accommodates'])\n"
+            "print('первый listing, accommodates:', first_accommodates)"
         ),
         md("## Урок. 4. loc vs iloc"),
         code(
-            "by_name = df.loc[:2, ['distance_km', 'duration_min']]\n"
-            "by_pos = df.iloc[:3][['distance_km', 'duration_min']]\n"
+            "by_name = df.loc[:2, ['accommodates', 'price']]\n"
+            "by_pos = df.iloc[:3][['accommodates', 'price']]\n"
             "assert (by_name.values == by_pos.values).all()\n"
             "print(by_name)\n"
             "print(by_pos)"
         ),
         md("## Урок. 5. Признак / цель / id"),
         code(
-            "TARGET = 'duration_min'\n"
-            "FEATURES = ['distance_km', 'hour', 'zone', 'vehicle_type']\n"
-            "ID_COL = 'trip_id'\n"
+            "TARGET = 'price'\n"
+            "FEATURES = ['accommodates', 'number_of_reviews', 'neighbourhood', 'room_type']\n"
+            "ID_COL = 'listing_id'\n"
             "assert TARGET not in FEATURES and ID_COL not in FEATURES"
         ),
         md("## Урок. 6. value_counts"),
         code(
-            "zone_counts = df['zone'].value_counts()\n"
-            "n_zones = int(df['zone'].nunique())\n"
-            "print('уникальных zone:', n_zones)\n"
-            "print(zone_counts)"
+            "neighbourhood_counts = df['neighbourhood'].value_counts()\n"
+            "n_neighbourhoods = int(df['neighbourhood'].nunique())\n"
+            "print('уникальных neighbourhood:', n_neighbourhoods)\n"
+            "print(neighbourhood_counts)"
         ),
         md("## Урок. 7. WHY_DATAFRAME"),
         code(
             "WHY_DATAFRAME = (\n"
             "    'DataFrame даёт столбцы целиком, фильтры и dtypes без цикла по list[dict]. '\n"
-            "    'Сотни поездок удобнее резать маской; sklearn ждёт таблицу признаков X.'\n"
+            "    'Сотни объявлений удобнее резать маской; sklearn ждёт таблицу признаков X.'\n"
             ")\n"
             "print(WHY_DATAFRAME)"
         ),
-        md("## Урок. 8. Поездка по id"),
+        md("## Урок. 8. Объявление по id"),
         code(
-            "duration_t0001 = float(df.loc[df['trip_id'] == 'T0001', 'duration_min'].iloc[0])\n"
-            "print('T0001 duration:', duration_t0001)"
+            "price_l0001 = float(df.loc[df['listing_id'] == 'L0001', 'price'].iloc[0])\n"
+            "print('L0001 price:', price_l0001)"
         ),
         md("## ДЗ. 1. Срез столбцов"),
         code(
-            "subset = df[['distance_km', 'duration_min', 'hour']].head(10)\n"
+            "subset = df[['accommodates', 'price', 'number_of_reviews']].head(10)\n"
             "print(subset)"
         ),
-        md("## ДЗ. 2. Одна поездка"),
+        md("## ДЗ. 2. Одно объявление"),
         code(
-            "duration_t0001 = float(df.loc[df['trip_id'] == 'T0001', 'duration_min'].iloc[0])\n"
-            "print(duration_t0001)"
+            "price_l0001 = float(df.loc[df['listing_id'] == 'L0001', 'price'].iloc[0])\n"
+            "print(price_l0001)"
         ),
         md("## ДЗ. 3. Два способа длины"),
         code(
@@ -336,17 +336,17 @@ def add_lesson01() -> None:
             "assert a == b\n"
             "print(a)"
         ),
-        md("## ДЗ. 4. Средняя comfort"),
+        md("## ДЗ. 4. Средняя entire"),
         code(
-            "mean_comfort = round(df.loc[df['vehicle_type'] == 'comfort', 'duration_min'].mean(), 1)\n"
-            "mean_all = round(df['duration_min'].mean(), 1)\n"
-            "COMPARE_NOTE = f'comfort: {mean_comfort}, все: {mean_all} — сравните порядок величин'\n"
-            "print(mean_comfort, mean_all, COMPARE_NOTE)"
+            "mean_entire = round(df.loc[df['room_type'] == 'entire', 'price'].mean(), 1)\n"
+            "mean_all = round(df['price'].mean(), 1)\n"
+            "COMPARE_NOTE = f'entire: {mean_entire}, все: {mean_all} — сравните порядок величин'\n"
+            "print(mean_entire, mean_all, COMPARE_NOTE)"
         ),
-        md("## ДЗ. 5. top vehicle"),
+        md("## ДЗ. 5. top room_type"),
         code(
-            "top_vehicle = str(df['vehicle_type'].value_counts().index[0])\n"
-            "print(top_vehicle)"
+            "top_room_type = str(df['room_type'].value_counts().index[0])\n"
+            "print(top_room_type)"
         ),
     )
     NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
@@ -359,76 +359,76 @@ def add_lesson02() -> None:
     lesson = nb(
         md(
             "# Практика: фильтры и типы\n\n"
-            "Тот же `trips.csv`. Фильтры — первый инструмент аналитика: "
-            "«покажи только центр», «только длинные поездки»."
+            "Тот же `listings.csv`. Фильтры — первый инструмент аналитика: "
+            "«покажи только центр», «только вместительные объявления»."
         ),
         code(LOAD_DATA),
         md(
-            "## 1. Фильтр по зоне\n\n"
-            "Оставьте строки с `zone == 'center'`. Сколько таких поездок?\n\n"
+            "## 1. Фильтр по району\n\n"
+            "Оставьте строки с `neighbourhood == 'center'`. Сколько таких объявлений?\n\n"
             "**Why:** маска — Series из True/False той же длины, что `df`.\n\n"
             "**Вопрос:** строка в `center` — подмножество таблицы или новый файл?"
         ),
         code(
             "center = None  # df[маска]\n"
             "assert center is not None\n"
-            "assert (center['zone'] == 'center').all()\n"
+            "assert (center['neighbourhood'] == 'center').all()\n"
             "assert len(center) > 0\n"
             "print('center:', len(center), 'из', len(df))"
         ),
         md(
-            "## 2. Длинные поездки\n\n"
-            "`distance_km >= 15`. Выведите `trip_id`, расстояние, длительность (`head`).\n\n"
-            "**Pitfall:** сравнивайте с числом (`15`), не со строкой `'15'`."
+            "## 2. Вместительные объявления\n\n"
+            "`accommodates >= 6`. Выведите `listing_id`, вместимость, цена (`head`).\n\n"
+            "**Pitfall:** сравнивайте с числом (`6`), не со строкой `'6'`."
         ),
         code(
-            "long_trips = None\n"
-            "assert long_trips is not None\n"
-            "assert (long_trips['distance_km'] >= 15).all()\n"
-            "print(long_trips[['trip_id', 'distance_km', 'duration_min']].head())"
+            "large_listings = None\n"
+            "assert large_listings is not None\n"
+            "assert (large_listings['accommodates'] >= 6).all()\n"
+            "print(large_listings[['listing_id', 'accommodates', 'price']].head())"
         ),
         md(
             "## 3. Составная маска (&)\n\n"
-            "Нужны поездки **и** в center, **и** с `distance_km >= 10`. "
-            "Так **не работает**: `df['zone'] == 'center' and df['distance_km'] >= 10` — "
+            "Нужны объявления **и** в center, **и** с `accommodates >= 4`. "
+            "Так **не работает**: `df['neighbourhood'] == 'center' and df['accommodates'] >= 4` — "
             "Python сравнивает два Series через `and` и падает.\n\n"
             "**How:** `&` и скобки вокруг каждого условия: `df[(...) & (...)]`."
         ),
         code(
             "center_long = None  # df[(...) & (...)]\n"
             "assert center_long is not None\n"
-            "assert (center_long['zone'] == 'center').all()\n"
-            "assert (center_long['distance_km'] >= 10).all()\n"
+            "assert (center_long['neighbourhood'] == 'center').all()\n"
+            "assert (center_long['accommodates'] >= 4).all()\n"
             "print(len(center_long))"
         ),
         md(
             "## 4. Отрицание ~\n\n"
-            "Оставьте поездки **не** из `center` (`zone != 'center'` или `~ (df['zone'] == 'center')`).\n\n"
+            "Оставьте объявления **не** из `center` (`neighbourhood != 'center'` или `~ (df['neighbourhood'] == 'center')`).\n\n"
             "**Checkpoint:** `len(not_center) + len(center)` должно равняться `len(df)` "
-            "(если нет NaN в zone)."
+            "(если нет NaN в neighbourhood)."
         ),
         code(
             "not_center = None\n"
             "assert not_center is not None\n"
-            "assert (not_center['zone'] != 'center').all()\n"
+            "assert (not_center['neighbourhood'] != 'center').all()\n"
             "assert len(not_center) + len(center) == len(df)\n"
             "print('not center:', len(not_center))"
         ),
         md(
             "## 5. Сортировка и топ-N\n\n"
-            "Три самые длинные поездки по `duration_min` — только `trip_id` и `duration_min`.\n\n"
+            "Три самые дорогие объявления по `price` — только `listing_id` и `price`.\n\n"
             "**How:** `sort_values(..., ascending=False).head(3)`."
         ),
         code(
             "top3 = None\n"
             "assert top3 is not None\n"
             "assert len(top3) == 3\n"
-            "assert top3['duration_min'].is_monotonic_decreasing\n"
-            "print(top3[['trip_id', 'duration_min']])"
+            "assert top3['price'].is_monotonic_decreasing\n"
+            "print(top3[['listing_id', 'price']])"
         ),
         md(
             "## 6. Доля фильтра\n\n"
-            "Доля поездок `zone == 'center'` среди всех (0–1, округлить до 3 знаков).\n\n"
+            "Доля объявлений `neighbourhood == 'center'` среди всех (0–1, округлить до 3 знаков).\n\n"
             "**Why:** абсолютное число строк без доли плохо сравнивать между выборками разного размера."
         ),
         code(
@@ -440,60 +440,60 @@ def add_lesson02() -> None:
         md(
             "## 7. loc vs iloc после фильтра\n\n"
             "После фильтра `center` индекс может быть «дырявым». "
-            "Возьмите **первую строку** `center` через `.iloc[0]` и запишите её `trip_id`.\n\n"
+            "Возьмите **первую строку** `center` через `.iloc[0]` и запишите её `listing_id`.\n\n"
             "**Pitfall:** `center.loc[0]` часто падает — метки 0 может не быть."
         ),
         code(
-            "first_center_id = None  # str trip_id\n"
+            "first_center_id = None  # str listing_id\n"
             "assert first_center_id is not None\n"
-            "assert isinstance(first_center_id, str) and first_center_id.startswith('T')\n"
+            "assert isinstance(first_center_id, str) and first_center_id.startswith('L')\n"
             "print(first_center_id)"
         ),
         md(
-            "## 8. Тип hour\n\n"
-            "Приведите `hour` к `int`, проверьте диапазон 0–23. "
-            "Час — **категория времени суток**, не дробное число для «средней температуры»."
+            "## 8. Тип number_of_reviews\n\n"
+            "Приведите `number_of_reviews` к `int`, проверьте, что значения ≥ 0. "
+            "Число отзывов — **счётчик**, не доля и не цена."
         ),
         code(
-            "hours = None  # df['hour'].astype(int)\n"
-            "assert hours is not None\n"
-            "assert hours.dtype.kind in 'iu'\n"
-            "assert hours.min() >= 0 and hours.max() <= 23\n"
-            "print(int(hours.min()), int(hours.max()))"
+            "reviews = None  # df['number_of_reviews'].astype(int)\n"
+            "assert reviews is not None\n"
+            "assert reviews.dtype.kind in 'iu'\n"
+            "assert reviews.min() >= 0\n"
+            "print(int(reviews.min()), int(reviews.max()))"
         ),
     )
     hw = nb(
         md("# ДЗ: фильтры"),
         code(LOAD_DATA),
         md("### A. Закрепление"),
-        md("## 1. Комфорт\n\nТолько `vehicle_type == 'comfort'` — число строк."),
+        md("## 1. Entire\n\nТолько `room_type == 'entire'` — число строк."),
         code(
-            "n_comfort = None\n"
-            "assert n_comfort is not None\n"
-            "assert isinstance(n_comfort, (int, float))\n"
-            "assert 0 < n_comfort < len(df)\n"
-            "print(n_comfort)"
+            "n_entire = None\n"
+            "assert n_entire is not None\n"
+            "assert isinstance(n_entire, (int, float))\n"
+            "assert 0 < n_entire < len(df)\n"
+            "print(n_entire)"
         ),
-        md("## 2. Утро\n\n`hour` от 7 до 9 включительно — число строк."),
+        md("## 2. Отзывы 10–50\n\n`number_of_reviews` от 10 до 50 включительно — число строк."),
         code(
-            "n_morning = None\n"
-            "assert n_morning is not None\n"
-            "assert isinstance(n_morning, (int, float))\n"
-            "assert 0 < n_morning < len(df)\n"
-            "print(n_morning)"
+            "n_mid_reviews = None\n"
+            "assert n_mid_reviews is not None\n"
+            "assert isinstance(n_mid_reviews, (int, float))\n"
+            "assert 0 < n_mid_reviews < len(df)\n"
+            "print(n_mid_reviews)"
         ),
-        md("## 3. Топ-5\n\n5 самых длинных по `duration_min` (`trip_id`, `duration_min`)."),
+        md("## 3. Топ-5\n\n5 самых дорогих по `price` (`listing_id`, `price`)."),
         code(
             "top5 = None\n"
             "assert top5 is not None\n"
             "assert len(top5) == 5\n"
-            "assert top5['duration_min'].is_monotonic_decreasing\n"
-            "print(top5[['trip_id', 'duration_min']])"
+            "assert top5['price'].is_monotonic_decreasing\n"
+            "print(top5[['listing_id', 'price']])"
         ),
         md(
             "### B. Вызов\n\n"
             "## 4. Доля center\n\n"
-            "Доля поездок `zone == 'center'` среди всех (0–1, округлить до 3 знаков). "
+            "Доля объявлений `neighbourhood == 'center'` среди всех (0–1, округлить до 3 знаков). "
             "Одной фразой: это много или мало для аналитика?"
         ),
         code(
@@ -505,16 +505,16 @@ def add_lesson02() -> None:
             "print(share_center, SHARE_NOTE)"
         ),
         md(
-            "## 5. Не comfort\n\n"
-            "Число строк, где `vehicle_type` **не** `'comfort'` (через `~` или `!=`). "
-            "Проверьте: сумма с `n_comfort` равна `len(df)`."
+            "## 5. Не entire\n\n"
+            "Число строк, где `room_type` **не** `'entire'` (через `~` или `!=`). "
+            "Проверьте: сумма с `n_entire` равна `len(df)`."
         ),
         code(
-            "n_not_comfort = None\n"
-            "assert n_not_comfort is not None\n"
-            "assert isinstance(n_not_comfort, (int, float))\n"
-            "assert 0 < n_not_comfort < len(df)\n"
-            "print(n_not_comfort)"
+            "n_not_entire = None\n"
+            "assert n_not_entire is not None\n"
+            "assert isinstance(n_not_entire, (int, float))\n"
+            "assert 0 < n_not_entire < len(df)\n"
+            "print(n_not_entire)"
         ),
     )
     sol = nb(
@@ -522,29 +522,29 @@ def add_lesson02() -> None:
         code(LOAD_DATA),
         md("## Урок. 1. Фильтр center"),
         code(
-            "center = df[df['zone'] == 'center']\n"
+            "center = df[df['neighbourhood'] == 'center']\n"
             "print('center:', len(center), 'из', len(df))"
         ),
-        md("## Урок. 2. Длинные поездки"),
+        md("## Урок. 2. Вместительные объявления"),
         code(
-            "long_trips = df[df['distance_km'] >= 15]\n"
-            "print(long_trips[['trip_id', 'distance_km', 'duration_min']].head())"
+            "large_listings = df[df['accommodates'] >= 6]\n"
+            "print(large_listings[['listing_id', 'accommodates', 'price']].head())"
         ),
         md("## Урок. 3. Составная маска"),
         code(
-            "center_long = df[(df['zone'] == 'center') & (df['distance_km'] >= 10)]\n"
+            "center_long = df[(df['neighbourhood'] == 'center') & (df['accommodates'] >= 4)]\n"
             "print(len(center_long))"
         ),
         md("## Урок. 4. Отрицание ~"),
         code(
-            "not_center = df[~(df['zone'] == 'center')]\n"
+            "not_center = df[~(df['neighbourhood'] == 'center')]\n"
             "assert len(not_center) + len(center) == len(df)\n"
             "print('not center:', len(not_center))"
         ),
         md("## Урок. 5. Топ-3"),
         code(
-            "top3 = df.sort_values('duration_min', ascending=False).head(3)\n"
-            "print(top3[['trip_id', 'duration_min']])"
+            "top3 = df.sort_values('price', ascending=False).head(3)\n"
+            "print(top3[['listing_id', 'price']])"
         ),
         md("## Урок. 6. Доля center"),
         code(
@@ -553,39 +553,39 @@ def add_lesson02() -> None:
         ),
         md("## Урок. 7. loc vs iloc после фильтра"),
         code(
-            "first_center_id = str(center.iloc[0]['trip_id'])\n"
+            "first_center_id = str(center.iloc[0]['listing_id'])\n"
             "print(first_center_id)"
         ),
-        md("## Урок. 8. Тип hour"),
+        md("## Урок. 8. Тип number_of_reviews"),
         code(
-            "hours = df['hour'].astype(int)\n"
-            "print(int(hours.min()), int(hours.max()))"
+            "reviews = df['number_of_reviews'].astype(int)\n"
+            "print(int(reviews.min()), int(reviews.max()))"
         ),
-        md("## ДЗ. 1. Комфорт"),
+        md("## ДЗ. 1. Entire"),
         code(
-            "n_comfort = int((df['vehicle_type'] == 'comfort').sum())\n"
-            "print(n_comfort)"
+            "n_entire = int((df['room_type'] == 'entire').sum())\n"
+            "print(n_entire)"
         ),
-        md("## ДЗ. 2. Утро"),
+        md("## ДЗ. 2. Отзывы 10–50"),
         code(
-            "n_morning = int(((df['hour'] >= 7) & (df['hour'] <= 9)).sum())\n"
-            "print(n_morning)"
+            "n_mid_reviews = int(((df['number_of_reviews'] >= 7) & (df['number_of_reviews'] <= 9)).sum())\n"
+            "print(n_mid_reviews)"
         ),
         md("## ДЗ. 3. Топ-5"),
         code(
-            "top5 = df.sort_values('duration_min', ascending=False).head(5)\n"
-            "print(top5[['trip_id', 'duration_min']])"
+            "top5 = df.sort_values('price', ascending=False).head(5)\n"
+            "print(top5[['listing_id', 'price']])"
         ),
         md("## ДЗ. 4. Доля center"),
         code(
-            "share_center = round((df['zone'] == 'center').mean(), 3)\n"
-            "SHARE_NOTE = f'center ≈ {share_center:.0%} поездок — ориентир доли центра'\n"
+            "share_center = round((df['neighbourhood'] == 'center').mean(), 3)\n"
+            "SHARE_NOTE = f'center ≈ {share_center:.0%} объявлений — ориентир доли центра'\n"
             "print(share_center, SHARE_NOTE)"
         ),
-        md("## ДЗ. 5. Не comfort"),
+        md("## ДЗ. 5. Не entire"),
         code(
-            "n_not_comfort = int((df['vehicle_type'] != 'comfort').sum())\n"
-            "print(n_not_comfort)"
+            "n_not_entire = int((df['room_type'] != 'entire').sum())\n"
+            "print(n_not_entire)"
         ),
     )
     NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
@@ -604,50 +604,50 @@ def add_lesson03() -> None:
         code(LOAD_DATA + IMPORTS_MPL),
         md(
             "## 1. describe: читать таблицу\n\n"
-            "Описательная статистика для `distance_km` и `duration_min`.\n\n"
+            "Описательная статистика для `accommodates` и `price`.\n\n"
             "**How читать:** `mean` — среднее; `50%` — медиана; `min`/`max` — хвосты; "
             "`std` — разброс.\n\n"
-            "Запишите mean длительности в `mean_duration` (без подсказки формулы в assert)."
+            "Запишите mean цены в `mean_price` (без подсказки формулы в assert)."
         ),
         code(
-            "stats = None  # df[['distance_km', 'duration_min']].describe()\n"
+            "stats = None  # df[['accommodates', 'price']].describe()\n"
             "# print(stats)\n"
-            "mean_duration = None\n"
+            "mean_price = None\n"
             "assert stats is not None\n"
-            "assert mean_duration is not None\n"
-            "assert isinstance(mean_duration, (int, float)) and mean_duration > 0\n"
-            "print('mean duration:', mean_duration)"
+            "assert mean_price is not None\n"
+            "assert isinstance(mean_price, (int, float)) and mean_price > 0\n"
+            "print('mean price:', mean_price)"
         ),
         md(
             "## 2. mean vs median\n\n"
-            "Сравните mean и median для `duration_min`. "
-            "Если mean заметно больше median — правый хвост (длинные поездки тянут среднее).\n\n"
+            "Сравните mean и median для `price`. "
+            "Если mean заметно больше median — правый хвост (вместительные объявления тянут среднее).\n\n"
             "Запишите обе величины и короткий вывод в `MEAN_MEDIAN_NOTE`."
         ),
         code(
-            "median_duration = None\n"
+            "median_price = None\n"
             "MEAN_MEDIAN_NOTE = ''\n"
-            "assert median_duration is not None\n"
-            "assert isinstance(median_duration, (int, float)) and median_duration > 0\n"
+            "assert median_price is not None\n"
+            "assert isinstance(median_price, (int, float)) and median_price > 0\n"
             "assert len(MEAN_MEDIAN_NOTE) > 15\n"
-            "print(mean_duration, median_duration, MEAN_MEDIAN_NOTE)"
+            "print(mean_price, median_price, MEAN_MEDIAN_NOTE)"
         ),
         md(
             "## 3. info и пропуски\n\n"
-            "Вызовите `df.info()`. Сколько **ненулевых** значений в `duration_min`? "
+            "Вызовите `df.info()`. Сколько **ненулевых** значений в `price`? "
             "Если меньше числа строк — есть пропуски."
         ),
         code(
             "# df.info()\n"
-            "n_non_null_duration = None\n"
-            "assert n_non_null_duration is not None\n"
-            "assert isinstance(n_non_null_duration, (int, float))\n"
-            "assert n_non_null_duration == len(df) or n_non_null_duration < len(df)\n"
-            "print('non-null duration:', n_non_null_duration, '/', len(df))"
+            "n_non_null_price = None\n"
+            "assert n_non_null_price is not None\n"
+            "assert isinstance(n_non_null_price, (int, float))\n"
+            "assert n_non_null_price == len(df) or n_non_null_price < len(df)\n"
+            "print('non-null price:', n_non_null_price, '/', len(df))"
         ),
         md(
             "## 4. Scatter: подписи и ловушки\n\n"
-            "Scatter `distance_km` → `duration_min`.\n\n"
+            "Scatter `accommodates` → `price`.\n\n"
             "**Pitfalls:**\n"
             "- без `xlabel`/`ylabel`/`title` график «немой»;\n"
             "- при тысячах точек облако заливает — `alpha=0.4…0.6`;\n"
@@ -656,7 +656,7 @@ def add_lesson03() -> None:
         ),
         code(
             "plt.figure(figsize=(6, 4))\n"
-            "plt.scatter(df['distance_km'], df['duration_min'], alpha=0.5)\n"
+            "plt.scatter(df['accommodates'], df['price'], alpha=0.5)\n"
             "# plt.xlabel(...); plt.ylabel(...); plt.title(...)\n"
             "plt.show()\n"
             "SCATTER_DONE = False\n"
@@ -664,7 +664,7 @@ def add_lesson03() -> None:
         ),
         md(
             "## 5. Что видно на графике\n\n"
-            "Одно–два предложения: есть ли **положительная** связь расстояние → длительность? "
+            "Одно–два предложения: есть ли **положительная** связь вместимость → цена? "
             "Есть ли **разброс** (точки далеко от воображаемой линии)?"
         ),
         code(
@@ -673,47 +673,47 @@ def add_lesson03() -> None:
             "print(EDA_CONCLUSION)"
         ),
         md(
-            "## 6. hour — другой признак\n\n"
-            "Медиана `hour` и scatter `hour` → `duration_min` (с подписями). "
-            "Сравните с distance: облако плотнее или размытее?"
+            "## 6. number_of_reviews — другой признак\n\n"
+            "Медиана `number_of_reviews` и scatter `number_of_reviews` → `price` (с подписями). "
+            "Сравните с accommodates: облако плотнее или размытее?"
         ),
         code(
-            "median_hour = None\n"
-            "assert median_hour is not None\n"
-            "assert 0 <= float(median_hour) <= 23\n"
+            "median_reviews = None\n"
+            "assert median_reviews is not None\n"
+            "assert 0 <= float(median_reviews) <= 23\n"
             "plt.figure(figsize=(6, 4))\n"
-            "plt.scatter(df['hour'], df['duration_min'], alpha=0.4)\n"
-            "plt.xlabel('hour')\n"
-            "plt.ylabel('duration_min')\n"
-            "plt.title('Длительность vs час')\n"
+            "plt.scatter(df['number_of_reviews'], df['price'], alpha=0.4)\n"
+            "plt.xlabel('number_of_reviews')\n"
+            "plt.ylabel('price')\n"
+            "plt.title('Цена vs отзывы')\n"
             "plt.show()\n"
-            "print('median hour:', median_hour)"
+            "print('median reviews:', median_reviews)"
         ),
         md(
             "## 7. Корреляция — число, не доказательство\n\n"
-            "`corr_dist` — корреляция Пирсона между `distance_km` и `duration_min`.\n\n"
+            "`corr_acc` — корреляция Пирсона между `accommodates` и `price`.\n\n"
             "**Важно:** corr близко к 1 говорит о **линейной** согласованности на этих данных, "
             "но **не доказывает** причинность («далеко → долго из‑за X»). "
             "Запишите число и фразу-ограничение в `CORR_NOTE`."
         ),
         code(
-            "corr_dist = None\n"
+            "corr_acc = None\n"
             "CORR_NOTE = ''\n"
-            "assert corr_dist is not None\n"
-            "assert -1 <= float(corr_dist) <= 1\n"
+            "assert corr_acc is not None\n"
+            "assert -1 <= float(corr_acc) <= 1\n"
             "assert len(CORR_NOTE) > 20\n"
-            "print('corr(distance, duration):', round(float(corr_dist), 3))\n"
+            "print('corr(accommodates, price):', round(float(corr_acc), 3))\n"
             "print(CORR_NOTE)"
         ),
         md(
             "## 8. Checkpoint: какой признак в модель\n\n"
             "По describe + scatter: какой признак перспективнее для **линейной** модели "
-            "как первый кандидат — `distance_km` или `hour`? Почему (2 предложения)?"
+            "как первый кандидат — `accommodates` или `number_of_reviews`? Почему (2 предложения)?"
         ),
         code(
-            "BETTER_FOR_LINEAR = ''  # 'distance_km' или 'hour'\n"
+            "BETTER_FOR_LINEAR = ''  # 'accommodates' или 'number_of_reviews'\n"
             "WHY_EDA = ''\n"
-            "assert BETTER_FOR_LINEAR in ('distance_km', 'hour')\n"
+            "assert BETTER_FOR_LINEAR in ('accommodates', 'number_of_reviews')\n"
             "assert len(WHY_EDA) > 30\n"
             "print(BETTER_FOR_LINEAR, WHY_EDA)"
         ),
@@ -722,53 +722,53 @@ def add_lesson03() -> None:
         md("# ДЗ: EDA"),
         code(LOAD_DATA + IMPORTS_MPL),
         md("### A. Закрепление"),
-        md("## 1. describe hour\n\n`describe()` для `hour`. Запишите медиану в `median_hour`."),
+        md("## 1. describe number_of_reviews\n\n`describe()` для `number_of_reviews`. Запишите медиану в `median_reviews`."),
         code(
-            "median_hour = None\n"
-            "assert median_hour is not None\n"
-            "assert 0 <= float(median_hour) <= 23\n"
-            "print(median_hour)"
+            "median_reviews = None\n"
+            "assert median_reviews is not None\n"
+            "assert 0 <= float(median_reviews) <= 23\n"
+            "print(median_reviews)"
         ),
-        md("## 2. Scatter hour\n\nScatter `hour` → `duration_min` с подписями осей и заголовком."),
+        md("## 2. Scatter number_of_reviews\n\nScatter `number_of_reviews` → `price` с подписями осей и заголовком."),
         code(
             "plt.figure(figsize=(6, 4))\n"
             "# ваш scatter + подписи\n"
             "plt.show()\n"
-            "HOUR_SCATTER_DONE = False\n"
-            "assert HOUR_SCATTER_DONE"
+            "REVIEWS_SCATTER_DONE = False\n"
+            "assert REVIEWS_SCATTER_DONE"
         ),
-        md("## 3. max distance\n\n`trip_id` поездки с максимальным `distance_km`."),
+        md("## 3. max accommodates\n\n`listing_id` объявления с максимальным `accommodates`."),
         code(
-            "max_dist_id = None\n"
-            "assert max_dist_id is not None\n"
-            "assert isinstance(max_dist_id, str) and str(max_dist_id).startswith('T')\n"
-            "print(max_dist_id)"
+            "max_acc_id = None\n"
+            "assert max_acc_id is not None\n"
+            "assert isinstance(max_acc_id, str) and str(max_acc_id).startswith('L')\n"
+            "print(max_acc_id)"
         ),
         md(
             "### B. Вызов\n\n"
             "## 4. Сравнение scatter\n\n"
-            "Сравните визуально distance→duration и hour→duration. "
+            "Сравните визуально accommodates→price и number_of_reviews→price. "
             "Какой признак перспективнее для **линейной** модели? Почему (2 предложения)?"
         ),
         code(
-            "BETTER_FOR_LINEAR = ''  # 'distance_km' или 'hour'\n"
+            "BETTER_FOR_LINEAR = ''  # 'accommodates' или 'number_of_reviews'\n"
             "WHY_VISUAL = ''\n"
-            "assert BETTER_FOR_LINEAR in ('distance_km', 'hour')\n"
+            "assert BETTER_FOR_LINEAR in ('accommodates', 'number_of_reviews')\n"
             "assert len(WHY_VISUAL) > 30\n"
             "print(BETTER_FOR_LINEAR, WHY_VISUAL)"
         ),
         md(
-            "## 5. corr hour\n\n"
-            "Корреляция `hour` и `duration_min` (число от −1 до 1) + одна фраза: "
-            "меньше по модулю, чем у distance — что это значит для линейной модели?"
+            "## 5. corr number_of_reviews\n\n"
+            "Корреляция `number_of_reviews` и `price` (число от −1 до 1) + одна фраза: "
+            "меньше по модулю, чем у accommodates — что это значит для линейной модели?"
         ),
         code(
-            "corr_hour = None\n"
+            "corr_reviews = None\n"
             "CORR_HOUR_NOTE = ''\n"
-            "assert corr_hour is not None\n"
-            "assert -1 <= float(corr_hour) <= 1\n"
+            "assert corr_reviews is not None\n"
+            "assert -1 <= float(corr_reviews) <= 1\n"
             "assert len(CORR_HOUR_NOTE) > 15\n"
-            "print(round(float(corr_hour), 3), CORR_HOUR_NOTE)"
+            "print(round(float(corr_reviews), 3), CORR_HOUR_NOTE)"
         ),
     )
     sol = nb(
@@ -776,104 +776,104 @@ def add_lesson03() -> None:
         code(LOAD_DATA + IMPORTS_MPL),
         md("## Урок. 1. describe"),
         code(
-            "stats = df[['distance_km', 'duration_min']].describe()\n"
+            "stats = df[['accommodates', 'price']].describe()\n"
             "print(stats)\n"
-            "mean_duration = float(df['duration_min'].mean())\n"
-            "print('mean duration:', mean_duration)"
+            "mean_price = float(df['price'].mean())\n"
+            "print('mean price:', mean_price)"
         ),
         md("## Урок. 2. mean vs median"),
         code(
-            "median_duration = float(df['duration_min'].median())\n"
+            "median_price = float(df['price'].median())\n"
             "MEAN_MEDIAN_NOTE = (\n"
-            "    'Сравните mean и median: если mean выше — длинный хвост поездок тянет среднее.'\n"
+            "    'Сравните mean и median: если mean выше — длинный хвост цен тянет среднее.'\n"
             ")\n"
-            "print(mean_duration, median_duration, MEAN_MEDIAN_NOTE)"
+            "print(mean_price, median_price, MEAN_MEDIAN_NOTE)"
         ),
         md("## Урок. 3. info"),
         code(
-            "n_non_null_duration = int(df['duration_min'].notna().sum())\n"
-            "print('non-null duration:', n_non_null_duration, '/', len(df))"
+            "n_non_null_price = int(df['price'].notna().sum())\n"
+            "print('non-null price:', n_non_null_price, '/', len(df))"
         ),
-        md("## Урок. 4. Scatter distance"),
+        md("## Урок. 4. Scatter accommodates"),
         code(
             "plt.figure(figsize=(6, 4))\n"
-            "plt.scatter(df['distance_km'], df['duration_min'], alpha=0.5)\n"
-            "plt.xlabel('distance_km')\n"
-            "plt.ylabel('duration_min')\n"
-            "plt.title('Длительность vs расстояние')\n"
+            "plt.scatter(df['accommodates'], df['price'], alpha=0.5)\n"
+            "plt.xlabel('accommodates')\n"
+            "plt.ylabel('price')\n"
+            "plt.title('Цена vs вместимость')\n"
             "plt.show()\n"
             "SCATTER_DONE = True"
         ),
         md("## Урок. 5. Вывод EDA"),
         code(
             "EDA_CONCLUSION = (\n"
-            "    'С ростом distance_km длительность в среднем растёт, но разброс заметный.'\n"
+            "    'С ростом accommodates цена в среднем растёт, но разброс заметный.'\n"
             ")\n"
             "print(EDA_CONCLUSION)"
         ),
-        md("## Урок. 6. hour scatter"),
+        md("## Урок. 6. number_of_reviews scatter"),
         code(
-            "median_hour = float(df['hour'].median())\n"
+            "median_reviews = float(df['number_of_reviews'].median())\n"
             "plt.figure(figsize=(6, 4))\n"
-            "plt.scatter(df['hour'], df['duration_min'], alpha=0.4)\n"
-            "plt.xlabel('hour')\n"
-            "plt.ylabel('duration_min')\n"
-            "plt.title('Длительность vs час')\n"
+            "plt.scatter(df['number_of_reviews'], df['price'], alpha=0.4)\n"
+            "plt.xlabel('number_of_reviews')\n"
+            "plt.ylabel('price')\n"
+            "plt.title('Цена vs отзывы')\n"
             "plt.show()\n"
-            "print('median hour:', median_hour)"
+            "print('median reviews:', median_reviews)"
         ),
         md("## Урок. 7. Корреляция"),
         code(
-            "corr_dist = float(df['distance_km'].corr(df['duration_min']))\n"
+            "corr_acc = float(df['accommodates'].corr(df['price']))\n"
             "CORR_NOTE = (\n"
             "    'corr — мера линейной согласованности на этих данных, не доказательство причины.'\n"
             ")\n"
-            "print('corr(distance, duration):', round(corr_dist, 3))\n"
+            "print('corr(accommodates, price):', round(corr_acc, 3))\n"
             "print(CORR_NOTE)"
         ),
         md("## Урок. 8. Checkpoint признак"),
         code(
-            "BETTER_FOR_LINEAR = 'distance_km'\n"
+            "BETTER_FOR_LINEAR = 'accommodates'\n"
             "WHY_EDA = (\n"
-            "    'На scatter с distance видна наклонная полоса; у hour облако более размытое. '\n"
-            "    'Линейная модель на distance — первый кандидат.'\n"
+            "    'На scatter с accommodates видна наклонная полоса; у number_of_reviews облако более размытое. '\n"
+            "    'Линейная модель на accommodates — первый кандидат.'\n"
             ")\n"
             "print(BETTER_FOR_LINEAR, WHY_EDA)"
         ),
-        md("## ДЗ. 1. hour describe"),
+        md("## ДЗ. 1. number_of_reviews describe"),
         code(
-            "median_hour = float(df['hour'].median())\n"
-            "print(median_hour)"
+            "median_reviews = float(df['number_of_reviews'].median())\n"
+            "print(median_reviews)"
         ),
-        md("## ДЗ. 2. Scatter hour"),
+        md("## ДЗ. 2. Scatter number_of_reviews"),
         code(
             "plt.figure(figsize=(6, 4))\n"
-            "plt.scatter(df['hour'], df['duration_min'], alpha=0.4)\n"
-            "plt.xlabel('hour')\n"
-            "plt.ylabel('duration_min')\n"
-            "plt.title('Длительность vs час')\n"
+            "plt.scatter(df['number_of_reviews'], df['price'], alpha=0.4)\n"
+            "plt.xlabel('number_of_reviews')\n"
+            "plt.ylabel('price')\n"
+            "plt.title('Цена vs отзывы')\n"
             "plt.show()\n"
-            "HOUR_SCATTER_DONE = True"
+            "REVIEWS_SCATTER_DONE = True"
         ),
-        md("## ДЗ. 3. max distance"),
+        md("## ДЗ. 3. max accommodates"),
         code(
-            "max_dist_id = str(df.loc[df['distance_km'].idxmax(), 'trip_id'])\n"
-            "print(max_dist_id)"
+            "max_acc_id = str(df.loc[df['accommodates'].idxmax(), 'listing_id'])\n"
+            "print(max_acc_id)"
         ),
         md("## ДЗ. 4. Сравнение признаков"),
         code(
-            "BETTER_FOR_LINEAR = 'distance_km'\n"
+            "BETTER_FOR_LINEAR = 'accommodates'\n"
             "WHY_VISUAL = (\n"
-            "    'На scatter с distance видна наклонная полоса; у hour облако более размытое. '\n"
-            "    'Линейная модель на distance выглядит уместнее как первый кандидат.'\n"
+            "    'На scatter с accommodates видна наклонная полоса; у number_of_reviews облако более размытое. '\n"
+            "    'Линейная модель на accommodates выглядит уместнее как первый кандидат.'\n"
             ")\n"
             "print(BETTER_FOR_LINEAR, WHY_VISUAL)"
         ),
-        md("## ДЗ. 5. corr hour"),
+        md("## ДЗ. 5. corr number_of_reviews"),
         code(
-            "corr_hour = float(df['hour'].corr(df['duration_min']))\n"
-            "CORR_HOUR_NOTE = 'Слабее линейная связь с duration — hour хуже как единственный признак'\n"
-            "print(round(corr_hour, 3), CORR_HOUR_NOTE)"
+            "corr_reviews = float(df['number_of_reviews'].corr(df['price']))\n"
+            "CORR_HOUR_NOTE = 'Слабее линейная связь с price — number_of_reviews хуже как единственный признак'\n"
+            "print(round(corr_reviews, 3), CORR_HOUR_NOTE)"
         ),
     )
     NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
@@ -893,7 +893,7 @@ def add_lesson04() -> None:
             "## 1. Утечка смыслами (leakage)\n\n"
             "Если учить и проверять модель на **одних и тех же** строках, метрика будет "
             "завышенной: модель «видела» ответы.\n\n"
-            "**How в словах:** test — поездки, которых не было в `fit`. "
+            "**How в словах:** test — объявления, которых не было в `fit`. "
             "Не подглядывать в test при выборе признаков «до конца модуля» — "
             "пока достаточно: всегда считать качество на отложенных строках.\n\n"
             "Запишите 1–2 предложения в `LEAKAGE_NOTE`."
@@ -905,14 +905,14 @@ def add_lesson04() -> None:
         ),
         md(
             "## 2. Признак и цель\n\n"
-            "Соберите `X` как DataFrame из одного столбца `distance_km` и `y` — Series `duration_min`. "
-            "Важно: двойные скобки у X (`df[['distance_km']]`)."
+            "Соберите `X` как DataFrame из одного столбца `accommodates` и `y` — Series `price`. "
+            "Важно: двойные скобки у X (`df[['accommodates']]`)."
         ),
         code(
             "X = None\n"
             "y = None\n"
             "assert X is not None and y is not None\n"
-            "assert list(X.columns) == ['distance_km']\n"
+            "assert list(X.columns) == ['accommodates']\n"
             "assert X.shape[1] == 1\n"
             "assert len(y) == len(X)\n"
             "print(X.shape, y.shape)"
@@ -968,7 +968,7 @@ def add_lesson04() -> None:
             "Xtr = Xte = ytr = yte = None\n"
             "model2 = None\n"
             "pred2 = None\n"
-            "assert X2 is not None and list(X2.columns) == ['distance_km']\n"
+            "assert X2 is not None and list(X2.columns) == ['accommodates']\n"
             "assert Xte is not None and len(Xte) == int(0.2 * len(df))\n"
             "assert model2 is not None and hasattr(model2, 'coef_')\n"
             "assert pred2 is not None and len(pred2) == len(yte)\n"
@@ -991,8 +991,8 @@ def add_lesson04() -> None:
         md("### A. Закрепление"),
         md("## 1. Другой test_size\n\n`test_size=0.3`, `random_state=42`. Сколько строк в test?"),
         code(
-            "X = df[['distance_km']]\n"
-            "y = df['duration_min']\n"
+            "X = df[['accommodates']]\n"
+            "y = df['price']\n"
             "n_test_03 = None\n"
             "assert n_test_03 is not None\n"
             "assert isinstance(n_test_03, (int, float))\n"
@@ -1011,16 +1011,16 @@ def add_lesson04() -> None:
         ),
         md(
             "### B. Вызов\n\n"
-            "## 3. Модель на hour\n\n"
-            "Обучите модель на `hour` (тот же split 0.2 / 42). "
+            "## 3. Модель на number_of_reviews\n\n"
+            "Обучите модель на `number_of_reviews` (тот же split 0.2 / 42). "
             "Выведите `coef_`. Одной фразой: знак коэффициента ожидаем?"
         ),
         code(
-            "coef_hour = None  # число или массив coef_\n"
+            "coef_reviews = None  # число или массив coef_\n"
             "COEF_NOTE = ''\n"
-            "assert coef_hour is not None\n"
+            "assert coef_reviews is not None\n"
             "assert len(COEF_NOTE) > 10\n"
-            "print(coef_hour, COEF_NOTE)"
+            "print(coef_reviews, COEF_NOTE)"
         ),
         md(
             "## 4. Leakage своими словами\n\n"
@@ -1039,14 +1039,14 @@ def add_lesson04() -> None:
         code(
             "LEAKAGE_NOTE = (\n"
             "    'Если учить и проверять на одних строках, ошибка занижена: модель видела ответы. '\n"
-            "    'Test — отложенные поездки, которых не было в fit.'\n"
+            "    'Test — отложенные объявления, которых не было в fit.'\n"
             ")\n"
             "print(LEAKAGE_NOTE)"
         ),
         md("## Урок. 2. X и y"),
         code(
-            "X = df[['distance_km']]\n"
-            "y = df['duration_min']\n"
+            "X = df[['accommodates']]\n"
+            "y = df['price']\n"
             "print(X.shape, y.shape)"
         ),
         md("## Урок. 3. train/test split"),
@@ -1072,8 +1072,8 @@ def add_lesson04() -> None:
         ),
         md("## Урок. 6. Pipeline целиком"),
         code(
-            "X2 = df[['distance_km']]\n"
-            "y2 = df['duration_min']\n"
+            "X2 = df[['accommodates']]\n"
+            "y2 = df['price']\n"
             "Xtr, Xte, ytr, yte = train_test_split(X2, y2, test_size=0.2, random_state=42)\n"
             "model2 = LinearRegression().fit(Xtr, ytr)\n"
             "pred2 = model2.predict(Xte)\n"
@@ -1082,14 +1082,14 @@ def add_lesson04() -> None:
         md("## Урок. 7. Checkpoint"),
         code(
             "NO_FIT_ALL_NOTE = (\n"
-            "    'Ошибка на тех же строках, где был fit, не показывает обобщение на новые поездки.'\n"
+            "    'Ошибка на тех же строках, где был fit, не показывает обобщение на новые объявления.'\n"
             ")\n"
             "print(NO_FIT_ALL_NOTE)"
         ),
         md("## ДЗ. 1. test_size=0.3"),
         code(
-            "X = df[['distance_km']]\n"
-            "y = df['duration_min']\n"
+            "X = df[['accommodates']]\n"
+            "y = df['price']\n"
             "_, X_te, _, y_te = train_test_split(X, y, test_size=0.3, random_state=42)\n"
             "n_test_03 = len(X_te)\n"
             "print(n_test_03)"
@@ -1101,13 +1101,13 @@ def add_lesson04() -> None:
             "reproducible = bool((a == b).all())\n"
             "print(reproducible)"
         ),
-        md("## ДЗ. 3. coef hour"),
+        md("## ДЗ. 3. coef number_of_reviews"),
         code(
-            "Xh = df[['hour']]\n"
+            "Xh = df[['number_of_reviews']]\n"
             "Xtr, Xte, ytr, yte = train_test_split(Xh, y, test_size=0.2, random_state=42)\n"
-            "coef_hour = LinearRegression().fit(Xtr, ytr).coef_\n"
+            "coef_reviews = LinearRegression().fit(Xtr, ytr).coef_\n"
             "COEF_NOTE = 'Знак coef зависит от данных; на паре важнее зафиксировать seed и размер test'\n"
-            "print(coef_hour, COEF_NOTE)"
+            "print(coef_reviews, COEF_NOTE)"
         ),
         md("## ДЗ. 4. Leakage"),
         code(
@@ -1135,9 +1135,9 @@ def add_lesson05() -> None:
         code(starter),
         md(
             "## 1. Split и модель\n\n"
-            "X = `distance_km`, y = `duration_min`. Split 0.2 / seed 42, "
+            "X = `accommodates`, y = `price`. Split 0.2 / seed 42, "
             "обучите `LinearRegression`, получите `y_pred` на test.\n\n"
-            "**How:** тот же конвейер, что на паре 14."
+            "**How:** тот же конвейер, что на паре 12."
         ),
         code(
             "X = None\n"
@@ -1146,7 +1146,7 @@ def add_lesson05() -> None:
             "model = None\n"
             "y_pred = None\n"
             "assert X is not None and y is not None\n"
-            "assert list(X.columns) == ['distance_km']\n"
+            "assert list(X.columns) == ['accommodates']\n"
             "assert X_test is not None\n"
             "assert len(X_test) == int(0.2 * len(df))\n"
             "assert model is not None and y_pred is not None\n"
@@ -1156,7 +1156,7 @@ def add_lesson05() -> None:
         md(
             "## 2. MSE — интуиция\n\n"
             "Среднеквадратичная ошибка на **test**: штрафует крупные промахи сильнее "
-            "(квадрат разности). Единицы — «минуты²», не минуты.\n\n"
+            "(квадрат разности). Единицы — «квадрат цены», не цена за ночь.\n\n"
             "Посчитайте `mse` (`mean_squared_error` или вручную)."
         ),
         code(
@@ -1235,12 +1235,12 @@ def add_lesson05() -> None:
         md("### A. Закрепление"),
         md(
             "## 1. MAE\n\n"
-            "Повторите split/fit (0.2 / 42) на `distance_km`. "
+            "Повторите split/fit (0.2 / 42) на `accommodates`. "
             "Средняя абсолютная ошибка на test (как MAE из модуля 1)."
         ),
         code(
-            "X = df[['distance_km']]\n"
-            "y = df['duration_min']\n"
+            "X = df[['accommodates']]\n"
+            "y = df['price']\n"
             "X_train, X_test, y_train, y_test = None, None, None, None\n"
             "model = None\n"
             "y_pred = None\n"
@@ -1292,8 +1292,8 @@ def add_lesson05() -> None:
         code(starter),
         md("## Урок. 1. Split и модель"),
         code(
-            "X = df[['distance_km']]\n"
-            "y = df['duration_min']\n"
+            "X = df[['accommodates']]\n"
+            "y = df['price']\n"
             "X_train, X_test, y_train, y_test = train_test_split(\n"
             "    X, y, test_size=0.2, random_state=42\n"
             ")\n"
@@ -1323,7 +1323,7 @@ def add_lesson05() -> None:
             "mse_train = mean_squared_error(y_train, model.predict(X_train))\n"
             "mse_test = mean_squared_error(y_test, y_pred)\n"
             "TRAIN_VS_TEST = (\n"
-            "    'На test ошибка важнее: так мы оцениваем обобщение на новые поездки'\n"
+            "    'На test ошибка важнее: так мы оцениваем обобщение на новые объявления'\n"
             ")\n"
             "print(round(mse_train, 2), round(mse_test, 2), TRAIN_VS_TEST)"
         ),
@@ -1336,15 +1336,15 @@ def add_lesson05() -> None:
         md("## Урок. 7. Интерпретация"),
         code(
             "METRIC_NOTE = (\n"
-            "    f'MSE={mse:.1f} — масштаб ошибки в мин²; R²≈{r2:.2f} — доля объяснённого разброса. '\n"
+            "    f'MSE={mse:.1f} — масштаб ошибки в (цена)²; R²≈{r2:.2f} — доля объяснённого разброса. '\n"
             "    f'Модель бьёт baseline (R² baseline≈{r2_baseline:.2f}).'\n"
             ")\n"
             "print(METRIC_NOTE)"
         ),
         md("## ДЗ. 1. MAE"),
         code(
-            "X = df[['distance_km']]\n"
-            "y = df['duration_min']\n"
+            "X = df[['accommodates']]\n"
+            "y = df['price']\n"
             "X_train, X_test, y_train, y_test = train_test_split(\n"
             "    X, y, test_size=0.2, random_state=42\n"
             ")\n"
@@ -1358,7 +1358,7 @@ def add_lesson05() -> None:
             "mse_train = mean_squared_error(y_train, model.predict(X_train))\n"
             "mse_test = mean_squared_error(y_test, y_pred)\n"
             "TRAIN_VS_TEST = (\n"
-            "    'На test ошибка важнее: так мы оцениваем обобщение на новые поездки, не заучивание train'\n"
+            "    'На test ошибка важнее: так мы оцениваем обобщение на новые объявления, не заучивание train'\n"
             ")\n"
             "print(mse_train, mse_test, TRAIN_VS_TEST)"
         ),
@@ -1388,40 +1388,40 @@ def add_lesson06() -> None:
     stubs = (
         "from pathlib import Path\n"
         "import pandas as pd\n\n\n"
-        "def load_trips(path: Path) -> pd.DataFrame:\n"
+        "def load_listings(path: Path) -> pd.DataFrame:\n"
         "    \"\"\"Загрузить CSV; при отсутствии файла — FileNotFoundError с понятным текстом.\"\"\"\n"
         "    pass\n\n\n"
-        "def clean_trips(raw: pd.DataFrame) -> pd.DataFrame:\n"
-        "    \"\"\"Удалить строки без distance_km или duration_min.\"\"\"\n"
+        "def clean_listings(raw: pd.DataFrame) -> pd.DataFrame:\n"
+        "    \"\"\"Удалить строки без accommodates или price.\"\"\"\n"
         "    pass\n\n\n"
         "def assert_usable(frame: pd.DataFrame) -> None:\n"
-        "    \"\"\"Проверить: непустой df и есть столбцы distance_km, duration_min.\"\"\"\n"
+        "    \"\"\"Проверить: непустой df и есть столбцы accommodates, price.\"\"\"\n"
         "    pass\n"
     )
     impl = (
-        "def load_trips(path: Path) -> pd.DataFrame:\n"
+        "def load_listings(path: Path) -> pd.DataFrame:\n"
         "    try:\n"
         "        return pd.read_csv(path)\n"
         "    except FileNotFoundError as e:\n"
         "        raise FileNotFoundError(\n"
-        "            f'Файл не найден: {path}. Положите trips.csv рядом с ноутбуком.'\n"
+        "            f'Файл не найден: {path}. Положите listings.csv рядом с ноутбуком.'\n"
         "        ) from e\n\n\n"
-        "def clean_trips(raw: pd.DataFrame) -> pd.DataFrame:\n"
-        "    return raw.dropna(subset=['distance_km', 'duration_min']).copy()\n\n\n"
+        "def clean_listings(raw: pd.DataFrame) -> pd.DataFrame:\n"
+        "    return raw.dropna(subset=['accommodates', 'price']).copy()\n\n\n"
         "def assert_usable(frame: pd.DataFrame) -> None:\n"
         "    if len(frame) == 0:\n"
         "        raise ValueError('пустой DataFrame после очистки')\n"
-        "    for col in ('distance_km', 'duration_min'):\n"
+        "    for col in ('accommodates', 'price'):\n"
         "        if col not in frame.columns:\n"
         "            raise ValueError(f'нет столбца {col}')\n"
     )
     path_finder = (
-        "TRIPS_PATH = None\n"
-        "for p in (Path('trips.csv'), Path('../../data/trips.csv'), Path('../data/trips.csv')):\n"
+        "LISTINGS_PATH = None\n"
+        "for p in (Path('listings.csv'), Path('../../data/listings.csv'), Path('../data/listings.csv')):\n"
         "    if p.exists():\n"
-        "        TRIPS_PATH = p.resolve()\n"
+        "        LISTINGS_PATH = p.resolve()\n"
         "        break\n"
-        "assert TRIPS_PATH is not None\n"
+        "assert LISTINGS_PATH is not None\n"
     )
     lesson = nb(
         md(
@@ -1432,26 +1432,26 @@ def add_lesson06() -> None:
         code(stubs),
         md(
             "## 1. Успешная загрузка\n\n"
-            "Реализуйте `load_trips` и загрузите существующий `trips.csv`.\n\n"
+            "Реализуйте `load_listings` и загрузите существующий `listings.csv`.\n\n"
             "**How:** `try` вокруг `pd.read_csv`; при успехе вернуть DataFrame."
         ),
         code(
             path_finder
-            + "df = load_trips(TRIPS_PATH)\n"
+            + "df = load_listings(LISTINGS_PATH)\n"
             "assert isinstance(df, pd.DataFrame)\n"
             "assert len(df) > 0\n"
             "print(df.shape)"
         ),
         md(
             "## 2. Ошибка пути\n\n"
-            "Вызовите `load_trips` на несуществующем пути и поймайте `FileNotFoundError`.\n\n"
+            "Вызовите `load_listings` на несуществующем пути и поймайте `FileNotFoundError`.\n\n"
             "**Pitfall:** голое `except:` глотает SyntaxError — ловите конкретный тип. "
             "В сообщении должны быть путь и подсказка."
         ),
         code(
             "caught = False\n"
             "try:\n"
-            "    load_trips(Path('no_such_file.csv'))\n"
+            "    load_listings(Path('no_such_file.csv'))\n"
             "except FileNotFoundError as e:\n"
             "    caught = True\n"
             "    print('Поймали:', e)\n"
@@ -1462,30 +1462,30 @@ def add_lesson06() -> None:
         ),
         md(
             "## 3. Очистка\n\n"
-            "`clean_trips`: удалить строки без `distance_km` или `duration_min` "
-            "(`dropna(subset=...)`). Проверка: одна NaN в duration → на одну строку меньше."
+            "`clean_listings`: удалить строки без `accommodates` или `price` "
+            "(`dropna(subset=...)`). Проверка: одна NaN в price → на одну строку меньше."
         ),
         code(
             "raw = df.copy()\n"
-            "raw.loc[raw.index[0], 'duration_min'] = None\n"
-            "cleaned = clean_trips(raw)\n"
+            "raw.loc[raw.index[0], 'price'] = None\n"
+            "cleaned = clean_listings(raw)\n"
             "assert len(cleaned) == len(raw) - 1\n"
             "print(len(raw), len(cleaned))"
         ),
         md(
             "## 4. assert_usable\n\n"
-            "Пустой df и df без `duration_min` должны давать `ValueError`. "
+            "Пустой df и df без `price` должны давать `ValueError`. "
             "Поймайте оба случая и напечатайте сообщение."
         ),
         code(
-            "empty = pd.DataFrame(columns=['distance_km', 'duration_min'])\n"
+            "empty = pd.DataFrame(columns=['accommodates', 'price'])\n"
             "try:\n"
             "    assert_usable(empty)\n"
             "    empty_ok = False\n"
             "except ValueError as e:\n"
             "    empty_ok = True\n"
             "    print('empty:', e)\n"
-            "bad = pd.DataFrame({'distance_km': [1.0, 2.0], 'hour': [8, 9]})\n"
+            "bad = pd.DataFrame({'accommodates': [1.0, 2.0], 'number_of_reviews': [8, 9]})\n"
             "try:\n"
             "    assert_usable(bad)\n"
             "    bad_ok = False\n"
@@ -1496,10 +1496,10 @@ def add_lesson06() -> None:
         ),
         md(
             "## 5. Pipeline до модели\n\n"
-            "`load_trips` → `clean_trips` → `assert_usable`. Выведите shape итога."
+            "`load_listings` → `clean_listings` → `assert_usable`. Выведите shape итога."
         ),
         code(
-            "pipeline_df = clean_trips(load_trips(TRIPS_PATH))\n"
+            "pipeline_df = clean_listings(load_listings(LISTINGS_PATH))\n"
             "assert_usable(pipeline_df)\n"
             "assert len(pipeline_df) > 0\n"
             "print('pipeline', pipeline_df.shape)"
@@ -1530,37 +1530,37 @@ def add_lesson06() -> None:
             "assert safe_load(Path('no_such_file.csv')) is None\n"
             "print('ok')"
         ),
-        md("## 2. Успешный путь\n\n`safe_load(TRIPS_PATH)` — непустой DataFrame."),
+        md("## 2. Успешный путь\n\n`safe_load(LISTINGS_PATH)` — непустой DataFrame."),
         code(
-            "ok = safe_load(TRIPS_PATH)\n"
+            "ok = safe_load(LISTINGS_PATH)\n"
             "assert ok is not None and len(ok) > 0\n"
             "print(ok.shape)"
         ),
         md(
             "### B. Вызов\n\n"
-            "## 3. zone NaN\n\n"
-            "`clean_trips` не должен удалять строку только из‑за NaN в `zone`, "
-            "если distance и duration заполнены."
+            "## 3. neighbourhood NaN\n\n"
+            "`clean_listings` не должен удалять строку только из‑за NaN в `neighbourhood`, "
+            "если accommodates и price заполнены."
         ),
         code(
-            "# допишите clean_trips выше\n"
+            "# допишите clean_listings выше\n"
             "sample = pd.DataFrame({\n"
-            "    'distance_km': [1.0, 2.0],\n"
-            "    'duration_min': [10.0, 20.0],\n"
-            "    'zone': [None, 'center'],\n"
+            "    'accommodates': [1.0, 2.0],\n"
+            "    'price': [10.0, 20.0],\n"
+            "    'neighbourhood': [None, 'center'],\n"
             "})\n"
-            "out = clean_trips(sample)\n"
+            "out = clean_listings(sample)\n"
             "assert len(out) == 2\n"
             "print(out)"
         ),
         md(
             "## 4. Пустой после clean\n\n"
-            "Одна строка с NaN в duration → после clean длина 0. "
+            "Одна строка с NaN в price → после clean длина 0. "
             "Запишите статус `'empty after clean'` или `'ok'`."
         ),
         code(
-            "tiny = pd.DataFrame({'distance_km': [1.0], 'duration_min': [None]})\n"
-            "cleaned = clean_trips(tiny)\n"
+            "tiny = pd.DataFrame({'accommodates': [1.0], 'price': [None]})\n"
+            "cleaned = clean_listings(tiny)\n"
             "status = None  # 'empty after clean' или 'ok'\n"
             "assert status in ('empty after clean', 'ok')\n"
             "print(status)"
@@ -1572,40 +1572,40 @@ def add_lesson06() -> None:
         md("## Урок. 1. Успешная загрузка"),
         code(
             path_finder
-            + "df = load_trips(TRIPS_PATH)\n"
+            + "df = load_listings(LISTINGS_PATH)\n"
             "print(df.shape)"
         ),
         md("## Урок. 2. Ошибка пути"),
         code(
             "caught = False\n"
             "try:\n"
-            "    load_trips(Path('no_such_file.csv'))\n"
+            "    load_listings(Path('no_such_file.csv'))\n"
             "except FileNotFoundError as e:\n"
             "    caught = True\n"
             "    print('Поймали:', e)\n"
             "assert caught\n"
             "ERROR_MSG_NOTE = (\n"
             "    'Сообщение должно содержать путь и подсказку: '\n"
-            "    'положите trips.csv рядом с ноутбуком'\n"
+            "    'положите listings.csv рядом с ноутбуком'\n"
             ")\n"
             "print(ERROR_MSG_NOTE)"
         ),
         md("## Урок. 3. Очистка"),
         code(
             "raw = df.copy()\n"
-            "raw.loc[raw.index[0], 'duration_min'] = None\n"
-            "cleaned = clean_trips(raw)\n"
+            "raw.loc[raw.index[0], 'price'] = None\n"
+            "cleaned = clean_listings(raw)\n"
             "assert len(cleaned) == len(raw) - 1\n"
             "print(len(raw), len(cleaned))"
         ),
         md("## Урок. 4. assert_usable"),
         code(
-            "empty = pd.DataFrame(columns=['distance_km', 'duration_min'])\n"
+            "empty = pd.DataFrame(columns=['accommodates', 'price'])\n"
             "try:\n"
             "    assert_usable(empty)\n"
             "except ValueError as e:\n"
             "    print('empty:', e)\n"
-            "bad = pd.DataFrame({'distance_km': [1.0, 2.0], 'hour': [8, 9]})\n"
+            "bad = pd.DataFrame({'accommodates': [1.0, 2.0], 'number_of_reviews': [8, 9]})\n"
             "try:\n"
             "    assert_usable(bad)\n"
             "except ValueError as e:\n"
@@ -1613,7 +1613,7 @@ def add_lesson06() -> None:
         ),
         md("## Урок. 5. Pipeline"),
         code(
-            "pipeline_df = clean_trips(load_trips(TRIPS_PATH))\n"
+            "pipeline_df = clean_listings(load_listings(LISTINGS_PATH))\n"
             "assert_usable(pipeline_df)\n"
             "print('pipeline', pipeline_df.shape)"
         ),
@@ -1633,23 +1633,23 @@ def add_lesson06() -> None:
             "    except FileNotFoundError:\n"
             "        return None\n\n\n"
             "assert safe_load(Path('no_such_file.csv')) is None\n"
-            "ok = safe_load(TRIPS_PATH)\n"
+            "ok = safe_load(LISTINGS_PATH)\n"
             "assert ok is not None and len(ok) > 0\n"
             "print(ok.shape)"
         ),
-        md("## ДЗ. 3. zone NaN"),
+        md("## ДЗ. 3. neighbourhood NaN"),
         code(
             "sample = pd.DataFrame({\n"
-            "    'distance_km': [1.0, 2.0],\n"
-            "    'duration_min': [10.0, 20.0],\n"
-            "    'zone': [None, 'center'],\n"
+            "    'accommodates': [1.0, 2.0],\n"
+            "    'price': [10.0, 20.0],\n"
+            "    'neighbourhood': [None, 'center'],\n"
             "})\n"
-            "print(clean_trips(sample))"
+            "print(clean_listings(sample))"
         ),
         md("## ДЗ. 4. Пустой после clean"),
         code(
-            "tiny = pd.DataFrame({'distance_km': [1.0], 'duration_min': [None]})\n"
-            "cleaned = clean_trips(tiny)\n"
+            "tiny = pd.DataFrame({'accommodates': [1.0], 'price': [None]})\n"
+            "cleaned = clean_listings(tiny)\n"
             "status = 'empty after clean' if len(cleaned) == 0 else 'ok'\n"
             "print(status)"
         ),
@@ -1660,6 +1660,7 @@ def add_lesson06() -> None:
 
 
 def add_lesson07() -> None:
+    """Pair 15: compare features + brief multi-feature overview."""
     base = "lessons/07_practice_features"
     fit_stub = (
         "def eval_feature(feature_name: str, random_state: int = 42):\n"
@@ -1668,68 +1669,60 @@ def add_lesson07() -> None:
     )
     lesson = nb(
         md(
-            "# Практика: сравнение признаков\n\n"
-            "Один и тот же pipeline, два кандидата: `distance_km` и `hour`. "
-            "Решение для отчёта — по R² на test при фиксированном seed."
+            "# Практика: сравнение признаков (+ обзор multi)\n\n"
+            "Один pipeline — два кандидата (`accommodates`, `number_of_reviews`). "
+            "В конце пары — короткий обзор: два столбца в одной модели."
         ),
         code(LOAD_DATA + IMPORTS_SKLEARN + fit_stub),
         md(
             "## 1. Контракт `eval_feature`\n\n"
-            "Внутри функции: `X = df[[feature_name]]`, `y = duration_min`, "
+            "Внутри: `X = df[[feature_name]]`, `y = price`, "
             "`train_test_split(..., test_size=0.2, random_state=...)`, "
             "`LinearRegression().fit`, вернуть `(mse, r2)` на test.\n\n"
-            "**Why функция:** иначе легко «случайно» сменить seed между признаками."
+            "**Why функция:** иначе легко сменить seed между признаками."
         ),
         code(
-            "# допишите тело eval_feature выше, затем проверьте сигнатуру\n"
+            "# допишите тело eval_feature выше\n"
             "assert callable(eval_feature)\n"
             "print('eval_feature готов к проверке')"
         ),
-        md(
-            "## 2. Метрики distance_km\n\n"
-            "Проверка на `distance_km`: оба числа конечные, MSE ≥ 0."
-        ),
+        md("## 2. Метрики accommodates\n\nПроверка: оба числа конечные, MSE ≥ 0."),
         code(
-            "mse_d, r2_d = eval_feature('distance_km')\n"
+            "mse_d, r2_d = eval_feature('accommodates')\n"
             "assert mse_d >= 0\n"
             "assert r2_d == r2_d  # not NaN\n"
-            "print('distance', round(mse_d, 2), round(r2_d, 3))"
+            "print('accommodates', round(mse_d, 2), round(r2_d, 3))"
         ),
         md(
-            "## 3. Метрики hour\n\n"
-            "Те же метрики для `hour` (тот же seed внутри функции)."
+            "## 3. Метрики number_of_reviews\n\n"
+            "Те же метрики для `number_of_reviews` (тот же seed внутри функции)."
         ),
         code(
-            "mse_h, r2_h = eval_feature('hour')\n"
-            "assert mse_h >= 0\n"
-            "print('hour', round(mse_h, 2), round(r2_h, 3))"
+            "mse_r, r2_r = eval_feature('number_of_reviews')\n"
+            "assert mse_r >= 0\n"
+            "print('number_of_reviews', round(mse_r, 2), round(r2_r, 3))"
         ),
         md(
             "## 4. Таблица сравнения\n\n"
-            "Соберите DataFrame со столбцами `feature`, `mse`, `r2` для обоих признаков. "
-            "Это заготовка § «сравнение» мини-отчёта."
+            "DataFrame со столбцами `feature`, `mse`, `r2` для обоих признаков."
         ),
         code(
             "compare_table = None  # DataFrame\n"
             "assert compare_table is not None\n"
             "assert list(compare_table.columns) == ['feature', 'mse', 'r2']\n"
-            "assert set(compare_table['feature']) == {'distance_km', 'hour'}\n"
+            "assert set(compare_table['feature']) == {'accommodates', 'number_of_reviews'}\n"
             "print(compare_table)"
         ),
-        md(
-            "## 5. Выбор для отчёта\n\n"
-            "Лучший признак по R² на test → `BETTER_FEATURE`."
-        ),
+        md("## 5. Выбор для отчёта\n\nЛучший признак по R² на test → `BETTER_FEATURE`."),
         code(
             "BETTER_FEATURE = ''\n"
-            "assert BETTER_FEATURE in ('distance_km', 'hour')\n"
-            "assert BETTER_FEATURE == ('distance_km' if r2_d >= r2_h else 'hour')\n"
+            "assert BETTER_FEATURE in ('accommodates', 'number_of_reviews')\n"
+            "assert BETTER_FEATURE == ('accommodates' if r2_d >= r2_r else 'number_of_reviews')\n"
             "print(BETTER_FEATURE)"
         ),
         md(
-            "## 6. Обоснование для аналитиков\n\n"
-            "2 предложения в `WHY`: числа R² + почему этот признак в отчёт "
-            "(без слова «магия»)."
+            "## 6. Обоснование\n\n"
+            "2 предложения в `WHY`: числа R² + почему этот признак в отчёт."
         ),
         code(
             "WHY = ''\n"
@@ -1737,22 +1730,36 @@ def add_lesson07() -> None:
             "print(BETTER_FEATURE, WHY)"
         ),
         md(
-            "## 7. Checkpoint: одинаковый протокол\n\n"
-            "Одна фраза: почему нельзя сравнить distance при seed=42 и hour при seed=7?"
+            "## 7. Обзор: два признака сразу\n\n"
+            "`X = df[['accommodates', 'number_of_reviews']]`, тот же seed 42 / test 0.2. "
+            "Сохраните `r2_two` и `two_better` (`r2_two > r2_one`, где `r2_one` — только accommodates). "
+            "На этих данных `two_better` может быть **False** — это нормально."
         ),
         code(
-            "PROTOCOL_NOTE = ''\n"
-            "assert len(PROTOCOL_NOTE) > 25\n"
-            "print(PROTOCOL_NOTE)"
+            "r2_one = None\n"
+            "r2_two = None\n"
+            "two_better = None  # True/False\n"
+            "assert r2_one is not None and r2_two is not None\n"
+            "assert two_better == (r2_two > r2_one)\n"
+            "print('one', round(float(r2_one), 3), 'two', round(float(r2_two), 3), 'two_better', two_better)"
+        ),
+        md(
+            "## 8. Checkpoint: больше столбцов ≠ лучше\n\n"
+            "`MULTI_NOTE`: зачем пробовать второй признак и почему это не гарантия роста R² на test?"
+        ),
+        code(
+            "MULTI_NOTE = ''\n"
+            "assert len(MULTI_NOTE) > 30\n"
+            "print(MULTI_NOTE)"
         ),
     )
     hw = nb(
-        md("# ДЗ: таблица сравнения"),
+        md("# ДЗ: таблица сравнения + multi"),
         code(LOAD_DATA + IMPORTS_SKLEARN),
         md("### A. Закрепление"),
         md(
             "## 1. Таблица\n\n"
-            "DataFrame со столбцами `feature`, `mse`, `r2` для `distance_km` и `hour`."
+            "DataFrame `feature` / `mse` / `r2` для `accommodates` и `number_of_reviews`."
         ),
         code(
             "def eval_feature(feature_name: str, random_state: int = 42):\n"
@@ -1760,33 +1767,34 @@ def add_lesson07() -> None:
             "table = None  # DataFrame\n"
             "assert table is not None\n"
             "assert list(table.columns) == ['feature', 'mse', 'r2']\n"
-            "assert set(table['feature']) == {'distance_km', 'hour'}\n"
+            "assert set(table['feature']) == {'accommodates', 'number_of_reviews'}\n"
             "print(table)"
         ),
         md(
             "### B. Вызов\n\n"
-            "## 2. is_comfort\n\n"
-            "Добавьте третий признак `vehicle_type`: сначала закодируйте "
-            "`comfort→1`, иначе `0` в новый столбец `is_comfort`, затем `eval_feature('is_comfort')`. "
-            "Лучше ли он distance по R²?"
+            "## 2. is_entire\n\n"
+            "Код `entire→1`, иначе `0` → столбец `is_entire`; `eval_feature('is_entire')`. "
+            "Лучше ли accommodates по R²?"
         ),
         code(
             "df = df.copy()\n"
-            "df['is_comfort'] = (df['vehicle_type'] == 'comfort').astype(int)\n"
-            "mse_c, r2_c = eval_feature('is_comfort')\n"
-            "beats_distance = None  # True/False\n"
-            "assert beats_distance in (True, False)\n"
-            "print(r2_c, beats_distance)"
+            "df['is_entire'] = (df['room_type'] == 'entire').astype(int)\n"
+            "mse_c, r2_c = eval_feature('is_entire')\n"
+            "beats_accommodates = None  # True/False\n"
+            "assert beats_accommodates in (True, False)\n"
+            "print(r2_c, beats_accommodates)"
         ),
         md(
-            "## 3. Фраза для отчёта\n\n"
-            "1–2 предложения: какой признак берёте в сдачу и с какими MSE/R² "
-            "(числа из вашей таблицы)."
+            "## 3. MSE двух признаков\n\n"
+            "MSE на test для модели accommodates+number_of_reviews (seed 42, test 0.2) + "
+            "одна фраза: когда оставить один признак в сдаче."
         ),
         code(
-            "REPORT_CHOICE = ''\n"
-            "assert len(REPORT_CHOICE) > 30\n"
-            "print(REPORT_CHOICE)"
+            "mse_two = None\n"
+            "KEEP_ONE_NOTE = ''\n"
+            "assert mse_two is not None and mse_two >= 0\n"
+            "assert len(KEEP_ONE_NOTE) > 25\n"
+            "print(round(float(mse_two), 2), KEEP_ONE_NOTE)"
         ),
     )
     sol = nb(
@@ -1796,79 +1804,88 @@ def add_lesson07() -> None:
         code(
             "def eval_feature(feature_name: str, random_state: int = 42):\n"
             "    X = df[[feature_name]]\n"
-            "    y = df['duration_min']\n"
+            "    y = df['price']\n"
             "    X_tr, X_te, y_tr, y_te = train_test_split(\n"
             "        X, y, test_size=0.2, random_state=random_state\n"
             "    )\n"
             "    pred = LinearRegression().fit(X_tr, y_tr).predict(X_te)\n"
             "    return mean_squared_error(y_te, pred), r2_score(y_te, pred)\n\n\n"
-            "mse_d, r2_d = eval_feature('distance_km')\n"
-            "mse_h, r2_h = eval_feature('hour')\n"
-            "print('distance', round(mse_d, 2), round(r2_d, 3))\n"
-            "print('hour', round(mse_h, 2), round(r2_h, 3))"
+            "mse_d, r2_d = eval_feature('accommodates')\n"
+            "mse_r, r2_r = eval_feature('number_of_reviews')\n"
+            "print('accommodates', round(mse_d, 2), round(r2_d, 3))\n"
+            "print('number_of_reviews', round(mse_r, 2), round(r2_r, 3))"
         ),
         md("## Урок. 4. Таблица"),
         code(
             "compare_table = pd.DataFrame([\n"
-            "    {'feature': 'distance_km', 'mse': mse_d, 'r2': r2_d},\n"
-            "    {'feature': 'hour', 'mse': mse_h, 'r2': r2_h},\n"
+            "    {'feature': 'accommodates', 'mse': mse_d, 'r2': r2_d},\n"
+            "    {'feature': 'number_of_reviews', 'mse': mse_r, 'r2': r2_r},\n"
             "])\n"
             "print(compare_table)"
         ),
-        md("## Урок. 5. BETTER_FEATURE"),
+        md("## Урок. 5–6. BETTER_FEATURE / WHY"),
         code(
-            "BETTER_FEATURE = 'distance_km' if r2_d >= r2_h else 'hour'\n"
-            "print(BETTER_FEATURE)"
-        ),
-        md("## Урок. 6. WHY"),
-        code(
+            "BETTER_FEATURE = 'accommodates' if r2_d >= r2_r else 'number_of_reviews'\n"
             "WHY = (\n"
             "    f'По R² на test лучше {BETTER_FEATURE} '\n"
-            "    f'(distance R²={r2_d:.3f}, hour R²={r2_h:.3f}). '\n"
+            "    f'(accommodates R²={r2_d:.3f}, number_of_reviews R²={r2_r:.3f}). '\n"
             "    'Для отчёта фиксируем один признак и те же seed/test_size.'\n"
             ")\n"
+            "print(BETTER_FEATURE)\n"
             "print(WHY)"
         ),
-        md("## Урок. 7. PROTOCOL"),
+        md("## Урок. 7–8. Multi-feature обзор"),
         code(
-            "PROTOCOL_NOTE = (\n"
-            "    'Разный seed меняет состав test — сравнение R² становится некорректным.'\n"
+            "y = df['price']\n"
+            "X1 = df[['accommodates']]\n"
+            "X2 = df[['accommodates', 'number_of_reviews']]\n"
+            "X1_tr, X1_te, y1_tr, y1_te = train_test_split(X1, y, test_size=0.2, random_state=42)\n"
+            "X2_tr, X2_te, y2_tr, y2_te = train_test_split(X2, y, test_size=0.2, random_state=42)\n"
+            "r2_one = r2_score(y1_te, LinearRegression().fit(X1_tr, y1_tr).predict(X1_te))\n"
+            "pred2 = LinearRegression().fit(X2_tr, y2_tr).predict(X2_te)\n"
+            "r2_two = r2_score(y2_te, pred2)\n"
+            "two_better = r2_two > r2_one\n"
+            "MULTI_NOTE = (\n"
+            "    'Второй признак стоит пробовать, но решение — по метрике на test: '\n"
+            "    'лишний столбец может не помочь или чуть ухудшить R².'\n"
             ")\n"
-            "print(PROTOCOL_NOTE)"
+            "print('one', round(r2_one, 3), 'two', round(r2_two, 3), 'two_better', two_better)\n"
+            "print(MULTI_NOTE)"
         ),
         md("## ДЗ. 1. Таблица"),
         code(
             "rows = []\n"
-            "for f in ('distance_km', 'hour'):\n"
+            "for f in ('accommodates', 'number_of_reviews'):\n"
             "    m, r = eval_feature(f)\n"
             "    rows.append({'feature': f, 'mse': m, 'r2': r})\n"
             "table = pd.DataFrame(rows)\n"
             "print(table)"
         ),
-        md("## ДЗ. 2. is_comfort"),
+        md("## ДЗ. 2. is_entire"),
         code(
             "df2 = df.copy()\n"
-            "df2['is_comfort'] = (df2['vehicle_type'] == 'comfort').astype(int)\n"
+            "df2['is_entire'] = (df2['room_type'] == 'entire').astype(int)\n"
             "\n"
             "def eval_feature_df(frame, feature_name: str, random_state: int = 42):\n"
             "    X = frame[[feature_name]]\n"
-            "    y = frame['duration_min']\n"
+            "    y = frame['price']\n"
             "    X_tr, X_te, y_tr, y_te = train_test_split(\n"
             "        X, y, test_size=0.2, random_state=random_state\n"
             "    )\n"
             "    pred = LinearRegression().fit(X_tr, y_tr).predict(X_te)\n"
             "    return mean_squared_error(y_te, pred), r2_score(y_te, pred)\n\n\n"
-            "mse_c, r2_c = eval_feature_df(df2, 'is_comfort')\n"
-            "beats_distance = r2_c > r2_d\n"
-            "print(r2_c, beats_distance)"
+            "mse_c, r2_c = eval_feature_df(df2, 'is_entire')\n"
+            "beats_accommodates = r2_c > r2_d\n"
+            "print(r2_c, beats_accommodates)"
         ),
-        md("## ДЗ. 3. REPORT_CHOICE"),
+        md("## ДЗ. 3. MSE two + KEEP_ONE"),
         code(
-            "REPORT_CHOICE = (\n"
-            "    f'В сдачу берём {BETTER_FEATURE}: '\n"
-            "    f'R² distance={r2_d:.3f}, R² hour={r2_h:.3f} на test (seed 42).'\n"
+            "mse_two = mean_squared_error(y2_te, pred2)\n"
+            "KEEP_ONE_NOTE = (\n"
+            "    'Если второй признак не улучшает R² на test или усложняет интерпретацию — '\n"
+            "    'в сдачу оставляем один столбец.'\n"
             ")\n"
-            "print(REPORT_CHOICE)"
+            "print(round(mse_two, 2), KEEP_ONE_NOTE)"
         ),
     )
     NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
@@ -1877,525 +1894,214 @@ def add_lesson07() -> None:
 
 
 def add_lesson08() -> None:
-    base = "lessons/08_multifeature_overview"
+    """Pair 16: report draft + submit in one pair."""
+    base = "lessons/08_report"
     lesson = nb(
         md(
-            "# Несколько признаков (обзор)\n\n"
-            "Можно ли улучшить R², добавив `hour` к `distance_km`? "
-            "Обзорно: два столбца в `X`, тот же seed, сравнение с одним признаком."
-        ),
-        code(LOAD_DATA + IMPORTS_SKLEARN),
-        md(
-            "## 1. X из двух столбцов\n\n"
-            "Соберите `X = df[['distance_km', 'hour']]`, `y = duration_min`. "
-            "Проверьте `X.shape[1] == 2`."
-        ),
-        code(
-            "X = None\n"
-            "y = None\n"
-            "assert X is not None and y is not None\n"
-            "assert list(X.columns) == ['distance_km', 'hour']\n"
-            "assert X.shape[1] == 2\n"
-            "print(X.shape)"
-        ),
-        md(
-            "## 2. Модель на двух признаках\n\n"
-            "Split 0.2 / seed 42. Обучите модель; сохраните `r2_two` и посмотрите `coef_` "
-            "(два числа — по одному на признак)."
-        ),
-        code(
-            "model = None\n"
-            "r2_two = None\n"
-            "assert model is not None and r2_two is not None\n"
-            "assert len(model.coef_) == 2\n"
-            "assert isinstance(r2_two, (int, float))\n"
-            "print('coef', model.coef_, 'R2', round(float(r2_two), 3))"
-        ),
-        md(
-            "## 3. Сравнение с одним признаком\n\n"
-            "Тот же seed: R² только на `distance_km` → `r2_one`. "
-            "Запишите в `two_better`, улучшил ли второй признак R² на test "
-            "(на этих данных ответ может быть **False** — это нормально для обзора)."
-        ),
-        code(
-            "r2_one = None\n"
-            "two_better = None  # True/False: r2_two > r2_one\n"
-            "assert r2_one is not None\n"
-            "assert two_better == (r2_two > r2_one)\n"
-            "print('one', round(float(r2_one), 3), 'two', round(float(r2_two), 3), 'two_better', two_better)"
-        ),
-        md(
-            "## 4. Когда второй признак мешает\n\n"
-            "**Why может упасть R² на test:** шум, корреляция признаков, мало данных, "
-            "линейная модель не ловит взаимодействие.\n\n"
-            "1–2 предложения в `WHEN_HURTS` — без «магии»."
-        ),
-        code(
-            "WHEN_HURTS = ''\n"
-            "assert len(WHEN_HURTS) > 30\n"
-            "print(WHEN_HURTS)"
-        ),
-        md(
-            "## 5. Правило для отчёта\n\n"
-            "Кратко в `MULTI_NOTE`: зачем пробовать второй признак и почему "
-            "«больше столбцов» не гарантирует лучший R² на test?"
-        ),
-        code(
-            "MULTI_NOTE = ''\n"
-            "assert len(MULTI_NOTE) > 30\n"
-            "print(MULTI_NOTE)"
-        ),
-        md(
-            "## 6. Практика: MSE двух признаков\n\n"
-            "Запишите MSE на test для модели distance+hour (тот же split)."
-        ),
-        code(
-            "mse_two = None\n"
-            "assert mse_two is not None and mse_two >= 0\n"
-            "print('MSE two', round(float(mse_two), 2))"
-        ),
-        md(
-            "## 7. Checkpoint: интерпретация coef_\n\n"
-            "Одна фраза: можно ли читать `coef_[1]` (hour) как «минуты на час суток» "
-            "без оговорок, если в модели уже есть distance?"
-        ),
-        code(
-            "COEF_READ_NOTE = ''\n"
-            "assert len(COEF_READ_NOTE) > 25\n"
-            "print(COEF_READ_NOTE)"
-        ),
-    )
-    hw = nb(
-        md("# ДЗ: обзор нескольких признаков"),
-        code(LOAD_DATA + IMPORTS_SKLEARN),
-        md("### A. Закрепление"),
-        md("## 1. MSE двух признаков\n\nMSE на test для distance+hour (seed 42, test 0.2)."),
-        code(
-            "mse_two = None\n"
-            "assert mse_two is not None and mse_two >= 0\n"
-            "print(round(float(mse_two), 2))"
-        ),
-        md(
-            "### B. Вызов\n\n"
-            "## 2. Третий признак\n\n"
-            "Добавьте `is_comfort` (0/1) к distance+hour. Вырос ли R² относительно двух признаков? "
-            "Ответ bool + одна фраза ограничения обзора."
-        ),
-        code(
-            "improved = None\n"
-            "LIMIT_NOTE = ''\n"
-            "assert improved in (True, False)\n"
-            "assert len(LIMIT_NOTE) > 15\n"
-            "print(improved, LIMIT_NOTE)"
-        ),
-        md(
-            "## 3. Когда не добавлять\n\n"
-            "2 предложения: в каких условиях вы оставите один признак в сдаче, "
-            "даже если «можно» добавить второй."
-        ),
-        code(
-            "KEEP_ONE_NOTE = ''\n"
-            "assert len(KEEP_ONE_NOTE) > 30\n"
-            "print(KEEP_ONE_NOTE)"
-        ),
-    )
-    sol = nb(
-        md("# Решения: несколько признаков\n\n" + SOL_BANNER),
-        code(LOAD_DATA + IMPORTS_SKLEARN),
-        md("## Урок. 1–2. Два признака"),
-        code(
-            "y = df['duration_min']\n"
-            "X = df[['distance_km', 'hour']]\n"
-            "X2_tr, X2_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, random_state=42)\n"
-            "model = LinearRegression().fit(X2_tr, y_tr)\n"
-            "pred2 = model.predict(X2_te)\n"
-            "r2_two = r2_score(y_te, pred2)\n"
-            "print('coef', model.coef_, 'R2', round(r2_two, 3))"
-        ),
-        md("## Урок. 3. Сравнение с одним"),
-        code(
-            "X1 = df[['distance_km']]\n"
-            "X1_tr, X1_te, y1_tr, y1_te = train_test_split(X1, y, test_size=0.2, random_state=42)\n"
-            "r2_one = r2_score(y1_te, LinearRegression().fit(X1_tr, y1_tr).predict(X1_te))\n"
-            "two_better = r2_two > r2_one\n"
-            "print('one', round(r2_one, 3), 'two', round(r2_two, 3), 'two_better', two_better)"
-        ),
-        md("## Урок. 4–5. WHEN_HURTS / MULTI_NOTE"),
-        code(
-            "WHEN_HURTS = (\n"
-            "    'Второй признак может добавить шум: R² на test падает, хотя на train всё «красиво».'\n"
-            ")\n"
-            "MULTI_NOTE = (\n"
-            "    'Второй признак стоит пробовать, но решение — по метрике на test: '\n"
-            "    'лишний столбец может не помочь или чуть ухудшить R².'\n"
-            ")\n"
-            "print(WHEN_HURTS)\n"
-            "print(MULTI_NOTE)"
-        ),
-        md("## Урок. 6. MSE"),
-        code(
-            "mse_two = mean_squared_error(y_te, pred2)\n"
-            "print('MSE two', round(mse_two, 2))"
-        ),
-        md("## Урок. 7. coef_"),
-        code(
-            "COEF_READ_NOTE = (\n"
-            "    'coef hour — при фиксированном distance; это не «минуты на час» без оговорок.'\n"
-            ")\n"
-            "print(COEF_READ_NOTE)"
-        ),
-        md("## ДЗ. 1. MSE двух признаков"),
-        code(
-            "print(round(mse_two, 2))"
-        ),
-        md("## ДЗ. 2. is_comfort"),
-        code(
-            "df3 = df.copy()\n"
-            "df3['is_comfort'] = (df3['vehicle_type'] == 'comfort').astype(int)\n"
-            "X3 = df3[['distance_km', 'hour', 'is_comfort']]\n"
-            "X3_tr, X3_te, y3_tr, y3_te = train_test_split(X3, y, test_size=0.2, random_state=42)\n"
-            "r2_three = r2_score(y3_te, LinearRegression().fit(X3_tr, y3_tr).predict(X3_te))\n"
-            "improved = r2_three > r2_two\n"
-            "LIMIT_NOTE = 'Обзорно: рост R² не заменяет проверку на test и осмысленность признаков'\n"
-            "print(improved, LIMIT_NOTE)"
-        ),
-        md("## ДЗ. 3. KEEP_ONE"),
-        code(
-            "KEEP_ONE_NOTE = (\n"
-            "    'Если второй признак не улучшает R² на test или усложняет интерпретацию — '\n"
-            "    'в сдачу оставляем один столбец.'\n"
-            ")\n"
-            "print(KEEP_ONE_NOTE)"
-        ),
-    )
-    NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
-    NOTEBOOKS[f"{base}/homework.ipynb"] = hw
-    NOTEBOOKS[f"{base}/solutions.ipynb"] = sol
-
-
-def add_lesson09() -> None:
-    base = "lessons/09_report_draft"
-    lesson = nb(
-        md(
-            "# Мини-отчёт: черновик\n\n"
-            "Соберите каркас отчёта для отдела аналитики. "
-            "Каждая секция — готовый абзац или числа для `report_starter`."
+            "# Мини-отчёт: сборка и сдача\n\n"
+            "Одна пара: каркас по PROJECT → числа на test → сравнение признаков → "
+            "рекомендация → сдача `report_starter.ipynb`."
         ),
         code(LOAD_DATA + IMPORTS_SKLEARN + IMPORTS_MPL),
         md(
-            "## 1. Структура отчёта\n\n"
-            "Каркас: 1) данные → 2) EDA → 3) модель и метрики на test → "
-            "4) сравнение признаков → 5) рекомендация + ограничения.\n\n"
-            "Поставьте `STRUCTURE_OK = True`, когда порядок ясен."
+            "## 1. Структура и чек-лист\n\n"
+            "Каркас: данные → EDA → модель/метрики на test → сравнение ≥2 признаков → "
+            "рекомендация + ограничения → рефлексия.\n\n"
+            "Сверьте с PROJECT.md. `STRUCTURE_OK = True`, `CHECKLIST_OK = True`."
         ),
         code(
             "STRUCTURE_OK = False\n"
-            "assert STRUCTURE_OK is True"
+            "CHECKLIST_OK = False\n"
+            "assert STRUCTURE_OK is True and CHECKLIST_OK is True"
         ),
         md(
             "## 2. Данные\n\n"
-            "2–3 предложения в `REPORT_DATA`: источник файла, число строк, цель предсказания. "
-            "В тексте должно быть число строк (`len(df)`)."
+            "2–3 предложения в `REPORT_DATA`: источник, число строк (`len(df)`), цель `price`."
         ),
         code(
             "REPORT_DATA = ''\n"
             "assert str(len(df)) in REPORT_DATA\n"
-            "assert 'duration' in REPORT_DATA.lower() or 'длитель' in REPORT_DATA.lower()\n"
+            "assert 'price' in REPORT_DATA.lower() or 'цен' in REPORT_DATA.lower()\n"
             "print(REPORT_DATA)"
         ),
         md(
             "## 3. EDA\n\n"
-            "`describe` по distance/duration на экране + краткий вывод в `REPORT_EDA`."
+            "`describe` по accommodates/price + краткий вывод в `REPORT_EDA`."
         ),
         code(
-            "# print(df[['distance_km', 'duration_min']].describe())\n"
+            "# print(df[['accommodates', 'price']].describe())\n"
             "REPORT_EDA = ''\n"
             "assert len(REPORT_EDA) > 20\n"
             "print(REPORT_EDA)"
         ),
         md(
-            "## 4. Модель\n\n"
-            "Train/test 0.2 / 42, LR на `distance_km`, метрики test в `report_mse` и `report_r2`."
-        ),
-        code(
-            "report_mse = None\n"
-            "report_r2 = None\n"
-            "assert report_mse is not None and report_r2 is not None\n"
-            "assert report_mse >= 0\n"
-            "print('MSE', report_mse, 'R2', report_r2)"
-        ),
-        md(
-            "## 5. Сравнение признаков (черновик)\n\n"
-            "2 предложения: R² для distance и hour при том же протоколе (seed 42)."
-        ),
-        code(
-            "COMPARE_DRAFT = ''\n"
-            "assert 'distance' in COMPARE_DRAFT.lower() or 'distance_km' in COMPARE_DRAFT\n"
-            "assert 'hour' in COMPARE_DRAFT.lower()\n"
-            "print(COMPARE_DRAFT)"
-        ),
-        md(
-            "## 6. Рекомендация (черновик)\n\n"
-            "Абзац: признак, качество, ограничение. Добить на паре 20, если не успеете."
-        ),
-        code(
-            "REPORT_RECOMMENDATION = ''\n"
-            "assert len(REPORT_RECOMMENDATION) >= 0\n"
-            "print(REPORT_RECOMMENDATION or '(черновик пуст — доделать дома / на паре 20)')"
-        ),
-        md(
-            "## 7. Ограничения модели\n\n"
-            "1–2 предложения в `LIMITATIONS`: линейность, число признаков, данные одной компании."
-        ),
-        code(
-            "LIMITATIONS = ''\n"
-            "assert len(LIMITATIONS) > 25\n"
-            "print(LIMITATIONS)"
-        ),
-    )
-    hw = nb(
-        md("# ДЗ: доработать черновик"),
-        code(LOAD_DATA + IMPORTS_SKLEARN),
-        md("### A. Закрепление"),
-        md(
-            "## 1. Сравнение признаков в тексте\n\n"
-            "2 предложения: R² для distance и hour (seed 42)."
-        ),
-        code(
-            "COMPARE_DRAFT = ''\n"
-            "assert 'distance' in COMPARE_DRAFT.lower() or 'distance_km' in COMPARE_DRAFT\n"
-            "assert 'hour' in COMPARE_DRAFT.lower()\n"
-            "print(COMPARE_DRAFT)"
-        ),
-        md("### B. Вызов"),
-        md("## 2. Рекомендация ≥ 2 предложений\n\nЗаполните `REPORT_RECOMMENDATION`."),
-        code(
-            "REPORT_RECOMMENDATION = ''\n"
-            "assert len(REPORT_RECOMMENDATION) > 40\n"
-            "print(REPORT_RECOMMENDATION)"
-        ),
-        md(
-            "## 3. Полный каркас\n\n"
-            "Склейте `FULL_DRAFT`: данные + EDA + рекомендация (минимум 80 символов)."
-        ),
-        code(
-            "FULL_DRAFT = ''\n"
-            "assert len(FULL_DRAFT) > 80\n"
-            "print(FULL_DRAFT)"
-        ),
-    )
-    sol = nb(
-        md("# Решения: черновик отчёта\n\n" + SOL_BANNER),
-        code(LOAD_DATA + IMPORTS_SKLEARN),
-        md("## Урок. 1. Структура"),
-        code(
-            "STRUCTURE_OK = True\n"
-            "print(STRUCTURE_OK)"
-        ),
-        md("## Урок. 2. Данные"),
-        code(
-            "REPORT_DATA = (\n"
-            "    f'Источник: {TRIPS_PATH.name}, строк: {len(df)}. '\n"
-            "    'Цель: предсказать duration_min по признакам поездки.'\n"
-            ")\n"
-            "print(REPORT_DATA)"
-        ),
-        md("## Урок. 3. EDA"),
-        code(
-            "print(df[['distance_km', 'duration_min']].describe())\n"
-            "REPORT_EDA = (\n"
-            "    'describe показывает разброс distance и duration; '\n"
-            "    'на scatter distance→duration видна положительная связь.'\n"
-            ")\n"
-            "print(REPORT_EDA)"
-        ),
-        md("## Урок. 4. Модель"),
-        code(
-            "X = df[['distance_km']]\n"
-            "y = df['duration_min']\n"
-            "X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, random_state=42)\n"
-            "pred = LinearRegression().fit(X_tr, y_tr).predict(X_te)\n"
-            "report_mse = mean_squared_error(y_te, pred)\n"
-            "report_r2 = r2_score(y_te, pred)\n"
-            "print('MSE', report_mse, 'R2', report_r2)"
-        ),
-        md("## Урок. 5. Сравнение"),
-        code(
-            "def r2_of(col):\n"
-            "    Xc = df[[col]]\n"
-            "    tr, te, ytr, yte = train_test_split(Xc, y, test_size=0.2, random_state=42)\n"
-            "    return r2_score(yte, LinearRegression().fit(tr, ytr).predict(te))\n\n\n"
-            "COMPARE_DRAFT = (\n"
-            "    f'distance_km R²≈{r2_of(\"distance_km\"):.3f}; '\n"
-            "    f'hour R²≈{r2_of(\"hour\"):.3f} на том же test.'\n"
-            ")\n"
-            "print(COMPARE_DRAFT)"
-        ),
-        md("## Урок. 6–7. Рекомендация и ограничения"),
-        code(
-            "REPORT_RECOMMENDATION = (\n"
-            "    'Рекомендуем distance_km как основной признак: выше R² на test. '\n"
-            "    'Ограничение: один признак и линейная модель.'\n"
-            ")\n"
-            "LIMITATIONS = (\n"
-            "    'Линейная модель и данные одной компании не обещают точность на других городах.'\n"
-            ")\n"
-            "print(REPORT_RECOMMENDATION)\n"
-            "print(LIMITATIONS)"
-        ),
-        md("## ДЗ. 1–3"),
-        code(
-            "FULL_DRAFT = REPORT_DATA + ' ' + REPORT_EDA + ' ' + REPORT_RECOMMENDATION\n"
-            "print(FULL_DRAFT)"
-        ),
-    )
-    NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
-    NOTEBOOKS[f"{base}/homework.ipynb"] = hw
-    NOTEBOOKS[f"{base}/solutions.ipynb"] = sol
-
-
-def add_lesson10() -> None:
-    base = "lessons/10_report_submit"
-    lesson = nb(
-        md(
-            "# Сдача мини-отчёта\n\n"
-            "Финиш модуля 2: чек-лист PROJECT, финальные числа, мост к модулю 1, сдача starter."
-        ),
-        code(LOAD_DATA + IMPORTS_SKLEARN),
-        md(
-            "## 1. Чек-лист сдачи\n\n"
-            "Пройдите пункты (данные, EDA, train/test+LR, MSE/R² на test, "
-            "сравнение ≥2 признаков, рекомендация, ограничения). "
-            "Сверьте с PROJECT.md. Поставьте `CHECKLIST_OK = True`."
-        ),
-        code(
-            "CHECKLIST_OK = False\n"
-            "assert CHECKLIST_OK is True"
-        ),
-        md(
-            "## 2. Мост к модулю 1\n\n"
-            "3 коротких пункта в `BRIDGE_M1`: `predict` на списках → DataFrame + "
-            "`fit`/`predict` sklearn; связь `k` и `coef_`."
-        ),
-        code(
-            "BRIDGE_M1 = ''\n"
-            "assert len(BRIDGE_M1) > 50\n"
-            "assert 'coef' in BRIDGE_M1.lower() or 'predict' in BRIDGE_M1.lower() or 'спис' in BRIDGE_M1.lower()\n"
-            "print(BRIDGE_M1)"
-        ),
-        md(
-            "## 3. Финальные метрики\n\n"
-            "Пересчитайте MSE/R² для выбранной модели на test. Seed 42, test 0.2."
+            "## 4. Модель и финальные метрики\n\n"
+            "Train/test 0.2 / seed 42, LR на `accommodates` → `FINAL_MSE`, `FINAL_R2` на test."
         ),
         code(
             "FINAL_MSE = None\n"
             "FINAL_R2 = None\n"
             "assert FINAL_MSE is not None and FINAL_R2 is not None\n"
             "assert FINAL_MSE >= 0\n"
-            "print(FINAL_MSE, FINAL_R2)"
+            "print('MSE', FINAL_MSE, 'R2', FINAL_R2)"
         ),
         md(
-            "## 4. Сравнение признаков в сдаче\n\n"
-            "Кратко: какой признак лучше и на сколько по R² (два числа)."
+            "## 5. Сравнение признаков\n\n"
+            "Текст: R² для accommodates и number_of_reviews при том же протоколе (seed 42)."
         ),
         code(
             "FEATURE_COMPARE_NOTE = ''\n"
-            "assert 'distance' in FEATURE_COMPARE_NOTE.lower() or 'hour' in FEATURE_COMPARE_NOTE.lower()\n"
+            "assert 'accommodates' in FEATURE_COMPARE_NOTE.lower()\n"
+            "assert 'number_of_reviews' in FEATURE_COMPARE_NOTE.lower() or 'review' in FEATURE_COMPARE_NOTE.lower()\n"
             "assert len(FEATURE_COMPARE_NOTE) > 20\n"
             "print(FEATURE_COMPARE_NOTE)"
         ),
         md(
-            "## 5. Рефлексия модуля\n\n"
-            "3 предложения: что изменилось после модуля 1 (списки → таблица → sklearn)?"
+            "## 6. Рекомендация и ограничения\n\n"
+            "`REPORT_RECOMMENDATION` (≥2 предложения с числами) + `LIMITATIONS`."
+        ),
+        code(
+            "REPORT_RECOMMENDATION = ''\n"
+            "LIMITATIONS = ''\n"
+            "assert len(REPORT_RECOMMENDATION) > 40\n"
+            "assert len(LIMITATIONS) > 25\n"
+            "print(REPORT_RECOMMENDATION)\n"
+            "print(LIMITATIONS)"
+        ),
+        md(
+            "## 7. Рефлексия модуля\n\n"
+            "3 предложения: списки модуля 1 → DataFrame → sklearn fit/predict."
         ),
         code(
             "REFLECTION = ''\n"
-            "assert REFLECTION.count('.') >= 2 or REFLECTION.count('!') + REFLECTION.count('?') >= 2\n"
             "assert len(REFLECTION) > 60\n"
             "print(REFLECTION)"
         ),
         md(
-            "## 6. Файл сдачи\n\n"
-            "Сдаём заполненный `artifact/starter/report_starter.ipynb` (не только этот lesson). "
-            "Поставьте `STARTER_READY = True`, когда starter заполнен."
+            "## 8. Сдача starter\n\n"
+            "Файл сдачи — заполненный `artifact/starter/report_starter.ipynb` "
+            "(можно перенести блоки из этого lesson).\n\n"
+            "`STARTER_READY = True`; `SUBMIT_NOTE` — что отправляете в Canvas."
+        ),
+        code(
+            "STARTER_READY = False\n"
+            "SUBMIT_NOTE = ''\n"
+            "assert STARTER_READY is True\n"
+            "assert CHECKLIST_OK and FINAL_MSE is not None and FINAL_R2 is not None\n"
+            "assert len(SUBMIT_NOTE) > 15\n"
+            "print(SUBMIT_NOTE)"
+        ),
+    )
+    hw = nb(
+        md("# ДЗ: добить starter к сдаче (если не успели на паре)"),
+        code(LOAD_DATA + IMPORTS_SKLEARN),
+        md("### A. Закрепление"),
+        md(
+            "## 1. Сравнение в тексте\n\n"
+            "2 предложения: R² accommodates vs number_of_reviews (seed 42)."
+        ),
+        code(
+            "FEATURE_COMPARE_NOTE = ''\n"
+            "assert 'accommodates' in FEATURE_COMPARE_NOTE.lower()\n"
+            "assert 'number_of_reviews' in FEATURE_COMPARE_NOTE.lower() or 'review' in FEATURE_COMPARE_NOTE.lower()\n"
+            "print(FEATURE_COMPARE_NOTE)"
+        ),
+        md("### B. Вызов"),
+        md(
+            "## 2. Рекомендация ≥ 2 предложений\n\n"
+            "Заполните `REPORT_RECOMMENDATION` с числами и ограничением."
+        ),
+        code(
+            "REPORT_RECOMMENDATION = ''\n"
+            "assert len(REPORT_RECOMMENDATION) > 40\n"
+            "print(REPORT_RECOMMENDATION)"
+        ),
+        md(
+            "## 3. Перенос в starter\n\n"
+            "`STARTER_READY = True`, когда блоки §1–6 в `report_starter.ipynb` заполнены."
         ),
         code(
             "STARTER_READY = False\n"
             "assert STARTER_READY is True\n"
             "print('starter ready')"
         ),
-        md(
-            "## 7. Финальный gate\n\n"
-            "Все флаги True и числа на месте? `SUBMIT_NOTE` — одна фраза, что отправляете в Canvas."
-        ),
-        code(
-            "SUBMIT_NOTE = ''\n"
-            "assert CHECKLIST_OK and STARTER_READY\n"
-            "assert FINAL_MSE is not None and FINAL_R2 is not None\n"
-            "assert len(SUBMIT_NOTE) > 15\n"
-            "print(SUBMIT_NOTE)"
-        ),
     )
     sol = nb(
-        md("# Решения: сдача отчёта\n\n" + SOL_BANNER),
+        md("# Решения: мини-отчёт\n\n" + SOL_BANNER),
         code(LOAD_DATA + IMPORTS_SKLEARN),
-        md("## Урок. 1. Чек-лист"),
+        md("## Урок. 1. Структура"),
         code(
+            "STRUCTURE_OK = True\n"
             "CHECKLIST_OK = True\n"
-            "print(CHECKLIST_OK)"
+            "print(STRUCTURE_OK, CHECKLIST_OK)"
         ),
-        md("## Урок. 2. Мост к модулю 1"),
+        md("## Урок. 2–3. Данные и EDA"),
         code(
-            "BRIDGE_M1 = (\n"
-            "    'В модуле 1 predict был функцией на списках с ручным k. '\n"
-            "    'Здесь данные — DataFrame из CSV; sklearn даёт fit/predict. '\n"
-            "    'coef_ — тот же смысл, что k, но подобран по train.'\n"
+            "REPORT_DATA = (\n"
+            "    f'Источник: {LISTINGS_PATH.name}, строк: {len(df)}. '\n"
+            "    'Цель: предсказать price по признакам объявления.'\n"
             ")\n"
-            "print(BRIDGE_M1)"
+            "print(df[['accommodates', 'price']].describe())\n"
+            "REPORT_EDA = (\n"
+            "    'describe показывает разброс accommodates и price; '\n"
+            "    'на scatter accommodates→price видна положительная связь.'\n"
+            ")\n"
+            "print(REPORT_DATA)\n"
+            "print(REPORT_EDA)"
         ),
-        md("## Урок. 3. Финальные метрики"),
+        md("## Урок. 4–5. Метрики и сравнение"),
         code(
-            "y = df['duration_min']\n"
+            "y = df['price']\n"
             "\n"
             "def metrics(cols):\n"
             "    X = df[cols]\n"
             "    X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, random_state=42)\n"
             "    pred = LinearRegression().fit(X_tr, y_tr).predict(X_te)\n"
             "    return mean_squared_error(y_te, pred), r2_score(y_te, pred)\n\n\n"
-            "FINAL_MSE, FINAL_R2 = metrics(['distance_km'])\n"
-            "print(FINAL_MSE, FINAL_R2)"
-        ),
-        md("## Урок. 4. Сравнение признаков"),
-        code(
-            "_, r2_h = metrics(['hour'])\n"
+            "FINAL_MSE, FINAL_R2 = metrics(['accommodates'])\n"
+            "_, r2_r = metrics(['number_of_reviews'])\n"
             "FEATURE_COMPARE_NOTE = (\n"
-            "    f'distance_km R²={FINAL_R2:.3f}, hour R²={r2_h:.3f} — выбираем distance_km'\n"
+            "    f'accommodates R²={FINAL_R2:.3f}, number_of_reviews R²={r2_r:.3f} — выбираем accommodates'\n"
             ")\n"
+            "print(FINAL_MSE, FINAL_R2)\n"
             "print(FEATURE_COMPARE_NOTE)"
         ),
-        md("## Урок. 5. Рефлексия"),
+        md("## Урок. 6–8. Рекомендация, рефлексия, сдача"),
         code(
+            "REPORT_RECOMMENDATION = (\n"
+            "    'Рекомендуем accommodates как основной признак: выше R² на test. '\n"
+            "    'Ограничение: один признак и линейная модель.'\n"
+            ")\n"
+            "LIMITATIONS = (\n"
+            "    'Линейная модель и сэмпл Porto (Inside Airbnb) не обещают точность на других городах.'\n"
+            ")\n"
             "REFLECTION = (\n"
             "    'В модуле 1 predict был функцией на списках. '\n"
             "    'Здесь данные — таблица CSV и DataFrame. '\n"
             "    'sklearn даёт fit/predict и метрики на test вместо ручного коэффициента.'\n"
             ")\n"
-            "print(REFLECTION)"
-        ),
-        md("## Урок. 6–7. Сдача"),
-        code(
             "STARTER_READY = True\n"
             "SUBMIT_NOTE = 'Отправляю заполненный report_starter.ipynb с метриками на test и сравнением признаков'\n"
+            "print(REPORT_RECOMMENDATION)\n"
+            "print(LIMITATIONS)\n"
+            "print(REFLECTION)\n"
             "print(STARTER_READY, SUBMIT_NOTE)"
+        ),
+        md("## ДЗ. 1–3"),
+        code(
+            "print(FEATURE_COMPARE_NOTE)\n"
+            "print(REPORT_RECOMMENDATION)\n"
+            "print(STARTER_READY)"
         ),
     )
     NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
+    NOTEBOOKS[f"{base}/homework.ipynb"] = hw
     NOTEBOOKS[f"{base}/solutions.ipynb"] = sol
 
 
 def add_report_starter() -> None:
     starter = nb(
-        md("# Мини-отчёт: каршеринг «Дорога»"),
+        md("# Мини-отчёт: краткосрочная аренда «StayLocal»"),
         code(LOAD_DATA + IMPORTS_SKLEARN + IMPORTS_MPL),
         md(
             "## 1. Данные\n\n"
@@ -2407,7 +2113,7 @@ def add_report_starter() -> None:
             "assert str(len(df)) in REPORT_DATA\n"
             "print(REPORT_DATA)"
         ),
-        md("## 2. EDA\n\n`describe` и/или scatter для связи признака с `duration_min`."),
+        md("## 2. EDA\n\n`describe` и/или scatter для связи признака с `price`."),
         code(
             "# ваш код EDA\n"
             "REPORT_EDA = ''\n"
@@ -2427,7 +2133,7 @@ def add_report_starter() -> None:
         ),
         md(
             "## 4. Сравнение признаков\n\n"
-            "Таблица или два блока: минимум `distance_km` и `hour`."
+            "Таблица или два блока: минимум `accommodates` и `number_of_reviews`."
         ),
         code(
             "FEATURE_COMPARE = None  # DataFrame или текст\n"
@@ -2462,16 +2168,18 @@ def main() -> None:
     add_lesson06()
     add_lesson07()
     add_lesson08()
-    add_lesson09()
-    add_lesson10()
     add_report_starter()
     for rel, notebook in NOTEBOOKS.items():
         write(rel, notebook)
-    src_csv = ROOT / "data" / "trips.csv"
-    dst_csv = ROOT / "artifact" / "starter" / "trips.csv"
+    src_csv = ROOT / "data" / "listings.csv"
     if src_csv.exists():
-        shutil.copy(src_csv, dst_csv)
-        print("copied", dst_csv)
+        targets = [ROOT / "artifact" / "starter" / "listings.csv"]
+        for lesson_dir in (ROOT / "lessons").iterdir():
+            if lesson_dir.is_dir() and not lesson_dir.name.startswith("_"):
+                targets.append(lesson_dir / "listings.csv")
+        for dst in targets:
+            shutil.copy(src_csv, dst)
+            print("copied", dst)
     print(f"total notebooks: {len(NOTEBOOKS)}")
 
 

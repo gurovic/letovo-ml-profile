@@ -14,7 +14,7 @@
 | **Первая фраза** | «Считаем типы ошибок руками и фиксируем отладку: симптом → причина → исправление» |
 | **Минимум сдачи** | (1) `confusion_counts` → кортеж из 4 int; (2) ручная сверка на 4 объектах; (3) журнал — 3 строки |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать ноутбук (~1 ч) |
-| **Дальше** | рекурсия — [пара 7](../07_recursion/LESSON.md) |
+| **Дальше** | рекурсия + pipeline — [пара 7](../07_recursion_pipeline/LESSON.md) |
 | **Canvas** | Модуль 54688: [план](https://canvas.letovo.ru/courses/6465/pages/para-6-plan-uroka-dlia-priepodavatielia) (скрыт); [урок Colab](https://colab.research.google.com/gist/gurovic/223bec34de44132ae35d97bffc5f612d/lesson.ipynb); ДЗ Assignment 198694 |
 
 ### A. Чего хотим от пары

@@ -23,7 +23,7 @@ EXAM_SCORES = [40, 55, 60, 72, 88, 91, 95, 48, 63, 77]
 PREDICTIONS = [1, 0, 1, 1, 0, 1, 1, 0, 1, 0]
 LABELS =        [1, 0, 1, 0, 0, 1, 1, 0, 1, 1]
 
-# Пара 8: вложенный ответ API (как JSON) — доступ по ключу, без теории dict
+# Пара 7: вложенный ответ API (как JSON) — доступ по ключу, без теории dict
 NESTED_API_RESPONSE = [
     "batch",
     [
@@ -32,7 +32,7 @@ NESTED_API_RESPONSE = [
     ],
 ]
 
-# Пары 7–8: дерево категорий `(name, children)` — тот же контракт, что в lesson пары 7
+# Пара 7: дерево категорий `(name, children)` — тот же контракт, что в lesson
 CATEGORY_TREE = (
     "root",
     [
@@ -41,7 +41,7 @@ CATEGORY_TREE = (
     ],
 )
 
-# Пара 8: признаки для extract → scale → predict
+# Пара 7: признаки для extract → scale → predict
 FEATURE_ROWS = [
     {"area_sqm": 28, "rooms": 1, "floor": 3},
     {"area_sqm": 45, "rooms": 2, "floor": 7},

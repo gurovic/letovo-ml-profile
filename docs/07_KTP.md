@@ -11,8 +11,10 @@
 | Правило | Смысл |
 |---|---|
 | 1 тема = 1 пара | 2 академических часа (учёт) = **80 минут** проведения; **тема** — либо введение, либо отработка, либо интеграция/артефакт |
-| Нагрузка 8–9 | 5 ч/нед |
-| Нагрузка 9–10 | 6 ч/нед |
+| Нагрузка 8–9 | 4 ч/нед |
+| Нагрузка 10–11 | 6 ч/нед |
+| Учебных недель | 34 |
+| Пар 8 / 9 | 68 (= 4 × 34 / 2 ч на пару) |
 | Отработка в КТП | для программных навыков — явные строки «Практика: …» или эквивалентный блок; новая конструкция без отработки — ошибка плана (Foundation §5, Pedagogy §2) |
 | Итоговая работа модуля | до 2 пар (см. Unit Planner); не заменяет первичную отработку |
 | Сюжет модуля | свой контекст; не «продолжение» предыдущего модуля |
@@ -26,7 +28,7 @@
 
 | Класс | Документ | Статус |
 |---|---|---|
-| 8 | [08.md](ktp/08.md) | Draft 2, 85 пар; описания — [08_module_descriptions.md](ktp/08_module_descriptions.md) |
+| 8 | [08.md](ktp/08.md) | Draft 3, **68 пар** (4 ч/нед × 34 нед); описания — [08_module_descriptions.md](ktp/08_module_descriptions.md) |
 | 9 | — | TODO |
 | 10 | — | TODO |
 | 11 | — | TODO |
@@ -57,11 +59,11 @@
 
 Строка КТП → `modules/<grade>_<nn>_<slug>/` (Unit Planner).
 
-**8 класс:** 11 модулей, 85 пар — индекс в [README.md](../README.md#модули-8-класса); КТП: [ktp/08.md](ktp/08.md); описания модулей для учителя: [ktp/08_module_descriptions.md](ktp/08_module_descriptions.md). Журнал последних проходов агентов по модулям: [AGENT_PASSES.md](AGENT_PASSES.md).
+**8 класс:** 11 модулей, **68 пар** — индекс в [README.md](../README.md#модули-8-класса); КТП: [ktp/08.md](ktp/08.md); описания модулей для учителя: [ktp/08_module_descriptions.md](ktp/08_module_descriptions.md). Журнал последних проходов агентов по модулям: [AGENT_PASSES.md](AGENT_PASSES.md).
 
 **Описания модулей (1–2 абзаца для учителя):** [ktp/08_module_descriptions.md](ktp/08_module_descriptions.md) — горизонт всего блока; не дублировать в `UNIT.md` §2. Правила написания — в том же файле.
 
-Пример: пары 1–10 → [modules/08_01_functions_recursion/](../modules/08_01_functions_recursion/) (вводная + функции); пары 11–20 → [modules/08_02_carsharing_pandas_lr/](../modules/08_02_carsharing_pandas_lr/).
+Пример: пары 1–8 → [modules/08_01_functions_recursion/](../modules/08_01_functions_recursion/) (вводная + функции); пары 9–16 → [modules/08_02_carsharing_pandas_lr/](../modules/08_02_carsharing_pandas_lr/).
 
 ### Матрица навыков
 

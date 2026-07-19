@@ -1,14 +1,14 @@
 # Модуль: Функции и рекурсия в Python
 
 **Класс:** 8 | **Статус:** материалы (уроки, ноутбуки, артефакт)  
-**Объём:** 10 пар КТП (20 ч): вводная + введение/отработка + рекурсия + практика + артефакт
+**Объём:** 8 пар КТП (16 ч): вводная + введение/отработка + рекурсия/pipeline + артефакт
 
 ## Для преподавателя (с чего начать)
 
 1. **План модуля:** [UNIT.md](UNIT.md) — цель, глоссарий (§18), таблица пар (§11).
 2. **План каждой пары:** `lessons/<NN>_*/LESSON.md` — зоны **A–C** (сценарий / ход / если сбились). Один файл = одна пара (2 ч). Эталон формата: [пара 2](lessons/02_function_as_mapping/LESSON.md), [пара 3](lessons/03_parameters_and_return/LESSON.md).
-3. **Код на уроке:** `lessons/<NN>_*/lesson.ipynb` (Jupyter); пары 1, 9–10 — без ноутбука урока.
-4. **Итоговая работа:** пары 9–10 — [artifact/PROJECT.md](artifact/PROJECT.md), стартовый код в [artifact/starter/](artifact/starter/).
+3. **Код на уроке:** `lessons/<NN>_*/lesson.ipynb` (Jupyter); пары 1, 8 — без ноутбука урока.
+4. **Итоговая работа:** пара 8 — [artifact/PROJECT.md](artifact/PROJECT.md), стартовый код в [artifact/starter/](artifact/starter/).
 
 | Пара КТП | Что вести | План урока | Ноутбук / материал |
 |---|---|---|---|
@@ -18,10 +18,8 @@
 | 4 | Практика: transform | [04](lessons/04_practice_transform/LESSON.md) | [lesson.ipynb](lessons/04_practice_transform/lesson.ipynb) |
 | 5 | Scope и отладка | [05](lessons/05_scope_and_debugging/LESSON.md) | [lesson.ipynb](lessons/05_scope_and_debugging/lesson.ipynb) |
 | 6 | Практика: метрики | [06](lessons/06_practice_metrics/LESSON.md) | [lesson.ipynb](lessons/06_practice_metrics/lesson.ipynb); [homework_counter.py](lessons/06_practice_metrics/homework_counter.py) |
-| 7 | Рекурсия | [07](lessons/07_recursion/LESSON.md) | [lesson.ipynb](lessons/07_recursion/lesson.ipynb) |
-| 8 | Практика: рекурсия, lambda, pipeline | [08](lessons/08_practice_pipeline/LESSON.md) | [lesson.ipynb](lessons/08_practice_pipeline/lesson.ipynb) |
-| 9 | Артефакт: реализация | [09](lessons/09_artifact_build/LESSON.md) | [artifact/starter/](artifact/starter/) |
-| 10 | Артефакт: сдача | [10](lessons/10_artifact_submit/LESSON.md) | [artifact/starter/](artifact/starter/) |
+| 7 | Рекурсия; lambda, pipeline | [07](lessons/07_recursion_pipeline/LESSON.md) | [lesson.ipynb](lessons/07_recursion_pipeline/lesson.ipynb) |
+| 8 | Артефакт: сборка и сдача | [08](lessons/08_artifact/LESSON.md) | [artifact/starter/](artifact/starter/) |
 
 **Сленг модуля** (proto-EDA, pipeline, HOF и т.д.) — расшифровки в [UNIT.md §18](UNIT.md#18-глоссарий-модуля).
 
@@ -45,7 +43,7 @@
 
 ```bash
 cd modules/08_01_functions_recursion
-python generate_notebooks.py   # пересобрать lesson.ipynb пар 2–8
+python generate_notebooks.py   # пересобрать lesson.ipynb пар 2–7
 jupyter notebook
 ```
 

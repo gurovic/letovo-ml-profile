@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Publish module 08_03 (pairs 21-29) to Canvas course 6465."""
+"""Publish module 08_03 (pairs 17-23) to Canvas course 6465."""
 
 from __future__ import annotations
 
@@ -48,16 +48,14 @@ class Pair:
         return f"https://colab.research.google.com/gist/{GIST_USER}/{gist_id}/{filename}"
 
 
-PAIRS: dict[int, Pair] = {
-    21: Pair(21, "01_load_inspect_paths", "Пара 21. Загрузка Titanic, осмотр, пути", "para-21-plan-uroka-dlia-priepodavatielia"),
-    22: Pair(22, "02_practice_inspect", "Пара 22. Практика: осмотр таблицы", "para-22-plan-uroka-dlia-priepodavatielia"),
-    23: Pair(23, "03_mean_median_std", "Пара 23. Среднее, медиана, std", "para-23-plan-uroka-dlia-priepodavatielia"),
-    24: Pair(24, "04_practice_boxplot", "Пара 24. Практика: квартили, boxplot", "para-24-plan-uroka-dlia-priepodavatielia"),
-    25: Pair(25, "05_sampling_bias", "Пара 25. Выборка, sampling bias", "para-25-plan-uroka-dlia-priepodavatielia"),
-    26: Pair(26, "06_normal_missing", "Пара 26. ЦПТ; пропуски и дубликаты", "para-26-plan-uroka-dlia-priepodavatielia"),
-    27: Pair(27, "07_practice_groups", "Пара 27. Практика: группы и пропуски", "para-27-plan-uroka-dlia-priepodavatielia"),
-    28: Pair(28, "08_report_draft", "Пара 28. EDA-отчёт — черновик", "para-28-plan-uroka-dlia-priepodavatielia"),
-    29: Pair(29, "09_report_submit", "Пара 29. Сдача EDA-отчёта", "para-29-plan-uroka-dlia-priepodavatielia"),
+PAIRS = {
+    17: Pair(17, "01_load_inspect_paths", "Пара 17. Загрузка Titanic, осмотр, пути", "para-17-plan-uroka-dlia-priepodavatielia"),
+    18: Pair(18, "02_practice_inspect", "Пара 18. Практика: осмотр таблицы", "para-18-plan-uroka-dlia-priepodavatielia"),
+    19: Pair(19, "03_mean_median_std", "Пара 19. Среднее, медиана, std", "para-19-plan-uroka-dlia-priepodavatielia"),
+    20: Pair(20, "04_practice_boxplot", "Пара 20. Практика: квартили, boxplot", "para-20-plan-uroka-dlia-priepodavatielia"),
+    21: Pair(21, "05_bias_clt_missing", "Пара 21. Bias, ЦПТ, пропуски", "para-21-plan-uroka-dlia-priepodavatielia"),
+    22: Pair(22, "06_practice_groups", "Пара 22. Практика: группы и пропуски", "para-22-plan-uroka-dlia-priepodavatielia"),
+    23: Pair(23, "07_eda_report", "Пара 23. EDA-отчёт — сборка и сдача", "para-23-plan-uroka-dlia-priepodavatielia"),
 }
 
 
@@ -158,7 +156,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Publish M3 to Canvas")
     parser.add_argument("--course-id", type=int, default=COURSE_DEFAULT)
     parser.add_argument("--module-id", type=int, default=None)
-    parser.add_argument("--pair", type=int, default=None, help="KTP pair 21-29")
+    parser.add_argument("--pair", type=int, default=None, help="KTP pair 17-23")
     parser.add_argument("--all", action="store_true")
     parser.add_argument("--update-page-only", action="store_true")
     parser.add_argument(
