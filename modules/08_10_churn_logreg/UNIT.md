@@ -1,7 +1,7 @@
 # Unit Planner: логистическая регрессия и venv
 
 **Класс:** 8  
-**Статус:** план модуля; `LESSON.md` — после финализации группировки пар  
+**Статус:** полный комплект материалов (`LESSON.md`, ноутбуки, артефакт, данные)  
 **Длительность:** 5 пар по КТП (10 академических часов)
 
 **Сквозная линия модуля:** сигмоида → logreg fit/predict → метрики дисбаланса → CLI → venv → README эксперимента.
@@ -131,11 +131,21 @@
 
 | Пара КТП | Тема | Часы | Задача на Bank Marketing | Вклад в артефакт |
 |---|---|---|---|---|
-| 60 | Логистическая регрессия — вероятность, сигмоида, порог; запрет leakage `duration` | 2 | Осмотр `bank.csv` / `bank-full.csv`; доля `yes`; **запрет `duration`** | схема модели + список признаков |
+| 60 | Логистическая регрессия — вероятность, сигмоида, порог; запрет leakage `duration` | 2 | Осмотр `bank_marketing_slim.csv`; доля `yes`; **запрет `duration`** | схема модели + список признаков |
 | 61 | Практика: fit/predict, выбор порога (без `duration`) | 2 | `LogisticRegression` без `duration`; порог под precision/recall | обученная модель |
 | 62 | Метрики на несбалансированных классах | 2 | Сравнение accuracy vs F1 / recall при дисбалансе `y` | таблица метрик |
-| 63 | Практика: метрики; CLI — запуск скрипта | 2 | `python train.py --data ...` на slim | CLI-вход |
+| 63 | Практика: метрики; CLI — запуск скрипта | 2 | `python train_cli.py --data ...` на slim | CLI-вход |
 | 64 | venv, requirements.txt, README эксперимента — сдача | 2 | Изоляция зависимостей + README: данные, leakage, порог, метрики | итоговый README |
+
+### Ссылки на уроки (заполненная §13)
+
+| Пара КТП | Урок |
+|---|---|
+| 60 | [lessons/01_logreg_sigmoid_threshold/LESSON.md](lessons/01_logreg_sigmoid_threshold/LESSON.md) |
+| 61 | [lessons/02_practice_fit_threshold/LESSON.md](lessons/02_practice_fit_threshold/LESSON.md) |
+| 62 | [lessons/03_imbalance_metrics/LESSON.md](lessons/03_imbalance_metrics/LESSON.md) |
+| 63 | [lessons/04_practice_metrics_cli/LESSON.md](lessons/04_practice_metrics_cli/LESSON.md) |
+| 64 | [lessons/05_venv_requirements_readme/LESSON.md](lessons/05_venv_requirements_readme/LESSON.md) |
 
 ---
 
@@ -192,7 +202,7 @@
 | Ресурс | Назначение |
 |---|---|
 | [UCI Bank Marketing](https://archive.ics.uci.edu/dataset/222/bank+marketing) | Исходник; цель `y` ∈ {yes, no} |
-| Slim CSV в `data/` (ещё не собран) | См. [data/README.md](data/README.md); без `duration` в файле признаков или с явным дропом в коде |
+| Slim CSV в `data/` | См. [data/README.md](data/README.md); `duration` есть только для демонстрации leakage и исключается из X |
 | `sklearn.linear_model.LogisticRegression` | Модель |
 | `python -m venv`, `pip freeze` | Среда |
 
@@ -214,7 +224,7 @@
 | Этап | Содержание |
 |---|---|
 | До начала | Не смешивать с полным MLOps 9–10 класса. Датасет — UCI Bank, не синтетический telecom churn. |
-| Во время | Пары 79–80 — техническое время Windows/macOS/Linux оговорить. Assert «нет duration» — обязателен. |
+| Во время | Пары 63-64 — техническое время Windows/macOS/Linux оговорить. Assert «нет duration» — обязателен. |
 | После | 9 класс: формальная вероятность из спецматематики. |
 
 ---
@@ -238,7 +248,9 @@
 
 - [x] план по парам КТП согласован с [docs/ktp/08.md](../../docs/ktp/08.md)
 - [x] рефлексия автора (§17), глоссарий (§18)
-- [ ] `LESSON.md` и §13 — после группировки пар
+- [x] `LESSON.md` и §13 заполнены для пар 60-64
+- [x] `generate_notebooks.py`, `train_cli.py` и `artifact/PROJECT.md` собраны
+- [x] `python scripts/run_solutions.py modules/08_10_churn_logreg` -> 5 passed
 
 ---
 

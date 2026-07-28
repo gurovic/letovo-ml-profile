@@ -1,40 +1,44 @@
-# Данные модуля 10 (план)
+# Данные модуля 10: UCI Bank Marketing (пары 60-64)
 
-**Статус:** исходник выбран; slim CSV ещё не собран. Собирать на этапе `design-lesson`.
+## Файл модуля
+
+| Файл | Назначение |
+|---|---|
+| `bank_marketing_slim.csv` | Учебный срез для уроков 60-64 |
+| `make_bank_marketing_slim.py` | Сборка slim: сначала UCI, при недоступности сети — синтетический fallback с теми же типами столбцов |
 
 ## Источник
 
 | Поле | Значение |
 |---|---|
-| Набор | [UCI Bank Marketing](https://archive.ics.uci.edu/dataset/222/bank+marketing) |
-| Файлы исходника | `bank.csv` (меньше) и/или `bank-full.csv` |
-| Цель | `y` ∈ {yes, no} — согласие на срочный депозит |
-| Почему здесь | Реальная кампания банка; естественный дисбаланс классов; учебный кейс leakage |
+| Базовый источник | [UCI Bank Marketing](https://archive.ics.uci.edu/dataset/222/bank+marketing) |
+| Цель | `y` в `{yes, no}` — отклик на депозит |
+| Почему выбран | Реальный кейс банковской кампании + естественный дисбаланс классов |
+| Fallback | Синтетика в стиле UCI (те же смысловые столбцы), только если UCI недоступен |
 
-## Целевой артефакт данных модуля
+## Leakage rule (обязательно)
 
-| Файл (ожидаемый) | Содержание |
-|---|---|
-| `bank_slim.csv` | Срез строк + выбранные столбцы для fit; **без** `duration` **или** с `duration` только для демо «почему нельзя» на паре 60 |
-| Словарь категорий | Краткие русские пояснения к `job`, `marital`, `education`, `month`, … |
+`duration` присутствует в slim только для демонстрации leakage.  
+Во всех уроках, CLI и артефакте: `duration` запрещен в признаках модели.
 
-## Запрет leakage
+Минимальная проверка:
 
-| Столбец | Почему нельзя в X для сдачи |
-|---|---|
-| `duration` | Длительность звонка известна **после** контакта; в продакшене до звонка её нет |
+```python
+assert "duration" not in feature_columns
+```
 
-В assert артефакта / `train.py`: `assert "duration" not in feature_columns`.
+## Состав `bank_marketing_slim.csv`
 
-## Ограничения среза
+`age`, `job`, `marital`, `education`, `contact`, `month`, `campaign`, `pdays`, `previous`, `poutcome`, `emp.var.rate`, `cons.price.idx`, `cons.conf.idx`, `euribor3m`, `nr.employed`, `duration`, `y`.
 
-- Для 8 класса удобнее `bank.csv` (~4.5k) или стратифицированный срез `bank-full`.
-- Не подменять датасет синтетическим telecom churn без отдельного решения в UNIT.
-- Этика: исторический учебный набор; не формулировать «как давить на клиента».
+## Как пересобрать
 
-## Связь с другими модулями
+Из корня репозитория:
 
-| Модуль | Связь |
-|---|---|
-| M5 (Olist RFM) | Другие данные; навыки transform переносятся |
-| M7 (банк «Надёжный») | Только сюжетный мост «банк», не общие CSV |
+```bash
+python modules/08_10_churn_logreg/data/make_bank_marketing_slim.py
+```
+
+Скрипт печатает `source=...`:
+- `source=uci_bank_marketing` — взят реальный UCI;
+- `source=synthetic_fallback` — сеть/источник недоступны, использован classroom fallback.
