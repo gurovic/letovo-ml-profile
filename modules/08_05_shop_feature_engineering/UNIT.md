@@ -1,7 +1,7 @@
 # Unit Planner: Feature Engineering и lambda
 
 **Класс:** 8  
-**Статус:** план модуля; `LESSON.md` — после финализации группировки пар  
+**Статус:** материалы модуля (LESSON + ноутбуки + артефакт)  
 **Длительность:** 6 пар по КТП (12 академических часов)
 
 **Сквозная линия модуля:** типы признаков → `apply`/lambda → агрегаты RFM → валидация → новые признаки → цепочка preprocessing.
@@ -129,16 +129,14 @@
 
 ## 11. Последовательность (план по парам КТП)
 
-| Пара КТП | Тема | Часы | Задача на данных Olist | Вклад в артефакт |
+| Пара КТП | Тема | Часы | Папка | Вклад в артефакт |
 |---|---|---|---|---|
-| 30 | Числовые и категориальные признаки; lambda и `.apply` (схема orders/customers/payments) | 2 | Роли столбцов в `orders` / `customers` / `order_payments` (slim); число vs `object` | схема признаков |
-| 31 | Практика: apply, новые столбцы на строке заказа | 2 | Производные на строке заказа (например дни с даты, бины суммы) | функции transform |
-| 32 | Группировки и агрегаты → Recency / Frequency / Monetary | 2 | `groupby(customer_id)` → Frequency, Monetary; Recency от max(order_purchase) | таблица клиент×RFM |
-| 33 | Практика: агрегаты и производные признаки (без метки churn) | 2 | +1–2 признака сверх RFM (доля оплат card / средний freight) без метки churn | расширенная таблица |
-| 34 | Логирование preprocessing; `raise` — валидация входа | 2 | Лог шагов; `raise` на битых датах / отрицательных суммах | журнал + контракт |
-| 35 | Практика и сдача: цепочка preprocessing raw → клиент×RFM | 2 | Сдача: функция + лог + краткое описание RFM | итоговый pipeline |
-
-При `design-lesson`: номера пар и темы согласовать с [docs/ktp/08.md](../../docs/ktp/08.md); не вводить supervised churn.
+| 30 | Числовые и категориальные признаки; lambda и `.apply` | 2 | [01_feature_types_apply](lessons/01_feature_types_apply/LESSON.md) | схема признаков и базовые transform |
+| 31 | Практика: apply, новые столбцы на строке заказа | 2 | [02_practice_apply_orders](lessons/02_practice_apply_orders/LESSON.md) | функции transform заказа |
+| 32 | Группировки и агрегаты → Recency / Frequency / Monetary | 2 | [03_rfm_groupby](lessons/03_rfm_groupby/LESSON.md) | таблица клиент×RFM |
+| 33 | Практика: агрегаты и производные признаки (без метки churn) | 2 | [04_practice_aggregates](lessons/04_practice_aggregates/LESSON.md) | расширенная таблица RFM+ |
+| 34 | Логирование preprocessing; `raise` — валидация входа | 2 | [05_logging_raise](lessons/05_logging_raise/LESSON.md) | журнал + контракт данных |
+| 35 | Практика и сдача: цепочка preprocessing raw → клиент×RFM | 2 | [06_practice_pipeline](lessons/06_practice_pipeline/LESSON.md) | итоговый preprocessing-pipeline |
 
 ---
 
@@ -194,7 +192,7 @@
 | Ресурс | Назначение |
 |---|---|
 | [Olist Brazilian E-Commerce](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) | Исходник: `olist_orders_dataset`, `olist_customers_dataset`, `olist_order_payments_dataset` (+ при необходимости `order_items`) |
-| Slim CSV в `data/` (ещё не собран) | Сквозная таблица модуля; готовит автор при `design-lesson` — см. [data/README.md](data/README.md) |
+| Slim CSV в `data/` | Сквозная таблица модуля (classroom slim) — см. [data/README.md](data/README.md) |
 | `pandas`, `logging` | Преобразования и лог |
 
 ### Бриф для design-lesson (не дублировать в ученических ноутбуках целиком)
@@ -237,8 +235,9 @@
 
 - [x] план по парам КТП согласован с [docs/ktp/08.md](../../docs/ktp/08.md)
 - [x] рефлексия автора (§17), глоссарий (§18)
-- [ ] `LESSON.md` и §13 — после группировки пар
-- [ ] датасет — этап `design-lesson`
+- [x] `LESSON.md` и §13 по всем 6 парам
+- [x] ноутбуки и копии slim CSV в уроках
+- [x] `python scripts/run_solutions.py modules/08_05_shop_feature_engineering` — PASS
 
 ---
 

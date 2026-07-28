@@ -1,39 +1,45 @@
-# Данные модуля 5 (план)
+# Данные модуля 5 — slim заказов маркетплейса (схема Olist)
 
-**Статус:** исходник выбран; slim CSV ещё не собран. Собирать на этапе `design-lesson`.
+| Файл | Назначение |
+|---|---|
+| `orders_slim.csv` | Заказы: id, клиент, статус, даты |
+| `customers_slim.csv` | Клиенты: id, unique_id, штат |
+| `payments_slim.csv` | Оплаты: order_id, тип, сумма |
+| `make_slim.py` | Сборка slim из Olist raw **или** classroom-синтетика |
 
 ## Источник
 
-| Поле | Значение |
+Канон сюжета — [Olist Brazilian E-Commerce](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
+(`olist_orders_dataset`, `olist_customers_dataset`, `olist_order_payments_dataset`).
+
+Чтобы ноутбуки работали **офлайн** без Kaggle, `make_slim.py` по умолчанию пишет
+**classroom-slim** с теми же именами столбцов (seed=42). Если положить настоящие CSV
+в `data/raw/`, скрипт соберёт slim из них.
+
+```bash
+python make_slim.py   # из каталога data/
+```
+
+Attribution: схема и сюжет — Olist / Kaggle; classroom-slim — учебная синтетика для профиля.
+
+## RFM (зафиксировано)
+
+| Признак | Правило |
 |---|---|
-| Набор | [Olist Brazilian E-Commerce](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) |
-| Файлы исходника | `olist_orders_dataset.csv`, `olist_customers_dataset.csv`, `olist_order_payments_dataset.csv` (при необходимости `olist_order_items_dataset.csv`) |
-| Почему здесь | Реальные заказы маркетплейса; естественный `groupby` → RFM |
+| Recency | Дни от `max(order_purchase_timestamp)` клиента до опорной даты = max даты в таблице заказов |
+| Frequency | Число заказов клиента в slim |
+| Monetary | Сумма `payment_value` по заказам клиента |
 
-## Целевой артефакт данных модуля
+Метку `churn` **не** вводим (модуль 10).
 
-| Файл (ожидаемый) | Содержание |
-|---|---|
-| `orders_slim.csv` | Срез заказов: `order_id`, `customer_id`, `order_purchase_timestamp`, статус (опц.), сумма оплаты / freight |
-| `customer_rfm_example.csv` (опц.) | Эталон для учителя: уже посчитанные R/F/M на том же срезе |
+## Столбцы slim
 
-## Определения RFM (зафиксировать в LESSON / глоссарии)
+**orders_slim:** `order_id`, `customer_id`, `order_status`, `order_purchase_timestamp`, `order_delivered_customer_date`  
 
-| Признак | Правило (черновик) |
-|---|---|
-| Recency | Дни от `max(order_purchase_timestamp)` клиента до опорной даты среза |
-| Frequency | Число заказов клиента в срезе |
-| Monetary | Сумма платежей клиента (`payment_value`) |
+**customers_slim:** `customer_id`, `customer_unique_id`, `customer_state`  
 
-Не вводить столбец `churn` без явного правила — это модуль 10.
-
-## Ограничения среза
-
-- Не тащить полный join всех таблиц Olist в ноутбук пары 30.
-- Объём: ориентир ≤15k строк заказов или ≤5k клиентов после агрегации.
-- Имена столбцов: либо оставить английские Olist + словарь, либо переименовать один раз в `generate_slim.py` и зафиксировать здесь.
-- Attribution: указать Olist / Kaggle в README модуля при публикации данных.
+**payments_slim:** `order_id`, `payment_type`, `payment_value`
 
 ## Связь с модулем 8
 
-Модуль 8 использует **тот же исходник Olist**, но другой вопрос (опоздание доставки) и другой slim. Не копировать один CSV на оба модуля без пометки назначения.
+Модуль 8 — тот же исходник Olist, другой вопрос (опоздания). Не смешивать один slim без пометки.
