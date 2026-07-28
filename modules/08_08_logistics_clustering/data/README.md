@@ -1,38 +1,48 @@
-# Данные модуля 8 (план)
+# Данные модуля 8: логистика и кластеризация
 
-**Статус:** исходник выбран; slim CSV ещё не собран. Собирать на этапе `design-lesson`.
-
-## Источник
+## Источник и режим сборки
 
 | Поле | Значение |
 |---|---|
-| Набор | [Olist Brazilian E-Commerce](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) |
-| Файлы исходника | `olist_orders_dataset.csv`, `olist_order_items_dataset.csv`, `olist_sellers_dataset.csv`, `olist_customers_dataset.csv` (гео штатов) |
-| Почему здесь | Реальные сроки доставки и freight; метка опоздания без синтетики |
+| Базовый источник | [Olist Brazilian E-Commerce](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) |
+| Raw-файлы (если доступны) | `olist_orders_dataset.csv`, `olist_order_items_dataset.csv`, `olist_customers_dataset.csv`, `olist_sellers_dataset.csv` в `data/raw/` |
+| Fallback | classroom synthetic с Olist-подобными колонками |
+| Скрипт сборки | `make_slim.py` |
 
-## Целевой артефакт данных модуля
+## Файл модуля
 
-| Файл (ожидаемый) | Содержание |
+| Файл | Назначение |
 |---|---|
-| `orders_slim.csv` | Одна строка ≈ заказ (или item): id, даты purchase / estimated / delivered, `freight_value`, гео-прокси (штат seller/customer), опц. `seller_id` |
-| `is_late` | Бинарный столбец по правилу ниже |
+| `orders_slim.csv` | Единый срез для всех 6 уроков: структуры данных, частоты, k-means, DBSCAN, аномалии |
 
-## Правило метки (черновик — зафиксировать при сборке)
+## Схема `orders_slim.csv`
 
-```
+- `order_id`, `seller_id`
+- `seller_state`, `customer_state`
+- `order_purchase_timestamp`
+- `order_estimated_delivery_date`
+- `order_delivered_customer_date`
+- `freight_value`, `price`
+- `delivery_days`, `estimated_days`, `delay_days`
+- `is_late`
+
+## Правило метки `is_late`
+
+```text
 is_late = 1, если order_delivered_customer_date > order_estimated_delivery_date
-         (и обе даты непустые); иначе 0 или NaN → отфильтровать
+is_late = 0, иначе
 ```
 
-Дополнительно полезны: `delivery_days`, `estimated_days`, `freight_value`.
+Для уроков кластера используются признаки `delivery_days`, `freight_value`, `delay_days`.
 
-## Ограничения среза
+## Как собрать данные
 
-- Ученик на паре 49 **не** собирает полный join с Kaggle с нуля — только работает со slim.
-- Объём: ориентир 5–20k строк после фильтра доставленных заказов.
-- Не тащить сюда RFM-таблицу модуля 5 как основной объект (можно упомянуть связь маркеплейса устно).
-- Attribution: Olist / Kaggle.
+```bash
+python modules/08_08_logistics_clustering/data/make_slim.py
+```
 
-## Связь с модулем 5
+## Ограничения
 
-Тот же исходник Olist, **другой slim и другой вопрос** (опоздание vs RFM).
+- В уроках 49-52 используем только готовый slim, без полного join на паре.
+- Метка `is_late` нужна для describe и интерпретации кластеров, а не для supervised-предсказания.
+- RFM-контекст модуля 5 сюда не переносится.

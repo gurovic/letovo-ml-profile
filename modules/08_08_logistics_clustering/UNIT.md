@@ -1,7 +1,7 @@
 # Unit Planner: структуры данных, кластеризация и аномалии
 
 **Класс:** 8  
-**Статус:** план модуля; `LESSON.md` — после финализации группировки пар  
+**Статус:** материалы модуля (LESSON + ноутбуки + артефакт)  
 **Длительность:** 6 пар по КТП (12 академических часов)
 
 **Сквозная линия модуля:** стек/очередь/set/dict → частоты опозданий → k-means → DBSCAN → аномалии на таблице.
@@ -133,14 +133,14 @@
 
 ## 11. Последовательность (план по парам КТП)
 
-| Пара КТП | Тема | Часы | Задача на данных Olist | Вклад в артефакт |
+| Пара КТП | Тема | Часы | LESSON.md | Вклад в артефакт |
 |---|---|---|---|---|
-| 49 | Стек, очередь, deque — буфер и отмена шагов (поток заказов) | 2 | События заказа как поток (постановка / отмена шага обработки) | `UndoStack` / буфер |
-| 50 | Практика: стек / очередь / deque на потоке событий | 2 | Симуляция очереди заказов из slim (id + timestamp) | рабочие структуры |
-| 51 | set и dict как hash map — уникальность, частоты опозданий | 2 | Уникальные `order_id` / seller; частоты опозданий по штату / seller | `set` + счётчики |
-| 52 | Практика: membership, счётчики, доля late по сегментам | 2 | Доля late по сегментам через `dict` | таблица частот |
-| 53 | k-means; DBSCAN — кластеры, плотность, выбросы | 2 | Признаки: дни доставки, freight, расстояние/гео-прокси; кластеры заказов | модель кластеров |
-| 54 | Практика: кластеризация и аномалии на признаках доставки | 2 | Интерпретация кластеров; топ аномальных заказов + обоснование | отчёт хаба |
+| 49 | Стек, очередь, deque — буфер и отмена шагов (поток заказов) | 2 | [01_stack_queue_deque](lessons/01_stack_queue_deque/LESSON.md) | `UndoStack` / буфер |
+| 50 | Практика: стек / очередь / deque на потоке событий | 2 | [02_practice_buffers](lessons/02_practice_buffers/LESSON.md) | рабочие структуры |
+| 51 | set и dict как hash map — уникальность, частоты опозданий | 2 | [03_set_dict_freq](lessons/03_set_dict_freq/LESSON.md) | `set` + счётчики |
+| 52 | Практика: membership, счётчики, доля late по сегментам | 2 | [04_practice_membership_counts](lessons/04_practice_membership_counts/LESSON.md) | таблица частот |
+| 53 | k-means; DBSCAN — кластеры, плотность, выбросы | 2 | [05_kmeans_dbscan](lessons/05_kmeans_dbscan/LESSON.md) | модель кластеров |
+| 54 | Практика: кластеризация и аномалии на признаках доставки | 2 | [06_practice_clusters_anomalies](lessons/06_practice_clusters_anomalies/LESSON.md) | отчёт хаба |
 
 При `design-lesson`: полный supervised прогноз delay — не цель блока (достаточно метки late для describe и интерпретации кластеров).
 
@@ -198,7 +198,7 @@
 | Ресурс | Назначение |
 |---|---|
 | [Olist Brazilian E-Commerce](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) | Исходник: orders, order_items, sellers, customers (гео), при необходимости reviews |
-| Slim CSV в `data/` (ещё не собран) | Готовый join + метка `is_late` — см. [data/README.md](data/README.md) |
+| Slim CSV в `data/` (`orders_slim.csv`) | Готовый join + метка `is_late` — см. [data/README.md](data/README.md) |
 | `collections.deque` | Очередь |
 | `sklearn.cluster` | k-means, DBSCAN |
 
@@ -243,7 +243,7 @@
 
 - [x] алгоритмический блок 2 Foundation §7 (без heap)
 - [x] план по парам КТП согласован с [docs/ktp/08.md](../../docs/ktp/08.md)
-- [ ] `LESSON.md` и §13 — после группировки пар
+- [x] `LESSON.md` и §13 по всем 6 парам
 
 ---
 
