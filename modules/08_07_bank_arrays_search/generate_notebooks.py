@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Generate lesson notebooks for module 08_07 (KTP pairs 42-48)."""
+"""Build the complete student and teacher materials for module 08_07.
+
+This file is the source of truth for 21 notebooks, seven local lesson plans,
+and the CSV copies required to run each notebook from its lesson directory.
+Student work is intentionally unfinished, but every task has an executable
+contract.  Teacher solutions mirror lesson and homework sections explicitly.
+"""
 
 from __future__ import annotations
 
@@ -9,34 +15,238 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 DATA_DIR = ROOT / "data"
-CSV_UNSORTED = DATA_DIR / "bank_transactions_unsorted.csv"
-CSV_BY_ID = DATA_DIR / "bank_transactions_sorted_by_txn_id.csv"
-CSV_BY_AMOUNT = DATA_DIR / "bank_transactions_sorted_by_amount.csv"
-CSV_TINY = DATA_DIR / "bank_transactions_tiny.csv"
-
-SOL_BANNER = (
-    "**Для преподавателя.** Эталон к `lesson.ipynb` и `homework.ipynb`. "
-    "Не показывать ученикам до сдачи."
+CSV_NAMES = (
+    "bank_transactions_unsorted.csv",
+    "bank_transactions_sorted_by_txn_id.csv",
+    "bank_transactions_sorted_by_amount.csv",
+    "bank_transactions_tiny.csv",
 )
 
-LOAD_DATA = (
-    "from pathlib import Path\n"
-    "import time\n"
-    "import pandas as pd\n\n\n"
-    "def _find(name: str) -> Path:\n"
-    "    for p in (Path(name), Path(f'../../data/{name}'), Path(f'../data/{name}')):\n"
-    "        if p.exists():\n"
-    "            return p.resolve()\n"
-    "    raise FileNotFoundError(f'{name} не найден рядом с ноутбуком')\n\n\n"
-    "unsorted_df = pd.read_csv(_find('bank_transactions_unsorted.csv'))\n"
-    "by_id_df = pd.read_csv(_find('bank_transactions_sorted_by_txn_id.csv'))\n"
-    "by_amount_df = pd.read_csv(_find('bank_transactions_sorted_by_amount.csv'))\n"
-    "tiny_df = pd.read_csv(_find('bank_transactions_tiny.csv'))\n\n"
-    "unsorted_txns = list(unsorted_df[['txn_id', 'amount', 'day', 'risk_score']].itertuples(index=False, name=None))\n"
-    "id_txns = list(by_id_df[['txn_id', 'amount', 'day', 'risk_score']].itertuples(index=False, name=None))\n"
-    "amount_txns = list(by_amount_df[['txn_id', 'amount', 'day', 'risk_score']].itertuples(index=False, name=None))\n"
-    "id_list = [t[0] for t in id_txns]\n"
-    "amount_list = [t[1] for t in amount_txns]\n"
+LESSONS = [
+    {
+        "dir": "01_linear_binary_search",
+        "pair": 42,
+        "title": "Линейный и бинарный поиск в логах банка",
+        "role": "введение",
+        "prereq": "Списки, циклы, функции и индексы; понятие отсортированного списка",
+        "first": "Один и тот же txn_id можно искать сотнями проверок или несколькими делениями диапазона — выясним цену порядка.",
+        "minimum": "зелёные assert §§2–7; корректные `linear_search` и `binary_search`; объяснение инварианта",
+        "next": "диапазонный поиск — пара 43",
+        "idea": "Бинарный поиск ускоряет запрос только потому, что сохраняет инвариант на отсортированном диапазоне.",
+        "outcomes": "реализовать линейный и бинарный поиск; проверить пустой список и отсутствие цели; посчитать сравнения; объяснить O(n) и O(log n)",
+        "errors": [
+            ("Возвращает `None`", "Вернуться к контракту: индекс найденного элемента или `-1`."),
+            ("Цикл зависает", "После сравнения одна из границ обязана пройти за `mid`."),
+            ("Ищет бинарно в unsorted", "Попросить обосновать, какую половину можно отбросить."),
+            ("Теряет крайний элемент", "Проверить цели на индексах 0 и n−1."),
+        ],
+        "stages": [
+            ("Схема данных и контракт", 8, "Читает четыре поля кортежа, формулирует индекс/−1.", "Показать разницу txn_id и позиции.", "§1", "Названы вход и выход."),
+            ("Линейный поиск", 14, "Пишет цикл с enumerate.", "Спросить, когда можно остановиться.", "§2", "Три assert зелёные."),
+            ("Границы бинарного", 12, "Трассирует left, mid, right.", "Фиксировать включительный диапазон.", "§3", "Трасса приходит к цели."),
+            ("Бинарный поиск", 18, "Реализует цикл.", "Не диктовать ветви; спрашивать, где цель.", "§4", "Края и miss проходят."),
+            ("Число сравнений", 10, "Инструментирует обе функции.", "Сравнивать шаги, не наносекунды.", "§5–6", "binary_steps < linear_steps."),
+            ("Нарушение предпосылки", 10, "Запускает контрпример на unsorted.", "Отделить случайное попадание от гарантии.", "§7", "Сформулирован инвариант."),
+            ("Самостоятельно и ДЗ", 8, "Решает поиск записи и открывает ДЗ.", "Развести Part A и Challenge.", "§8–9", "Ученик знает минимум сдачи."),
+        ],
+    },
+    {
+        "dir": "02_practice_search_logs",
+        "pair": 43,
+        "title": "Практика: поиск и границы диапазона",
+        "role": "отработка",
+        "prereq": "Пара 42: бинарный поиск и включительные границы",
+        "first": "Банк редко спрашивает одну сумму: чаще нужен весь диапазон — найдём его без полного прохода.",
+        "minimum": "зелёные assert у `lower_bound`, `upper_bound`, диапазонного среза и поиска пачки id",
+        "next": "ручные сортировки — пара 44",
+        "idea": "Два бинарных поиска превращают условие по диапазону в точный полуинтервал `[lo, hi)`.",
+        "outcomes": "реализовать lower/upper bound; получить диапазон сумм; обработать пустой результат; искать пачку id; описать сложность O(log n + k)",
+        "errors": [
+            ("Путает `<` и `<=`", "Проговорить: lower — первое ≥ target, upper — первое > target."),
+            ("Срез теряет последнее значение", "Напомнить, что правая граница Python-среза не включается."),
+            ("Индекс выходит за список", "У границ используем `right = len(nums)`."),
+            ("Считает выдачу диапазона O(log n)", "Отдельно учесть k строк результата."),
+        ],
+        "stages": [
+            ("Повтор поиска id", 8, "Восстанавливает binary_search.", "Проверить крайние id.", "§1", "Контракт выполнен."),
+            ("Lower bound", 14, "Ищет первое значение ≥ target.", "Трассировать полуинтервал.", "§2", "Дубликаты обработаны."),
+            ("Upper bound", 14, "Меняет условие на первое > target.", "Сопоставить две функции.", "§3", "Дубликаты обработаны."),
+            ("Диапазон сумм", 14, "Строит срез `[lo:hi]`.", "Проверить минимум и максимум.", "§4", "Все суммы в диапазоне."),
+            ("Пустые и крайние диапазоны", 10, "Проверяет запрос вне данных.", "Не считать пустоту ошибкой.", "§5", "Получен пустой список."),
+            ("Пачка запросов", 10, "Ищет несколько txn_id.", "Проверить сохранение порядка целей.", "§6–7", "Все позиции верны."),
+            ("Вывод и ДЗ", 10, "Пишет сложность, открывает ДЗ.", "Развести поиск границ и выдачу k.", "§8–9", "Вывод содержит log и k."),
+        ],
+    },
+    {
+        "dir": "03_selection_merge_quick",
+        "pair": 44,
+        "title": "Selection sort, mergesort и идея quicksort",
+        "role": "введение",
+        "prereq": "Функции, вложенные циклы, рекурсия из модуля 1",
+        "first": "Сортировка выбором, слиянием и pivot дают один результат, но растут совершенно по-разному.",
+        "minimum": "рабочие `selection_sort`, `merge_sorted`, `merge_sort`; корректный partition; объяснение роста",
+        "next": "сравнение реализаций — пара 45",
+        "idea": "Стратегия разбиения определяет рост работы: полный поиск минимума даёт O(n²), деление и слияние — O(n log n).",
+        "outcomes": "реализовать selection sort; слить два sorted списка; собрать mergesort рекурсивно; выполнить partition; различать средний и худший случай",
+        "errors": [
+            ("Меняет входной список", "Начать функцию с копии и проверить исходный список."),
+            ("После while теряет хвост", "Добавить остаток обоих списков."),
+            ("Нет базового случая", "Проверить списки длины 0 и 1."),
+            ("Дубликат pivot пропадает", "Разделять на less/equal/greater."),
+        ],
+        "stages": [
+            ("Selection: один проход", 10, "Находит минимум хвоста.", "Показать границу sorted/unsorted.", "§1", "Один шаг корректен."),
+            ("Полный selection", 14, "Реализует вложенные циклы.", "Считать сравнения.", "§2", "Не мутирует вход."),
+            ("Слияние", 14, "Двигает два индекса.", "Спросить, почему назад не идём.", "§3", "Дубликаты сохранены."),
+            ("Mergesort", 18, "Пишет base/split/merge.", "Связать с деревом рекурсии.", "§4", "Краевые тесты зелёные."),
+            ("Partition quicksort", 10, "Разбивает по pivot.", "Не требовать in-place quicksort.", "§5", "Все элементы сохранены."),
+            ("Сравнение работы", 8, "Считает selection comparisons.", "Отделить корректность от скорости.", "§6–7", "Формула подтверждена."),
+            ("Вывод и ДЗ", 6, "Выбирает алгоритм и открывает ДЗ.", "Уточнить средний/худший quicksort.", "§8–9", "Осмысленный вывод."),
+        ],
+    },
+    {
+        "dir": "04_practice_sorts",
+        "pair": 45,
+        "title": "Практика: корректность и бенчмарк сортировок",
+        "role": "отработка",
+        "prereq": "Пара 44: selection sort, merge и рекурсивный mergesort",
+        "first": "Быстрый алгоритм сначала должен быть правильным: построим тестовый gate, затем честно сравним рост.",
+        "minimum": "две реализации проходят edge cases; таблица для четырёх n; вывод не опирается на один шумный замер",
+        "next": "`sorted(key=...)` и два указателя — пара 46",
+        "idea": "Бенчмарк подтверждает модель роста только после проверки корректности и повторяемого протокола.",
+        "outcomes": "проверить сортировки на edge cases; измерить median времени; собрать таблицу; сравнить рост; выбрать production baseline",
+        "errors": [
+            ("Замер включает подготовку данных", "Создать вход до старта таймера."),
+            ("Один запуск даёт шум", "Повторить и взять медиану."),
+            ("Selection на 960 строк слишком долгий", "Ограничить размеры учебным диапазоном."),
+            ("Сравнивает разные входы", "Каждому алгоритму передать копию одного списка."),
+        ],
+        "stages": [
+            ("Quality gate", 10, "Проверяет edge cases.", "Не переходить к времени до PASS.", "§1", "Все функции корректны."),
+            ("Повторяемый таймер", 12, "Пишет median_runtime.", "Исключить генерацию входа.", "§2", "Время положительно."),
+            ("Таблица размеров", 18, "Замеряет 80–640.", "Одинаковые данные и repeats.", "§3", "Четыре строки."),
+            ("Нормированный рост", 12, "Сравнивает t/n² и t/(n log n).", "Не требовать идеальной константы.", "§4", "Есть численный вывод."),
+            ("Встроенный baseline", 10, "Добавляет sorted.", "Обсудить Timsort и production.", "§5", "Baseline измерен."),
+            ("Риск интерпретации", 10, "Формулирует ограничения.", "Время машины ≠ доказательство Big O.", "§6–8", "Вывод честный."),
+            ("ДЗ", 8, "Открывает homework.", "Показать обязательную и Challenge части.", "§9", "План сдачи понятен."),
+        ],
+    },
+    {
+        "dir": "05_sorted_key_two_pointers",
+        "pair": 46,
+        "title": "`sorted(key=...)` и два указателя",
+        "role": "введение",
+        "prereq": "Кортежи, lambda, отсортированные списки и сложность",
+        "first": "Ключ сортировки отвечает, что значит «раньше», а два указателя используют этот порядок как доказательство движения.",
+        "minimum": "сортировки по одному/двум ключам; `two_sum_closest`; `count_pairs_ge`; объяснение движения",
+        "next": "практика ключей и указателей — пара 47",
+        "idea": "После сортировки монотонность позволяет двигать указатели только вперёд и не перебирать все пары.",
+        "outcomes": "применить key и reverse; сортировать по двум полям; найти ближайшую сумму пары; посчитать пары выше порога; объяснить O(n)",
+        "errors": [
+            ("Сортирует весь кортеж", "Явно назвать индекс рабочего поля."),
+            ("Двигает неверный указатель", "Если сумма мала, увеличить меньший элемент; если велика — уменьшить больший."),
+            ("Считает одну пару вместо j−i", "Все пары с текущим правым и индексами i..j−1 подходят."),
+            ("Использует один элемент дважды", "Условие цикла `left < right`."),
+        ],
+        "stages": [
+            ("Key по amount", 8, "Сортирует записи.", "Сопоставить row[1] со схемой.", "§1", "Порядок сумм верен."),
+            ("Два ключа", 10, "Сортирует risk desc, amount asc.", "Показать отрицание числового ключа.", "§2", "Tie-break корректен."),
+            ("Трасса указателей", 10, "Вручную двигает left/right.", "Каждый шаг должен сужать интервал.", "§3", "Нет возврата назад."),
+            ("Ближайшая пара", 18, "Реализует функцию.", "Хранить best отдельно.", "§4", "Совпадает с brute force на toy."),
+            ("Число пар ≥ threshold", 16, "Использует пакетный подсчёт.", "Обосновать `right-left`.", "§5", "Совпадает с brute force."),
+            ("Стоимость сортировки", 10, "Сравнивает once vs each query.", "Развести preprocessing и query.", "§6–8", "Записана сложность."),
+            ("ДЗ", 8, "Открывает homework.", "Challenge — вернуть ids, не только суммы.", "§9", "Понятен контракт."),
+        ],
+    },
+    {
+        "dir": "06_practice_keys_pointers",
+        "pair": 47,
+        "title": "Практика: ключи, слияние и два указателя",
+        "role": "отработка",
+        "prereq": "Пара 46: key, tie-break и правило движения указателей",
+        "first": "Сегодня одна схема двух индексов решит три задачи: merge, минимальный разрыв и сверку id.",
+        "minimum": "merge строк по amount; min gap двух окон; пересечение sorted id; отчёт с проверенными числами",
+        "next": "интеграция и сложность — пара 48",
+        "idea": "Два монотонных потока можно совместно обработать за линейное время без вложенного перебора.",
+        "outcomes": "сливать записи по ключу; искать минимальный разрыв между списками; пересекать sorted id; строить multi-key рейтинг; проверять результат brute force",
+        "errors": [
+            ("Merge сравнивает txn_id", "Рабочий ключ здесь amount, то есть row[1]."),
+            ("Min gap пропускает равенство", "При gap=0 можно завершить поиск."),
+            ("Intersection дублирует id", "В наборе ids уникальны; при совпадении двигаются оба."),
+            ("Отчёт содержит непроверенное число", "Каждое число должно происходить из переменной ноутбука."),
+        ],
+        "stages": [
+            ("Merge записей", 14, "Сливает два окна.", "Проверить хвосты и ключ.", "§1", "80 строк и sorted."),
+            ("Минимальный разрыв", 16, "Двигает меньшую сумму.", "Остановиться на нуле.", "§2", "Совпадает с brute force."),
+            ("Пересечение ids", 14, "Пишет intersection.", "При равенстве двигаются оба.", "§3", "Toy и data проходят."),
+            ("Multi-key рейтинг", 10, "Сортирует risk/day/amount.", "Зафиксировать направления.", "§4", "Top-10 корректен."),
+            ("Проверка oracle", 10, "Сравнивает с вложенным циклом.", "Brute force — тест, не production.", "§5–6", "Результаты совпали."),
+            ("Мини-отчёт", 10, "Собирает проверенные выводы.", "Не приписывать причинность.", "§7–8", "Текст проходит контракт."),
+            ("ДЗ", 6, "Открывает homework.", "Challenge объединяет три операции.", "§9", "Понятен deliverable."),
+        ],
+    },
+    {
+        "dir": "07_complexity_integration",
+        "pair": 48,
+        "title": "Интеграция: библиотека алгоритмов и сложность",
+        "role": "интеграция",
+        "prereq": "Пары 42–47: поиск, сортировки, key и два указателя",
+        "first": "Соберём не набор разрозненных функций, а проверяемую библиотеку банка с quality gate и отчётом.",
+        "minimum": "API поиска/сортировки проходит gate; benchmark ≥4 размеров; acceptance all True; итоговый REPORT",
+        "next": "структуры данных — модуль 08_08",
+        "idea": "Инженерный результат соединяет контракт, тесты, модель сложности, измерение и ограниченный вывод.",
+        "outcomes": "собрать API; выполнить параметризованные тесты; построить benchmark; оценить рост; сформировать acceptance checklist и отчёт",
+        "errors": [
+            ("Gate проверяет только happy path", "Добавить empty, one, duplicates, miss."),
+            ("Отчёт утверждает причинность", "Бенчмарк показывает время реализации, не причину банковского риска."),
+            ("READY задан вручную", "Вычислить его из acceptance."),
+            ("Один медленный запуск ломает вывод", "Использовать median и говорить о тренде."),
+        ],
+        "stages": [
+            ("Контракт API", 8, "Фиксирует функции библиотеки.", "Сверить имена и выходы.", "§1", "API перечислен."),
+            ("Реализация поиска", 12, "Собирает linear/binary/bounds.", "Проверить miss и края.", "§2", "Search gate PASS."),
+            ("Реализация сортировок", 14, "Собирает selection/merge.", "Проверить немутируемость.", "§3", "Sort gate PASS."),
+            ("Параметризованный gate", 12, "Запускает набор cases.", "Тесты раньше benchmark.", "§4", "Все checks True."),
+            ("Benchmark", 16, "Строит таблицу 4 размеров.", "Median, одинаковые данные.", "§5", "Таблица полна."),
+            ("Acceptance и REPORT", 12, "Связывает evidence с чек-листом.", "READY вычисляется.", "§6–8", "all True, текст ≥350."),
+            ("Сдача и ДЗ", 6, "Открывает итоговое ДЗ.", "Уточнить файлы артефакта.", "§9", "Deliverable понятен."),
+        ],
+    },
+]
+
+LOAD_DATA = """from pathlib import Path
+import math
+import statistics
+import time
+import pandas as pd
+
+
+def find_csv(name):
+    for path in (Path(name), Path("../../data") / name, Path("../data") / name):
+        if path.exists():
+            return path.resolve()
+    raise FileNotFoundError(f"{name} не найден рядом с ноутбуком или в data/")
+
+
+unsorted_df = pd.read_csv(find_csv("bank_transactions_unsorted.csv"))
+by_id_df = pd.read_csv(find_csv("bank_transactions_sorted_by_txn_id.csv"))
+by_amount_df = pd.read_csv(find_csv("bank_transactions_sorted_by_amount.csv"))
+tiny_df = pd.read_csv(find_csv("bank_transactions_tiny.csv"))
+COLS = ["txn_id", "amount", "day", "risk_score"]
+unsorted_txns = list(unsorted_df[COLS].itertuples(index=False, name=None))
+id_txns = list(by_id_df[COLS].itertuples(index=False, name=None))
+amount_txns = list(by_amount_df[COLS].itertuples(index=False, name=None))
+tiny_txns = list(tiny_df[COLS].itertuples(index=False, name=None))
+id_list = [row[0] for row in id_txns]
+amount_list = [row[1] for row in amount_txns]
+assert id_list == sorted(id_list)
+assert amount_list == sorted(amount_list)
+print(f"Загружено {len(unsorted_txns)} транзакций; поля кортежа: {COLS}")
+"""
+
+SOL_BANNER = (
+    "**Для преподавателя.** Полный эталон к `lesson.ipynb` и "
+    "`homework.ipynb`; ученикам до сдачи не показывать."
 )
 
 
@@ -54,7 +264,12 @@ def code(source: str) -> dict:
     }
 
 
-def nb(*cells: dict) -> dict:
+def notebook(title: str, sections: list[tuple[str, str]], solution: bool = False) -> dict:
+    prefix = "# Решения: " if solution else "# "
+    banner = f"\n\n{SOL_BANNER}" if solution else ""
+    cells = [md(prefix + title + banner), code(LOAD_DATA)]
+    for heading, source in sections:
+        cells.extend((md(heading), code(source)))
     return {
         "nbformat": 4,
         "nbformat_minor": 5,
@@ -62,1007 +277,468 @@ def nb(*cells: dict) -> dict:
             "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
             "language_info": {"name": "python", "pygments_lexer": "ipython3"},
         },
-        "cells": list(cells),
+        "cells": cells,
     }
 
 
-def write(rel_path: str, notebook: dict) -> None:
-    path = ROOT / rel_path
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(notebook, ensure_ascii=False, indent=1), encoding="utf-8")
-    print("wrote", path)
+COMMON_SOLUTION = """def linear_search(values, target):
+    for index, value in enumerate(values):
+        if value == target:
+            return index
+    return -1
 
 
-def copy_data(lesson_dir: str) -> None:
-    dest_dir = ROOT / lesson_dir
-    dest_dir.mkdir(parents=True, exist_ok=True)
-    for src in (CSV_UNSORTED, CSV_BY_ID, CSV_BY_AMOUNT, CSV_TINY):
-        dest = dest_dir / src.name
-        shutil.copy2(src, dest)
-        print("copied", src.name, "->", dest)
+def binary_search(values, target):
+    left, right = 0, len(values) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if values[mid] == target:
+            return mid
+        if values[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1
 
 
-NOTEBOOKS: dict[str, dict] = {}
-LESSON_DIRS = [
-    "lessons/01_linear_binary_search",
-    "lessons/02_practice_search_logs",
-    "lessons/03_selection_merge_quick",
-    "lessons/04_practice_sorts",
-    "lessons/05_sorted_key_two_pointers",
-    "lessons/06_practice_keys_pointers",
-    "lessons/07_complexity_integration",
-]
+def lower_bound(values, target):
+    left, right = 0, len(values)
+    while left < right:
+        mid = (left + right) // 2
+        if values[mid] < target:
+            left = mid + 1
+        else:
+            right = mid
+    return left
 
 
-def add_lesson01() -> None:
-    base = "lessons/01_linear_binary_search"
-    lesson = nb(
-        md("# Линейный и бинарный поиск в логах банка"),
-        code(LOAD_DATA),
-        md("## 1. Линейный поиск по `txn_id` в неотсортированном списке"),
-        code(
-            "def linear_search_txn(txns, target_id):\n"
-            "    # вернуть индекс или -1\n"
-            "    return None\n\n\n"
-            "probe_id = unsorted_txns[25][0]\n"
-            "idx = linear_search_txn(unsorted_txns, probe_id)\n"
-            "missing = linear_search_txn(unsorted_txns, 999999)\n"
-            "assert idx is not None and idx >= 0\n"
-            "assert missing == -1\n"
-            "print(idx, missing)"
-        ),
-        md("## 2. Бинарный поиск по `txn_id` в отсортированном списке"),
-        code(
-            "def binary_search_txn(sorted_ids, target_id):\n"
-            "    # вернуть индекс или -1\n"
-            "    return None\n\n\n"
-            "probe_id = id_list[200]\n"
-            "idx_bin = binary_search_txn(id_list, probe_id)\n"
-            "miss_bin = binary_search_txn(id_list, 999999)\n"
-            "assert idx_bin is not None and idx_bin >= 0\n"
-            "assert miss_bin == -1\n"
-            "print(idx_bin, miss_bin)"
-        ),
-        md("## 3. Подсчёт числа сравнений"),
-        code(
-            "def linear_steps(ids, target):\n"
-            "    return None\n\n\n"
-            "def binary_steps(ids, target):\n"
-            "    return None\n\n\n"
-            "target = id_list[700]\n"
-            "ls = linear_steps(id_list, target)\n"
-            "bs = binary_steps(id_list, target)\n"
-            "assert ls is not None and bs is not None\n"
-            "assert int(bs) < int(ls)\n"
-            "print(ls, bs)"
-        ),
-        md("## 4. Короткий вывод по сложности"),
-        code(
-            "COMPLEXITY_NOTE = ''\n"
-            "assert len(COMPLEXITY_NOTE) > 120\n"
-            "print(COMPLEXITY_NOTE)"
-        ),
-    )
-    hw = nb(
-        md("# ДЗ: поиск по `txn_id`"),
-        code(LOAD_DATA),
-        md("### A. Закрепление\n\n## 1. Первая и последняя транзакция"),
-        code(
-            "first_id = None\n"
-            "last_id = None\n"
-            "assert first_id is not None and last_id is not None\n"
-            "assert int(first_id) < int(last_id)\n"
-            "print(first_id, last_id)"
-        ),
-        md("## 2. Бинарный поиск 20 случайных id"),
-        code(
-            "hits = []\n"
-            "# добавьте 20 индексов найденных бинарным поиском\n"
-            "assert len(hits) == 20\n"
-            "assert min(hits) >= 0\n"
-            "print(hits[:5])"
-        ),
-        md("### B. Вызов\n\n## 3. Почему бинарный поиск не работает на неотсортированном списке"),
-        code(
-            "FAIL_NOTE = ''\n"
-            "assert len(FAIL_NOTE) > 130\n"
-            "print(FAIL_NOTE)"
-        ),
-    )
-    sol = nb(
-        md("# Решения: линейный и бинарный поиск\n\n" + SOL_BANNER),
-        code(LOAD_DATA),
-        code(
-            "def linear_search_txn(txns, target_id):\n"
-            "    for i, row in enumerate(txns):\n"
-            "        if row[0] == target_id:\n"
-            "            return i\n"
-            "    return -1\n\n\n"
-            "def binary_search_txn(sorted_ids, target_id):\n"
-            "    left, right = 0, len(sorted_ids) - 1\n"
-            "    while left <= right:\n"
-            "        mid = (left + right) // 2\n"
-            "        if sorted_ids[mid] == target_id:\n"
-            "            return mid\n"
-            "        if sorted_ids[mid] < target_id:\n"
-            "            left = mid + 1\n"
-            "        else:\n"
-            "            right = mid - 1\n"
-            "    return -1\n\n\n"
-            "def linear_steps(ids, target):\n"
-            "    steps = 0\n"
-            "    for x in ids:\n"
-            "        steps += 1\n"
-            "        if x == target:\n"
-            "            return steps\n"
-            "    return steps\n\n\n"
-            "def binary_steps(ids, target):\n"
-            "    left, right = 0, len(ids) - 1\n"
-            "    steps = 0\n"
-            "    while left <= right:\n"
-            "        steps += 1\n"
-            "        mid = (left + right) // 2\n"
-            "        if ids[mid] == target:\n"
-            "            return steps\n"
-            "        if ids[mid] < target:\n"
-            "            left = mid + 1\n"
-            "        else:\n"
-            "            right = mid - 1\n"
-            "    return steps\n\n\n"
-            "probe_id = unsorted_txns[25][0]\n"
-            "idx = linear_search_txn(unsorted_txns, probe_id)\n"
-            "idx_bin = binary_search_txn(id_list, id_list[200])\n"
-            "ls = linear_steps(id_list, id_list[700])\n"
-            "bs = binary_steps(id_list, id_list[700])\n"
-            "COMPLEXITY_NOTE = (\n"
-            "    'Линейный поиск в среднем просматривает значимую часть массива, а бинарный '\n"
-            "    'на отсортированных данных каждый шаг делит диапазон пополам.'\n"
-            ")\n"
-            "first_id = id_list[0]\n"
-            "last_id = id_list[-1]\n"
-            "hits = [binary_search_txn(id_list, id_list[i * 30]) for i in range(20)]\n"
-            "FAIL_NOTE = (\n"
-            "    'Бинарный поиск опирается на порядок значений слева и справа от середины. '\n"
-            "    'В неотсортированном массиве это условие нарушено, поэтому отбрасывание половины диапазона ошибочно.'\n"
-            ")\n"
-            "print(idx, idx_bin, ls, bs)\n"
-            "print(first_id, last_id)\n"
-            "print(hits[:5])"
-        ),
-    )
-    NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
-    NOTEBOOKS[f"{base}/homework.ipynb"] = hw
-    NOTEBOOKS[f"{base}/solutions.ipynb"] = sol
+def upper_bound(values, target):
+    left, right = 0, len(values)
+    while left < right:
+        mid = (left + right) // 2
+        if values[mid] <= target:
+            left = mid + 1
+        else:
+            right = mid
+    return left
 
 
-def add_lesson02() -> None:
-    base = "lessons/02_practice_search_logs"
-    lesson = nb(
-        md("# Практика: поиск в логах транзакций"),
-        code(LOAD_DATA),
-        md("## 1. Поиск транзакции и извлечение строки"),
-        code(
-            "def linear_search_txn(txns, target_id):\n"
-            "    return None\n\n\n"
-            "target_id = unsorted_txns[40][0]\n"
-            "idx = linear_search_txn(unsorted_txns, target_id)\n"
-            "row = None\n"
-            "assert idx is not None and idx >= 0\n"
-            "assert row is not None and row[0] == target_id\n"
-            "print(row)"
-        ),
-        md("## 2. Бинарный поиск и проверка соседей"),
-        code(
-            "def binary_search_txn(sorted_ids, target_id):\n"
-            "    return None\n\n\n"
-            "idx = binary_search_txn(id_list, id_list[300])\n"
-            "left_ok = None\n"
-            "right_ok = None\n"
-            "assert idx is not None and idx > 0\n"
-            "assert left_ok is True and right_ok is True\n"
-            "print(idx, left_ok, right_ok)"
-        ),
-        md("## 3. Диапазон по сумме через два бинарных поиска"),
-        code(
-            "def lower_bound(nums, target):\n"
-            "    return None\n\n\n"
-            "def upper_bound(nums, target):\n"
-            "    return None\n\n\n"
-            "low = lower_bound(amount_list, 5000)\n"
-            "high = upper_bound(amount_list, 12000)\n"
-            "subset = amount_txns[low:high]\n"
-            "assert low is not None and high is not None\n"
-            "assert low < high and len(subset) > 0\n"
-            "assert min(x[1] for x in subset) >= 5000\n"
-            "assert max(x[1] for x in subset) <= 12000\n"
-            "print(low, high, len(subset))"
-        ),
-        md("## 4. Нота для отчёта"),
-        code(
-            "RANGE_NOTE = ''\n"
-            "assert len(RANGE_NOTE) > 120\n"
-            "print(RANGE_NOTE)"
-        ),
-    )
-    hw = nb(
-        md("# ДЗ: практикум по поиску"),
-        code(LOAD_DATA),
-        md("### A. Закрепление\n\n## 1. Число транзакций с суммой <= 10000"),
-        code(
-            "count_small = None\n"
-            "assert count_small is not None and int(count_small) > 0\n"
-            "print(count_small)"
-        ),
-        md("## 2. Найти 10 транзакций в диапазоне [15000, 17000]"),
-        code(
-            "sample_ids = []\n"
-            "assert len(sample_ids) == 10\n"
-            "print(sample_ids)"
-        ),
-        md("### B. Вызов\n\n## 3. Почему диапазонный поиск лучше полного прохода"),
-        code(
-            "WHY_RANGE = ''\n"
-            "assert len(WHY_RANGE) > 130\n"
-            "print(WHY_RANGE)"
-        ),
-    )
-    sol = nb(
-        md("# Решения: практика поиска\n\n" + SOL_BANNER),
-        code(LOAD_DATA),
-        code(
-            "def linear_search_txn(txns, target_id):\n"
-            "    for i, row in enumerate(txns):\n"
-            "        if row[0] == target_id:\n"
-            "            return i\n"
-            "    return -1\n\n\n"
-            "def binary_search_txn(sorted_ids, target_id):\n"
-            "    left, right = 0, len(sorted_ids) - 1\n"
-            "    while left <= right:\n"
-            "        mid = (left + right) // 2\n"
-            "        if sorted_ids[mid] == target_id:\n"
-            "            return mid\n"
-            "        if sorted_ids[mid] < target_id:\n"
-            "            left = mid + 1\n"
-            "        else:\n"
-            "            right = mid - 1\n"
-            "    return -1\n\n\n"
-            "def lower_bound(nums, target):\n"
-            "    left, right = 0, len(nums)\n"
-            "    while left < right:\n"
-            "        mid = (left + right) // 2\n"
-            "        if nums[mid] < target:\n"
-            "            left = mid + 1\n"
-            "        else:\n"
-            "            right = mid\n"
-            "    return left\n\n\n"
-            "def upper_bound(nums, target):\n"
-            "    left, right = 0, len(nums)\n"
-            "    while left < right:\n"
-            "        mid = (left + right) // 2\n"
-            "        if nums[mid] <= target:\n"
-            "            left = mid + 1\n"
-            "        else:\n"
-            "            right = mid\n"
-            "    return left\n\n\n"
-            "target_id = unsorted_txns[40][0]\n"
-            "idx = linear_search_txn(unsorted_txns, target_id)\n"
-            "row = unsorted_txns[idx]\n"
-            "idx2 = binary_search_txn(id_list, id_list[300])\n"
-            "left_ok = id_list[idx2 - 1] <= id_list[idx2]\n"
-            "right_ok = id_list[idx2] <= id_list[idx2 + 1]\n"
-            "low = lower_bound(amount_list, 5000)\n"
-            "high = upper_bound(amount_list, 12000)\n"
-            "subset = amount_txns[low:high]\n"
-            "RANGE_NOTE = (\n"
-            "    'Если суммы отсортированы, два бинарных поиска быстро находят границы диапазона, '\n"
-            "    'и мы работаем только с нужным фрагментом лога.'\n"
-            ")\n"
-            "count_small = upper_bound(amount_list, 10000)\n"
-            "s_low = lower_bound(amount_list, 15000)\n"
-            "s_high = upper_bound(amount_list, 17000)\n"
-            "sample_ids = [row[0] for row in amount_txns[s_low:s_low + 10]]\n"
-            "WHY_RANGE = (\n"
-            "    'Полный проход проверяет все строки, даже если интересует узкий диапазон. '\n"
-            "    'На отсортированных данных диапазонный поиск сокращает число сравнений и ускоряет отчёт.'\n"
-            ")\n"
-            "print(row)\n"
-            "print(idx2, left_ok, right_ok)\n"
-            "print(low, high, len(subset))"
-        ),
-    )
-    NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
-    NOTEBOOKS[f"{base}/homework.ipynb"] = hw
-    NOTEBOOKS[f"{base}/solutions.ipynb"] = sol
+def selection_sort(values):
+    result = list(values)
+    for i in range(len(result)):
+        smallest = i
+        for j in range(i + 1, len(result)):
+            if result[j] < result[smallest]:
+                smallest = j
+        result[i], result[smallest] = result[smallest], result[i]
+    return result
 
 
-def add_lesson03() -> None:
-    base = "lessons/03_selection_merge_quick"
-    lesson = nb(
-        md("# Сортировки: selection, merge и quick (обзор)"),
-        code(LOAD_DATA),
-        md("## 1. Сортировка выбором списка сумм"),
-        code(
-            "def selection_sort(nums):\n"
-            "    return None\n\n\n"
-            "arr = [9, 1, 5, 3, 7]\n"
-            "sorted_arr = selection_sort(arr)\n"
-            "assert sorted_arr == [1, 3, 5, 7, 9]\n"
-            "print(sorted_arr)"
-        ),
-        md("## 2. Слияние двух отсортированных списков"),
-        code(
-            "def merge_sorted(a, b):\n"
-            "    return None\n\n\n"
-            "merged = merge_sorted([1, 4, 9], [2, 3, 7])\n"
-            "assert merged == [1, 2, 3, 4, 7, 9]\n"
-            "print(merged)"
-        ),
-        md("## 3. Mergesort рекурсивно"),
-        code(
-            "def merge_sort(nums):\n"
-            "    return None\n\n\n"
-            "test = [12, 5, 1, 8, 3, 7]\n"
-            "assert merge_sort(test) == sorted(test)\n"
-            "print(merge_sort(test))"
-        ),
-        md("## 4. Quicksort: один шаг partition"),
-        code(
-            "def partition_once(nums):\n"
-            "    # вернуть left, pivot, right\n"
-            "    return None\n\n\n"
-            "left, pivot, right = partition_once([8, 2, 9, 4, 6])\n"
-            "assert all(x <= pivot for x in left)\n"
-            "assert all(x > pivot for x in right)\n"
-            "print(left, pivot, right)"
-        ),
-        md("## 5. Нота по сложности"),
-        code(
-            "SORT_NOTE = ''\n"
-            "assert len(SORT_NOTE) > 140\n"
-            "print(SORT_NOTE)"
-        ),
-    )
-    hw = nb(
-        md("# ДЗ: сортировки"),
-        code(LOAD_DATA),
-        md("### A. Закрепление\n\n## 1. Сортировка 30 сумм выбором"),
-        code(
-            "part = [x[1] for x in unsorted_txns[:30]]\n"
-            "sorted_part = None\n"
-            "assert sorted_part is not None and sorted_part == sorted(part)\n"
-            "print(sorted_part[:10])"
-        ),
-        md("## 2. Mergesort для 120 сумм"),
-        code(
-            "vals = [x[1] for x in unsorted_txns[:120]]\n"
-            "res = None\n"
-            "assert res is not None and res == sorted(vals)\n"
-            "print(res[:10])"
-        ),
-        md("### B. Вызов\n\n## 3. Когда quicksort может тормозить"),
-        code(
-            "QUICK_NOTE = ''\n"
-            "assert len(QUICK_NOTE) > 120\n"
-            "print(QUICK_NOTE)"
-        ),
-    )
-    sol = nb(
-        md("# Решения: сортировки\n\n" + SOL_BANNER),
-        code(LOAD_DATA),
-        code(
-            "def selection_sort(nums):\n"
-            "    arr = nums[:]\n"
-            "    n = len(arr)\n"
-            "    for i in range(n):\n"
-            "        m = i\n"
-            "        for j in range(i + 1, n):\n"
-            "            if arr[j] < arr[m]:\n"
-            "                m = j\n"
-            "        arr[i], arr[m] = arr[m], arr[i]\n"
-            "    return arr\n\n\n"
-            "def merge_sorted(a, b):\n"
-            "    i = 0\n"
-            "    j = 0\n"
-            "    out = []\n"
-            "    while i < len(a) and j < len(b):\n"
-            "        if a[i] <= b[j]:\n"
-            "            out.append(a[i])\n"
-            "            i += 1\n"
-            "        else:\n"
-            "            out.append(b[j])\n"
-            "            j += 1\n"
-            "    out.extend(a[i:])\n"
-            "    out.extend(b[j:])\n"
-            "    return out\n\n\n"
-            "def merge_sort(nums):\n"
-            "    if len(nums) <= 1:\n"
-            "        return nums[:]\n"
-            "    mid = len(nums) // 2\n"
-            "    left = merge_sort(nums[:mid])\n"
-            "    right = merge_sort(nums[mid:])\n"
-            "    return merge_sorted(left, right)\n\n\n"
-            "def partition_once(nums):\n"
-            "    pivot = nums[len(nums) // 2]\n"
-            "    left = [x for x in nums if x < pivot]\n"
-            "    same = [x for x in nums if x == pivot]\n"
-            "    right = [x for x in nums if x > pivot]\n"
-            "    return left + same[:-1], pivot, right\n\n\n"
-            "arr = [9, 1, 5, 3, 7]\n"
-            "sorted_arr = selection_sort(arr)\n"
-            "merged = merge_sorted([1, 4, 9], [2, 3, 7])\n"
-            "test = [12, 5, 1, 8, 3, 7]\n"
-            "left, pivot, right = partition_once([8, 2, 9, 4, 6])\n"
-            "SORT_NOTE = (\n"
-            "    'Selection sort делает много сравнений и перестановок, поэтому растёт как O(n^2). '\n"
-            "    'Mergesort делит массив и сливает отсортированные части, что обычно даёт O(n log n).'\n"
-            ")\n"
-            "part = [x[1] for x in unsorted_txns[:30]]\n"
-            "sorted_part = selection_sort(part)\n"
-            "vals = [x[1] for x in unsorted_txns[:120]]\n"
-            "res = merge_sort(vals)\n"
-            "QUICK_NOTE = (\n"
-            "    'Quicksort может замедляться на почти отсортированных данных при неудачном pivot: '\n"
-            "    'разбиения становятся неравномерными, и глубина рекурсии растёт.'\n"
-            ")\n"
-            "print(sorted_arr)\n"
-            "print(merged)\n"
-            "print(merge_sort(test))\n"
-            "print(left, pivot, right)"
-        ),
-    )
-    NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
-    NOTEBOOKS[f"{base}/homework.ipynb"] = hw
-    NOTEBOOKS[f"{base}/solutions.ipynb"] = sol
+def merge_sorted(left, right):
+    i = j = 0
+    result = []
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:
+            result.append(left[i]); i += 1
+        else:
+            result.append(right[j]); j += 1
+    return result + list(left[i:]) + list(right[j:])
 
 
-def add_lesson04() -> None:
-    base = "lessons/04_practice_sorts"
-    lesson = nb(
-        md("# Практика: реализуем и сравниваем сортировки"),
-        code(LOAD_DATA),
-        md("## 1. Реализации selection и merge"),
-        code(
-            "def selection_sort(nums):\n"
-            "    return None\n\n\n"
-            "def merge_sort(nums):\n"
-            "    return None\n\n\n"
-            "vals = [x[1] for x in unsorted_txns[:80]]\n"
-            "assert selection_sort(vals) == sorted(vals)\n"
-            "assert merge_sort(vals) == sorted(vals)\n"
-            "print('ok')"
-        ),
-        md("## 2. Сравнение времени на 3 размерах"),
-        code(
-            "sizes = [80, 200, 500]\n"
-            "bench = []\n"
-            "# заполните bench строками [n, t_selection, t_merge]\n"
-            "assert len(bench) == 3\n"
-            "assert all(len(row) == 3 for row in bench)\n"
-            "print(bench)"
-        ),
-        md("## 3. Проверка монотонности времени"),
-        code(
-            "n_ok = None\n"
-            "assert n_ok is True\n"
-            "print(n_ok)"
-        ),
-        md("## 4. Вывод о выборе алгоритма"),
-        code(
-            "BENCH_NOTE = ''\n"
-            "assert len(BENCH_NOTE) > 120\n"
-            "print(BENCH_NOTE)"
-        ),
-    )
-    hw = nb(
-        md("# ДЗ: практикум сортировок"),
-        code(LOAD_DATA),
-        md("### A. Закрепление\n\n## 1. Сортировка по `risk_score`"),
-        code(
-            "risks = [x[3] for x in unsorted_txns[:150]]\n"
-            "risk_sorted = None\n"
-            "assert risk_sorted is not None and risk_sorted == sorted(risks)\n"
-            "print(risk_sorted[:12])"
-        ),
-        md("## 2. Сравнение встроенной `sorted` и merge_sort"),
-        code(
-            "t_builtin = None\n"
-            "t_merge = None\n"
-            "assert t_builtin is not None and t_merge is not None\n"
-            "assert float(t_builtin) > 0 and float(t_merge) > 0\n"
-            "print(t_builtin, t_merge)"
-        ),
-        md("### B. Вызов\n\n## 3. Почему в проде часто используют встроенную сортировку"),
-        code(
-            "PROD_NOTE = ''\n"
-            "assert len(PROD_NOTE) > 140\n"
-            "print(PROD_NOTE)"
-        ),
-    )
-    sol = nb(
-        md("# Решения: практикум сортировок\n\n" + SOL_BANNER),
-        code(LOAD_DATA),
-        code(
-            "def selection_sort(nums):\n"
-            "    arr = nums[:]\n"
-            "    for i in range(len(arr)):\n"
-            "        m = i\n"
-            "        for j in range(i + 1, len(arr)):\n"
-            "            if arr[j] < arr[m]:\n"
-            "                m = j\n"
-            "        arr[i], arr[m] = arr[m], arr[i]\n"
-            "    return arr\n\n\n"
-            "def merge_sorted(a, b):\n"
-            "    i = 0\n"
-            "    j = 0\n"
-            "    out = []\n"
-            "    while i < len(a) and j < len(b):\n"
-            "        if a[i] <= b[j]:\n"
-            "            out.append(a[i]); i += 1\n"
-            "        else:\n"
-            "            out.append(b[j]); j += 1\n"
-            "    out.extend(a[i:]); out.extend(b[j:])\n"
-            "    return out\n\n\n"
-            "def merge_sort(nums):\n"
-            "    if len(nums) <= 1:\n"
-            "        return nums[:]\n"
-            "    mid = len(nums) // 2\n"
-            "    return merge_sorted(merge_sort(nums[:mid]), merge_sort(nums[mid:]))\n\n\n"
-            "vals = [x[1] for x in unsorted_txns[:80]]\n"
-            "sizes = [80, 200, 500]\n"
-            "bench = []\n"
-            "for n in sizes:\n"
-            "    part = [x[1] for x in unsorted_txns[:n]]\n"
-            "    t0 = time.perf_counter(); selection_sort(part); t_sel = time.perf_counter() - t0\n"
-            "    t0 = time.perf_counter(); merge_sort(part); t_mer = time.perf_counter() - t0\n"
-            "    bench.append([n, t_sel, t_mer])\n"
-            "n_ok = (bench[0][1] <= bench[1][1] <= bench[2][1]) and (bench[0][2] <= bench[1][2] <= bench[2][2])\n"
-            "BENCH_NOTE = (\n"
-            "    'На маленьких объёмах разница умеренная, но с ростом n selection сортировка растёт быстрее. '\n"
-            "    'Для больших логов разумнее выбирать алгоритм уровня O(n log n).'\n"
-            ")\n"
-            "risks = [x[3] for x in unsorted_txns[:150]]\n"
-            "risk_sorted = merge_sort(risks)\n"
-            "part2 = [x[1] for x in unsorted_txns[:500]]\n"
-            "t0 = time.perf_counter(); sorted(part2); t_builtin = time.perf_counter() - t0\n"
-            "t0 = time.perf_counter(); merge_sort(part2); t_merge = time.perf_counter() - t0\n"
-            "PROD_NOTE = (\n"
-            "    'Встроенная сортировка в Python тщательно оптимизирована и надёжно протестирована. '\n"
-            "    'Свою реализацию обычно пишут для обучения и для контроля идеи, а не для боевого кода.'\n"
-            ")\n"
-            "print(bench)\n"
-            "print(n_ok)\n"
-            "print(t_builtin, t_merge)"
-        ),
-    )
-    NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
-    NOTEBOOKS[f"{base}/homework.ipynb"] = hw
-    NOTEBOOKS[f"{base}/solutions.ipynb"] = sol
+def merge_sort(values):
+    if len(values) <= 1:
+        return list(values)
+    mid = len(values) // 2
+    return merge_sorted(merge_sort(values[:mid]), merge_sort(values[mid:]))
 
 
-def add_lesson05() -> None:
-    base = "lessons/05_sorted_key_two_pointers"
-    lesson = nb(
-        md("# `sorted(key=...)` и метод двух указателей"),
-        code(LOAD_DATA),
-        md("## 1. Сортировка записей по `amount` и `risk_score`"),
-        code(
-            "by_amount_local = None\n"
-            "by_risk_local = None\n"
-            "assert by_amount_local is not None and by_risk_local is not None\n"
-            "assert by_amount_local[0][1] <= by_amount_local[-1][1]\n"
-            "assert by_risk_local[0][3] <= by_risk_local[-1][3]\n"
-            "print(by_amount_local[:3])"
-        ),
-        md("## 2. Два указателя: найти пару сумм близко к цели"),
-        code(
-            "def two_sum_closest(sorted_amounts, target):\n"
-            "    # вернуть (a, b, diff)\n"
-            "    return None\n\n\n"
-            "a, b, diff = two_sum_closest(amount_list, 40000)\n"
-            "assert a is not None and b is not None and diff is not None\n"
-            "assert a <= b\n"
-            "print(a, b, diff)"
-        ),
-        md("## 3. Два указателя: число пар не ниже порога"),
-        code(
-            "def count_pairs_ge(sorted_amounts, threshold):\n"
-            "    return None\n\n\n"
-            "n_pairs = count_pairs_ge(amount_list[:220], 30000)\n"
-            "assert n_pairs is not None and int(n_pairs) > 0\n"
-            "print(n_pairs)"
-        ),
-        md("## 4. Нота по применению метода"),
-        code(
-            "POINTER_NOTE = ''\n"
-            "assert len(POINTER_NOTE) > 120\n"
-            "print(POINTER_NOTE)"
-        ),
-    )
-    hw = nb(
-        md("# ДЗ: ключи сортировки и два указателя"),
-        code(LOAD_DATA),
-        md("### A. Закрепление\n\n## 1. Топ-15 рискованных транзакций"),
-        code(
-            "top_risk_ids = []\n"
-            "assert len(top_risk_ids) == 15\n"
-            "print(top_risk_ids[:5])"
-        ),
-        md("## 2. Пара сумм ровно на порог или ближайшая выше"),
-        code(
-            "pair_info = None\n"
-            "assert pair_info is not None and len(pair_info) == 3\n"
-            "print(pair_info)"
-        ),
-        md("### B. Вызов\n\n## 3. Почему указатели требуют сортировки"),
-        code(
-            "SORT_REQ_NOTE = ''\n"
-            "assert len(SORT_REQ_NOTE) > 130\n"
-            "print(SORT_REQ_NOTE)"
-        ),
-    )
-    sol = nb(
-        md("# Решения: key и два указателя\n\n" + SOL_BANNER),
-        code(LOAD_DATA),
-        code(
-            "by_amount_local = sorted(unsorted_txns, key=lambda row: row[1])\n"
-            "by_risk_local = sorted(unsorted_txns, key=lambda row: row[3])\n\n\n"
-            "def two_sum_closest(sorted_amounts, target):\n"
-            "    i = 0\n"
-            "    j = len(sorted_amounts) - 1\n"
-            "    best_a = sorted_amounts[0]\n"
-            "    best_b = sorted_amounts[-1]\n"
-            "    best_diff = abs(best_a + best_b - target)\n"
-            "    while i < j:\n"
-            "        cur = sorted_amounts[i] + sorted_amounts[j]\n"
-            "        diff = abs(cur - target)\n"
-            "        if diff < best_diff:\n"
-            "            best_diff = diff\n"
-            "            best_a = sorted_amounts[i]\n"
-            "            best_b = sorted_amounts[j]\n"
-            "        if cur < target:\n"
-            "            i += 1\n"
-            "        else:\n"
-            "            j -= 1\n"
-            "    return best_a, best_b, best_diff\n\n\n"
-            "def count_pairs_ge(sorted_amounts, threshold):\n"
-            "    i = 0\n"
-            "    j = len(sorted_amounts) - 1\n"
-            "    total = 0\n"
-            "    while i < j:\n"
-            "        if sorted_amounts[i] + sorted_amounts[j] >= threshold:\n"
-            "            total += j - i\n"
-            "            j -= 1\n"
-            "        else:\n"
-            "            i += 1\n"
-            "    return total\n\n\n"
-            "a, b, diff = two_sum_closest(amount_list, 40000)\n"
-            "n_pairs = count_pairs_ge(amount_list[:220], 30000)\n"
-            "POINTER_NOTE = (\n"
-            "    'Два указателя эффективны, когда массив отсортирован: каждое движение гарантированно '\n"
-            "    'сужает пространство поиска без возврата назад.'\n"
-            ")\n"
-            "top_risk_ids = [x[0] for x in sorted(unsorted_txns, key=lambda row: row[3], reverse=True)[:15]]\n"
-            "pair_info = two_sum_closest(amount_list, 50000)\n"
-            "SORT_REQ_NOTE = (\n"
-            "    'На несортированных данных нельзя выбрать направление движения указателей: '\n"
-            "    'неизвестно, как изменение индекса повлияет на сумму и сравнение с порогом.'\n"
-            ")\n"
-            "print(by_amount_local[:3])\n"
-            "print(a, b, diff)\n"
-            "print(n_pairs)"
-        ),
-    )
-    NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
-    NOTEBOOKS[f"{base}/homework.ipynb"] = hw
-    NOTEBOOKS[f"{base}/solutions.ipynb"] = sol
+def median_runtime(function, values, repeats=3):
+    samples = []
+    for _ in range(repeats):
+        start = time.perf_counter()
+        function(list(values))
+        samples.append(time.perf_counter() - start)
+    return statistics.median(samples)
+"""
 
 
-def add_lesson06() -> None:
-    base = "lessons/06_practice_keys_pointers"
-    lesson = nb(
-        md("# Практика: ключи и указатели на логах"),
-        code(LOAD_DATA),
-        md("## 1. Слияние двух отсортированных фрагментов"),
-        code(
-            "def merge_rows_by_amount(a_rows, b_rows):\n"
-            "    return None\n\n\n"
-            "left_rows = amount_txns[:40]\n"
-            "right_rows = amount_txns[40:80]\n"
-            "merged = merge_rows_by_amount(left_rows, right_rows)\n"
-            "assert merged is not None and len(merged) == 80\n"
-            "assert all(merged[i][1] <= merged[i + 1][1] for i in range(len(merged) - 1))\n"
-            "print(merged[:3])"
-        ),
-        md("## 2. Два указателя: минимальная разница сумм между двумя окнами"),
-        code(
-            "def min_gap_between_windows(a_amounts, b_amounts):\n"
-            "    return None\n\n\n"
-            "w1 = amount_list[50:130]\n"
-            "w2 = amount_list[420:500]\n"
-            "gap = min_gap_between_windows(w1, w2)\n"
-            "assert gap is not None and int(gap) >= 0\n"
-            "print(gap)"
-        ),
-        md("## 3. Поиск id по списку целей"),
-        code(
-            "targets = [id_list[10], id_list[90], id_list[190], id_list[390]]\n"
-            "positions = []\n"
-            "assert len(positions) == len(targets)\n"
-            "assert min(positions) >= 0\n"
-            "print(positions)"
-        ),
-        md("## 4. Рефлексия практики"),
-        code(
-            "PRACTICE_NOTE = ''\n"
-            "assert len(PRACTICE_NOTE) > 120\n"
-            "print(PRACTICE_NOTE)"
-        ),
-    )
-    hw = nb(
-        md("# ДЗ: интеграция ключей и указателей"),
-        code(LOAD_DATA),
-        md("### A. Закрепление\n\n## 1. Отсортировать tiny по двум ключам"),
-        code(
-            "tiny_rows = list(tiny_df[['txn_id', 'amount', 'day', 'risk_score']].itertuples(index=False, name=None))\n"
-            "tiny_sorted = None\n"
-            "assert tiny_sorted is not None and len(tiny_sorted) == len(tiny_rows)\n"
-            "print(tiny_sorted[:5])"
-        ),
-        md("## 2. Пары сумм не ниже 45000 в tiny"),
-        code(
-            "pairs_cnt = None\n"
-            "assert pairs_cnt is not None and int(pairs_cnt) >= 0\n"
-            "print(pairs_cnt)"
-        ),
-        md("### B. Вызов\n\n## 3. Короткий мини-отчёт для банка"),
-        code(
-            "MINI_REPORT = ''\n"
-            "assert len(MINI_REPORT) > 170\n"
-            "print(MINI_REPORT)"
-        ),
-    )
-    sol = nb(
-        md("# Решения: практика key + pointers\n\n" + SOL_BANNER),
-        code(LOAD_DATA),
-        code(
-            "def merge_rows_by_amount(a_rows, b_rows):\n"
-            "    i = 0\n"
-            "    j = 0\n"
-            "    out = []\n"
-            "    while i < len(a_rows) and j < len(b_rows):\n"
-            "        if a_rows[i][1] <= b_rows[j][1]:\n"
-            "            out.append(a_rows[i]); i += 1\n"
-            "        else:\n"
-            "            out.append(b_rows[j]); j += 1\n"
-            "    out.extend(a_rows[i:])\n"
-            "    out.extend(b_rows[j:])\n"
-            "    return out\n\n\n"
-            "def min_gap_between_windows(a_amounts, b_amounts):\n"
-            "    i = 0\n"
-            "    j = 0\n"
-            "    best = abs(a_amounts[0] - b_amounts[0])\n"
-            "    while i < len(a_amounts) and j < len(b_amounts):\n"
-            "        cur = abs(a_amounts[i] - b_amounts[j])\n"
-            "        if cur < best:\n"
-            "            best = cur\n"
-            "        if a_amounts[i] < b_amounts[j]:\n"
-            "            i += 1\n"
-            "        else:\n"
-            "            j += 1\n"
-            "    return best\n\n\n"
-            "def binary_search_txn(sorted_ids, target_id):\n"
-            "    left, right = 0, len(sorted_ids) - 1\n"
-            "    while left <= right:\n"
-            "        mid = (left + right) // 2\n"
-            "        if sorted_ids[mid] == target_id:\n"
-            "            return mid\n"
-            "        if sorted_ids[mid] < target_id:\n"
-            "            left = mid + 1\n"
-            "        else:\n"
-            "            right = mid - 1\n"
-            "    return -1\n\n\n"
-            "left_rows = amount_txns[:40]\n"
-            "right_rows = amount_txns[40:80]\n"
-            "merged = merge_rows_by_amount(left_rows, right_rows)\n"
-            "w1 = amount_list[50:130]\n"
-            "w2 = amount_list[420:500]\n"
-            "gap = min_gap_between_windows(w1, w2)\n"
-            "targets = [id_list[10], id_list[90], id_list[190], id_list[390]]\n"
-            "positions = [binary_search_txn(id_list, x) for x in targets]\n"
-            "PRACTICE_NOTE = (\n"
-            "    'Один и тот же принцип двух указателей помогает и при слиянии, и при поиске близких сумм. '\n"
-            "    'Ключевое условие - данные должны быть отсортированы по рабочему признаку.'\n"
-            ")\n"
-            "tiny_rows = list(tiny_df[['txn_id', 'amount', 'day', 'risk_score']].itertuples(index=False, name=None))\n"
-            "tiny_sorted = sorted(tiny_rows, key=lambda row: (row[2], row[1]))\n"
-            "tiny_amounts = sorted([x[1] for x in tiny_rows])\n"
-            "i = 0\n"
-            "j = len(tiny_amounts) - 1\n"
-            "pairs_cnt = 0\n"
-            "while i < j:\n"
-            "    if tiny_amounts[i] + tiny_amounts[j] >= 45000:\n"
-            "        pairs_cnt += j - i\n"
-            "        j -= 1\n"
-            "    else:\n"
-            "        i += 1\n"
-            "MINI_REPORT = (\n"
-            "    'На mini-логе отсортировали транзакции по дню и сумме для операционного просмотра. '\n"
-            "    'Двумя указателями оценили число пар крупных операций от 45000, '\n"
-            "    'что полезно как быстрый индикатор концентрации больших платежей.'\n"
-            ")\n"
-            "print(merged[:3])\n"
-            "print(gap)\n"
-            "print(positions)"
-        ),
-    )
-    NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
-    NOTEBOOKS[f"{base}/homework.ipynb"] = hw
-    NOTEBOOKS[f"{base}/solutions.ipynb"] = sol
+def lesson01() -> tuple[list, list, list]:
+    lesson = [
+        ("## 1. Контракт поиска\n\nПолучите список первых восьми id и назовите позицию существующей цели.", "sample_ids = id_list[:8]\ntarget = sample_ids[5]\nexpected_index = None  # TODO\nassert expected_index == 5\nassert sample_ids == sorted(sample_ids)\n"),
+        ("## 2. Линейный поиск\n\nВерните индекс первого совпадения или `-1`.", "def linear_search(values, target):\n    # TODO\n    ...\n\nassert linear_search([7, 2, 7], 7) == 0\nassert linear_search([], 1) == -1\nassert linear_search(id_list, id_list[-1]) == len(id_list) - 1\n"),
+        ("## 3. Трасса границ\n\nЗапишите пары `(left, right)` до нахождения 31.", "toy = [3, 8, 14, 21, 31, 44, 57]\ntrace = []  # TODO\nassert trace and trace[0] == (0, len(toy) - 1)\nassert len(trace) <= 3\n"),
+        ("## 4. Бинарный поиск\n\nДиапазон границ включительный.", "def binary_search(values, target):\n    # TODO\n    ...\n\nassert binary_search([], 5) == -1\nassert binary_search([5], 5) == 0\nassert binary_search(id_list, id_list[0]) == 0\nassert binary_search(id_list, id_list[-1]) == len(id_list) - 1\nassert binary_search(id_list, -1) == -1\n"),
+        ("## 5. Линейные сравнения", "def linear_steps(values, target):\n    # TODO: вернуть (index, comparisons)\n    ...\n\nli, ls = linear_steps(id_list, id_list[700])\nassert li == 700 and ls == 701\n"),
+        ("## 6. Бинарные сравнения", "def binary_steps(values, target):\n    # TODO: вернуть (index, comparisons)\n    ...\n\nbi, bs = binary_steps(id_list, id_list[700])\nassert bi == 700\nassert 1 <= bs <= math.ceil(math.log2(len(id_list))) + 1\nassert bs < ls\n"),
+        ("## 7. Предпосылка sorted\n\nОбъясните, почему результат на неотсортированном списке не гарантирован.", "SEARCH_INVARIANT = \"\"  # TODO: не менее 140 символов\nassert len(SEARCH_INVARIANT) >= 140\nassert \"сорт\" in SEARCH_INVARIANT.lower()\n"),
+        ("## 8. Поиск записи, а не только id", "probe = unsorted_txns[37]\npos = linear_search([row[0] for row in unsorted_txns], probe[0])\nfound_row = None  # TODO\nassert found_row == probe\n"),
+        ("## 9. Самопроверка", "checks = {\n    \"linear_contract\": None,\n    \"binary_edges\": None,\n    \"binary_fewer_steps\": None,\n    \"invariant_written\": None,\n}  # TODO: все значения True\nassert set(checks.values()) == {True}\n"),
+    ]
+    hw = [
+        ("### Part A — обязательно\n\n## A1. Серия линейных поисков", "targets = [unsorted_txns[i][0] for i in (0, 20, 100, 300)] + [-1]\nlinear_positions = None  # TODO\nassert len(linear_positions) == 5\nassert linear_positions[-1] == -1\n"),
+        ("## A2. Серия бинарных поисков", "targets_sorted = [id_list[i] for i in (0, 20, 100, 300)] + [-1]\nbinary_positions = None  # TODO\nassert binary_positions == [0, 20, 100, 300, -1]\n"),
+        ("## A3. Краевые тесты", "edge_checks = []  # TODO: минимум 6 bool-проверок обеих функций\nassert len(edge_checks) >= 6 and all(edge_checks)\n"),
+        ("### Challenge\n\n## B1. Первый индекс дубликата", "def binary_search_first(values, target):\n    # TODO\n    ...\n\nassert binary_search_first([1, 2, 2, 2, 5], 2) == 1\nassert binary_search_first([1, 3], 2) == -1\n"),
+        ("## B2. Инженерная записка", "SEARCH_NOTE = \"\"  # TODO: preprocessing, O(n), O(log n), ограничение\nassert len(SEARCH_NOTE) >= 220\nassert all(token in SEARCH_NOTE.lower() for token in [\"o(n)\", \"o(log n)\"])\n"),
+    ]
+    sol = [
+        ("## Урок. 1–2. Контракт и linear", COMMON_SOLUTION + "\nsample_ids = id_list[:8]\ntarget = sample_ids[5]\nexpected_index = linear_search(sample_ids, target)\nassert expected_index == 5\n"),
+        ("## Урок. 3. Трасса", "toy = [3, 8, 14, 21, 31, 44, 57]\nleft, right, trace = 0, len(toy) - 1, []\nwhile left <= right:\n    trace.append((left, right)); mid = (left + right) // 2\n    if toy[mid] == 31: break\n    if toy[mid] < 31: left = mid + 1\n    else: right = mid - 1\nassert trace[0] == (0, 6)\n"),
+        ("## Урок. 4. Binary edges", "assert binary_search([], 5) == -1\nassert binary_search([5], 5) == 0\nassert binary_search(id_list, id_list[-1]) == len(id_list) - 1\n"),
+        ("## Урок. 5–6. Сравнения", "def linear_steps(values, target):\n    for i, value in enumerate(values, 1):\n        if value == target: return i - 1, i\n    return -1, len(values)\n\ndef binary_steps(values, target):\n    left, right, steps = 0, len(values) - 1, 0\n    while left <= right:\n        steps += 1; mid = (left + right) // 2\n        if values[mid] == target: return mid, steps\n        if values[mid] < target: left = mid + 1\n        else: right = mid - 1\n    return -1, steps\n\nli, ls = linear_steps(id_list, id_list[700]); bi, bs = binary_steps(id_list, id_list[700])\nassert li == bi == 700 and bs < ls\n"),
+        ("## Урок. 7–9. Инвариант и gate", "SEARCH_INVARIANT = \"Бинарный поиск корректен только на отсортированном списке: после сравнения со средним элементом порядок доказывает, в какой половине цель невозможна. Без сортировки отбрасывание половины не обосновано.\"\nprobe = unsorted_txns[37]\npos = linear_search([row[0] for row in unsorted_txns], probe[0]); found_row = unsorted_txns[pos]\nchecks = {\"linear_contract\": linear_search([], 1) == -1, \"binary_edges\": binary_search([5], 5) == 0, \"binary_fewer_steps\": bs < ls, \"invariant_written\": len(SEARCH_INVARIANT) >= 140}\nassert set(checks.values()) == {True}\n"),
+        ("## ДЗ. Part A", "targets = [unsorted_txns[i][0] for i in (0, 20, 100, 300)] + [-1]\nlinear_positions = [linear_search([r[0] for r in unsorted_txns], x) for x in targets]\ntargets_sorted = [id_list[i] for i in (0, 20, 100, 300)] + [-1]\nbinary_positions = [binary_search(id_list, x) for x in targets_sorted]\nedge_checks = [linear_search([], 1) == -1, binary_search([], 1) == -1, linear_search([1], 1) == 0, binary_search([1], 1) == 0, linear_search([1], 2) == -1, binary_search([1], 2) == -1]\nassert binary_positions == [0, 20, 100, 300, -1] and all(edge_checks)\n"),
+        ("## ДЗ. Challenge", "def binary_search_first(values, target):\n    index = lower_bound(values, target)\n    return index if index < len(values) and values[index] == target else -1\n\nSEARCH_NOTE = \"Линейный поиск работает без preprocessing и стоит O(n) на запрос. Сортировка требует предварительной работы, зато бинарный запрос стоит O(log n). Ограничение: порядок должен поддерживаться после обновлений, иначе индекс становится некорректным.\"\nassert binary_search_first([1, 2, 2, 2, 5], 2) == 1 and len(SEARCH_NOTE) >= 220\n"),
+    ]
+    return lesson, hw, sol
 
 
-def add_lesson07() -> None:
-    base = "lessons/07_complexity_integration"
-    lesson = nb(
-        md("# Интеграция: O(n^2) vs O(n log n) на банковских логах"),
-        code(LOAD_DATA),
-        md("## 1. Подготовить функции сортировки"),
-        code(
-            "def selection_sort(nums):\n"
-            "    return None\n\n\n"
-            "def merge_sort(nums):\n"
-            "    return None\n\n\n"
-            "test = [8, 4, 2, 9, 1]\n"
-            "assert selection_sort(test) == sorted(test)\n"
-            "assert merge_sort(test) == sorted(test)\n"
-            "print('ok')"
-        ),
-        md("## 2. Бенчмарк на 4 размерах"),
-        code(
-            "sizes = [80, 180, 360, 720]\n"
-            "table = []\n"
-            "# собрать строки [n, t_selection, t_merge, ratio]\n"
-            "assert len(table) == 4\n"
-            "assert all(len(row) == 4 for row in table)\n"
-            "print(table)"
-        ),
-        md("## 3. Acceptance checklist"),
-        code(
-            "acceptance = pd.Series(\n"
-            "    [False, False, False, False, False],\n"
-            "    index=['correct_impl', 'has_benchmark', 'has_ratio', 'has_conclusion', 'report_ready']\n"
-            ")\n"
-            "assert bool(acceptance.all())\n"
-            "print(acceptance)"
-        ),
-        md("## 4. Финальный REPORT"),
-        code(
-            "REPORT = ''\n"
-            "READY = False\n"
-            "assert len(REPORT) > 320\n"
-            "assert READY is True\n"
-            "print(REPORT[:300])"
-        ),
-    )
-    hw = nb(
-        md("# ДЗ: итог алгоритмического блока"),
-        code(LOAD_DATA),
-        md("### A. Закрепление\n\n## 1. Повторить бенчмарк на `risk_score`"),
-        code(
-            "risk_table = []\n"
-            "assert len(risk_table) >= 3\n"
-            "print(risk_table)"
-        ),
-        md("## 2. Сравнить с встроенной сортировкой"),
-        code(
-            "t_builtin = None\n"
-            "t_merge = None\n"
-            "assert t_builtin is not None and t_merge is not None\n"
-            "print(t_builtin, t_merge)"
-        ),
-        md("### B. Вызов\n\n## 3. Рефлексия блока 42–48"),
-        code(
-            "REFLECTION = ''\n"
-            "assert len(REFLECTION) > 220\n"
-            "print(REFLECTION)"
-        ),
-    )
-    sol = nb(
-        md("# Решения: интеграция сложности\n\n" + SOL_BANNER),
-        code(LOAD_DATA),
-        code(
-            "def selection_sort(nums):\n"
-            "    arr = nums[:]\n"
-            "    for i in range(len(arr)):\n"
-            "        m = i\n"
-            "        for j in range(i + 1, len(arr)):\n"
-            "            if arr[j] < arr[m]:\n"
-            "                m = j\n"
-            "        arr[i], arr[m] = arr[m], arr[i]\n"
-            "    return arr\n\n\n"
-            "def merge_sorted(a, b):\n"
-            "    i = 0\n"
-            "    j = 0\n"
-            "    out = []\n"
-            "    while i < len(a) and j < len(b):\n"
-            "        if a[i] <= b[j]:\n"
-            "            out.append(a[i]); i += 1\n"
-            "        else:\n"
-            "            out.append(b[j]); j += 1\n"
-            "    out.extend(a[i:]); out.extend(b[j:])\n"
-            "    return out\n\n\n"
-            "def merge_sort(nums):\n"
-            "    if len(nums) <= 1:\n"
-            "        return nums[:]\n"
-            "    mid = len(nums) // 2\n"
-            "    return merge_sorted(merge_sort(nums[:mid]), merge_sort(nums[mid:]))\n\n\n"
-            "sizes = [80, 180, 360, 720]\n"
-            "table = []\n"
-            "for n in sizes:\n"
-            "    part = [x[1] for x in unsorted_txns[:n]]\n"
-            "    t0 = time.perf_counter(); selection_sort(part); t_sel = time.perf_counter() - t0\n"
-            "    t0 = time.perf_counter(); merge_sort(part); t_mer = time.perf_counter() - t0\n"
-            "    ratio = t_sel / t_mer if t_mer > 0 else 0.0\n"
-            "    table.append([n, t_sel, t_mer, ratio])\n"
-            "acceptance = pd.Series(\n"
-            "    [True, True, True, True, True],\n"
-            "    index=['correct_impl', 'has_benchmark', 'has_ratio', 'has_conclusion', 'report_ready']\n"
-            ")\n"
-            "REPORT = (\n"
-            "    'В модуле 42-48 мы собрали полный алгоритмический цикл на банковских логах: '\n"
-            "    'линейный и бинарный поиск, ручные сортировки, sorted(key=...), задачи на два указателя. '\n"
-            "    'Бенчмарк на размерах 80-720 показывает рост времени selection сортировки быстрее, '\n"
-            "    'чем у mergesort, что согласуется с O(n^2) против O(n log n). '\n"
-            "    'Практический вывод: при росте лога выбираем алгоритмы и структуры данных осознанно, '\n"
-            "    'а встроенные инструменты используем как надёжный baseline.'\n"
-            ")\n"
-            "READY = bool(acceptance.all())\n"
-            "risk_table = []\n"
-            "for n in (100, 300, 600):\n"
-            "    part = [x[3] for x in unsorted_txns[:n]]\n"
-            "    t0 = time.perf_counter(); selection_sort(part); t_sel = time.perf_counter() - t0\n"
-            "    t0 = time.perf_counter(); merge_sort(part); t_mer = time.perf_counter() - t0\n"
-            "    risk_table.append([n, t_sel, t_mer])\n"
-            "part2 = [x[1] for x in unsorted_txns[:720]]\n"
-            "t0 = time.perf_counter(); sorted(part2); t_builtin = time.perf_counter() - t0\n"
-            "t0 = time.perf_counter(); merge_sort(part2); t_merge = time.perf_counter() - t0\n"
-            "REFLECTION = (\n"
-            "    'Алгоритмический блок помог связать идею сложности с реальными данными банка. '\n"
-            "    'После практик стало видно, что выбор алгоритма заранее определяет, выдержит ли решение рост объёма лога. '\n"
-            "    'Отдельно важен инженерный баланс: понимать ручные реализации и в проде опираться на надёжные стандартные инструменты.'\n"
-            ")\n"
-            "print(table)\n"
-            "print(acceptance)\n"
-            "print('READY=', READY)"
-        ),
-    )
-    NOTEBOOKS[f"{base}/lesson.ipynb"] = lesson
-    NOTEBOOKS[f"{base}/homework.ipynb"] = hw
-    NOTEBOOKS[f"{base}/solutions.ipynb"] = sol
+def lesson02() -> tuple[list, list, list]:
+    lesson = [
+        ("## 1. Восстановите binary search", "def binary_search(values, target):\n    # TODO\n    ...\n\nassert binary_search(id_list, id_list[321]) == 321\nassert binary_search(id_list, -1) == -1\n"),
+        ("## 2. Lower bound: первое `>= target`", "def lower_bound(values, target):\n    # TODO\n    ...\n\nassert lower_bound([1, 3, 3, 7], 3) == 1\nassert lower_bound([1, 3, 3, 7], 4) == 3\nassert lower_bound([], 4) == 0\n"),
+        ("## 3. Upper bound: первое `> target`", "def upper_bound(values, target):\n    # TODO\n    ...\n\nassert upper_bound([1, 3, 3, 7], 3) == 3\nassert upper_bound([1, 3, 3, 7], 7) == 4\n"),
+        ("## 4. Диапазон сумм `[5000, 12000]`", "lo = None  # TODO\nhi = None  # TODO\nrange_rows = None  # TODO\nassert range_rows == amount_txns[lo:hi]\nassert range_rows and min(r[1] for r in range_rows) >= 5000\nassert max(r[1] for r in range_rows) <= 12000\n"),
+        ("## 5. Пустой диапазон", "empty_rows = None  # TODO: суммы выше максимума\nassert empty_rows == []\n"),
+        ("## 6. Пачка txn_id", "targets = [id_list[i] for i in (7, 77, 177, 777)] + [-10]\npositions = None  # TODO\nassert positions == [7, 77, 177, 777, -1]\n"),
+        ("## 7. Проверка границ по oracle", "probes = [0, 5000, 12000, 50000, 10**9]\nbound_checks = []  # TODO: сравните с фильтрацией/подсчётом\nassert len(bound_checks) == len(probes) and all(bound_checks)\n"),
+        ("## 8. Сложность диапазона", "RANGE_NOTE = \"\"  # TODO: O(log n + k), где k — размер ответа\nassert len(RANGE_NOTE) >= 160\nassert \"k\" in RANGE_NOTE.lower() and \"log\" in RANGE_NOTE.lower()\n"),
+        ("## 9. Самопроверка", "checks = {\"lower\": None, \"upper\": None, \"slice\": None, \"batch\": None}  # TODO\nassert set(checks.values()) == {True}\n"),
+    ]
+    hw = [
+        ("### Part A — обязательно\n\n## A1. Число сумм не выше 10000", "count_le_10000 = None  # TODO: одна граница\nassert count_le_10000 == sum(x <= 10000 for x in amount_list)\n"),
+        ("## A2. Три диапазона", "queries = [(0, 5000), (10000, 15000), (25000, 35000)]\ncounts = []  # TODO\nassert counts == [sum(a <= x <= b for x in amount_list) for a, b in queries]\n"),
+        ("## A3. Вернуть txn_id диапазона", "ids_15_17 = None  # TODO\nassert ids_15_17 == [r[0] for r in amount_txns if 15000 <= r[1] <= 17000]\n"),
+        ("### Challenge\n\n## B1. Универсальная функция", "def rows_in_amount_range(rows, amounts, low, high):\n    # TODO: включительные границы\n    ...\n\nresult = rows_in_amount_range(amount_txns, amount_list, 15000, 17000)\nassert result == [r for r in amount_txns if 15000 <= r[1] <= 17000]\n"),
+        ("## B2. Контракт плохого диапазона", "bad_result = rows_in_amount_range(amount_txns, amount_list, 20, 10)\nRANGE_POLICY = \"\"  # TODO: выбранная политика для low > high\nassert bad_result == []\nassert len(RANGE_POLICY) >= 140\n"),
+    ]
+    sol = [
+        ("## Урок. 1–3. Search и bounds", COMMON_SOLUTION + "\nassert lower_bound([1, 3, 3, 7], 3) == 1\nassert upper_bound([1, 3, 3, 7], 3) == 3\n"),
+        ("## Урок. 4–5. Срезы", "lo, hi = lower_bound(amount_list, 5000), upper_bound(amount_list, 12000)\nrange_rows = amount_txns[lo:hi]\ne_lo = lower_bound(amount_list, max(amount_list) + 1); e_hi = upper_bound(amount_list, max(amount_list) + 100)\nempty_rows = amount_txns[e_lo:e_hi]\nassert range_rows and empty_rows == []\n"),
+        ("## Урок. 6–7. Batch и oracle", "targets = [id_list[i] for i in (7, 77, 177, 777)] + [-10]\npositions = [binary_search(id_list, target) for target in targets]\nprobes = [0, 5000, 12000, 50000, 10**9]\nbound_checks = [lower_bound(amount_list, x) == sum(v < x for v in amount_list) for x in probes]\nassert positions == [7, 77, 177, 777, -1] and all(bound_checks)\n"),
+        ("## Урок. 8–9. Сложность и gate", "RANGE_NOTE = \"Две границы находятся бинарным поиском за O(log n) каждая. Создание ответа требует O(k), где k — число возвращённых строк, поэтому полная стоимость запроса O(log n + k).\"\nchecks = {\"lower\": lower_bound([], 1) == 0, \"upper\": upper_bound([1], 1) == 1, \"slice\": range_rows == [r for r in amount_txns if 5000 <= r[1] <= 12000], \"batch\": positions[-1] == -1}\nassert set(checks.values()) == {True}\n"),
+        ("## ДЗ. Part A", "count_le_10000 = upper_bound(amount_list, 10000)\nqueries = [(0, 5000), (10000, 15000), (25000, 35000)]\ncounts = [upper_bound(amount_list, b) - lower_bound(amount_list, a) for a, b in queries]\na, b = lower_bound(amount_list, 15000), upper_bound(amount_list, 17000)\nids_15_17 = [r[0] for r in amount_txns[a:b]]\nassert counts == [sum(a <= x <= b for x in amount_list) for a, b in queries]\n"),
+        ("## ДЗ. Challenge", "def rows_in_amount_range(rows, amounts, low, high):\n    if low > high: return []\n    return rows[lower_bound(amounts, low):upper_bound(amounts, high)]\n\nresult = rows_in_amount_range(amount_txns, amount_list, 15000, 17000)\nbad_result = rows_in_amount_range(amount_txns, amount_list, 20, 10)\nRANGE_POLICY = \"При low > high функция возвращает пустой список: допустимых значений нет. Эта политика сохраняет тип результата и удобна для pipeline без отдельного исключения.\"\nassert bad_result == [] and len(RANGE_POLICY) >= 140\n"),
+    ]
+    return lesson, hw, sol
 
 
-BUILDERS = [
-    add_lesson01,
-    add_lesson02,
-    add_lesson03,
-    add_lesson04,
-    add_lesson05,
-    add_lesson06,
-    add_lesson07,
-]
+def lesson03() -> tuple[list, list, list]:
+    lesson = [
+        ("## 1. Один шаг selection", "values = [9, 1, 5, 3, 7]\nsmallest_index = None  # TODO\none_step = values.copy()  # TODO: переставьте минимум на позицию 0\nassert smallest_index == 1\nassert one_step == [1, 9, 5, 3, 7]\n"),
+        ("## 2. Полный selection sort", "def selection_sort(values):\n    # TODO: не менять вход\n    ...\n\nsource = [4, 1, 4, -2, 0]\nassert selection_sort(source) == [-2, 0, 1, 4, 4]\nassert source == [4, 1, 4, -2, 0]\nassert selection_sort([]) == []\n"),
+        ("## 3. Merge двух sorted списков", "def merge_sorted(left, right):\n    # TODO\n    ...\n\nassert merge_sorted([1, 4, 4, 9], [2, 4, 7]) == [1, 2, 4, 4, 4, 7, 9]\nassert merge_sorted([], [2]) == [2]\n"),
+        ("## 4. Рекурсивный mergesort", "def merge_sort(values):\n    # TODO: base, split, recursive calls, merge\n    ...\n\nfor case in ([], [1], [3, 1, 2], [5, 2, 5, -1]):\n    assert merge_sort(case) == sorted(case)\n"),
+        ("## 5. Partition quicksort", "def partition(values, pivot):\n    # TODO: вернуть less, equal, greater\n    ...\n\nless, equal, greater = partition([8, 2, 8, 4, 9, 8], 8)\nassert less == [2, 4] and equal == [8, 8, 8] and greater == [9]\n"),
+        ("## 6. Число сравнений selection", "def selection_comparisons(n):\n    # TODO: число сравнений для длины n\n    ...\n\nassert selection_comparisons(0) == 0\nassert selection_comparisons(5) == 10\nassert selection_comparisons(100) == 4950\n"),
+        ("## 7. Сортировка банковских сумм", "amounts80 = [r[1] for r in unsorted_txns[:80]]\nselection_result = None  # TODO\nmerge_result = None  # TODO\nassert selection_result == merge_result == sorted(amounts80)\n"),
+        ("## 8. Сравнение стратегий", "SORT_NOTE = \"\"  # TODO: O(n²), O(n log n), quicksort worst case\nassert len(SORT_NOTE) >= 200\nassert \"o(n\" in SORT_NOTE.lower()\n"),
+        ("## 9. Самопроверка", "checks = {\"copy\": None, \"duplicates\": None, \"empty\": None, \"bank_data\": None}  # TODO\nassert set(checks.values()) == {True}\n"),
+    ]
+    hw = [
+        ("### Part A — обязательно\n\n## A1. Selection для risk_score", "risks = [r[3] for r in unsorted_txns[:120]]\nrisk_selection = None  # TODO\nassert risk_selection == sorted(risks)\n"),
+        ("## A2. Mergesort для txn_id", "ids = [r[0] for r in unsorted_txns[:300]]\nid_merge = None  # TODO\nassert id_merge == sorted(ids)\n"),
+        ("## A3. Property checks", "cases = [[], [1], [2, 1], [3, 3, 1], list(range(20, -1, -1))]\nproperty_checks = []  # TODO: обе функции для каждого case\nassert len(property_checks) == 2 * len(cases) and all(property_checks)\n"),
+        ("### Challenge\n\n## B1. Учебный quicksort", "def quick_sort(values):\n    # TODO: не менять вход, корректно сохранить duplicates\n    ...\n\nassert quick_sort([3, 1, 3, 2, 3]) == [1, 2, 3, 3, 3]\nassert quick_sort([]) == []\n"),
+        ("## B2. Худший случай", "QUICK_NOTE = \"\"  # TODO: pivot, неравные части, глубина, O(n²)\nassert len(QUICK_NOTE) >= 180\nassert \"pivot\" in QUICK_NOTE.lower() and \"o(n\" in QUICK_NOTE.lower()\n"),
+    ]
+    sol = [
+        ("## Урок. 1–4. Selection, merge, mergesort", COMMON_SOLUTION + "\nvalues = [9, 1, 5, 3, 7]\nsmallest_index = min(range(len(values)), key=values.__getitem__)\none_step = values.copy(); one_step[0], one_step[smallest_index] = one_step[smallest_index], one_step[0]\nassert one_step == [1, 9, 5, 3, 7]\n"),
+        ("## Урок. 5. Partition", "def partition(values, pivot):\n    return ([x for x in values if x < pivot], [x for x in values if x == pivot], [x for x in values if x > pivot])\n\nless, equal, greater = partition([8, 2, 8, 4, 9, 8], 8)\nassert len(less) + len(equal) + len(greater) == 6\n"),
+        ("## Урок. 6–7. Работа и банковские данные", "def selection_comparisons(n):\n    return n * (n - 1) // 2\n\namounts80 = [r[1] for r in unsorted_txns[:80]]\nselection_result = selection_sort(amounts80); merge_result = merge_sort(amounts80)\nassert selection_result == merge_result == sorted(amounts80)\n"),
+        ("## Урок. 8–9. Вывод и gate", "SORT_NOTE = \"Selection sort на каждом шаге просматривает остаток и делает O(n²) сравнений. Mergesort строит уровни разбиения и слияния за O(n log n). Quicksort в среднем похож по росту, но при неудачном pivot может деградировать до O(n²).\"\nsource = [4, 1, 4, -2, 0]; selection_sort(source)\nchecks = {\"copy\": source == [4, 1, 4, -2, 0], \"duplicates\": merge_sort([2, 2, 1]).count(2) == 2, \"empty\": selection_sort([]) == merge_sort([]) == [], \"bank_data\": selection_result == sorted(amounts80)}\nassert set(checks.values()) == {True}\n"),
+        ("## ДЗ. Part A", "risks = [r[3] for r in unsorted_txns[:120]]; risk_selection = selection_sort(risks)\nids = [r[0] for r in unsorted_txns[:300]]; id_merge = merge_sort(ids)\ncases = [[], [1], [2, 1], [3, 3, 1], list(range(20, -1, -1))]\nproperty_checks = [fn(case) == sorted(case) for case in cases for fn in (selection_sort, merge_sort)]\nassert all(property_checks)\n"),
+        ("## ДЗ. Challenge", "def quick_sort(values):\n    if len(values) <= 1: return list(values)\n    pivot = values[len(values) // 2]\n    less, equal, greater = partition(values, pivot)\n    return quick_sort(less) + equal + quick_sort(greater)\n\nQUICK_NOTE = \"Если pivot каждый раз оказывается минимумом или максимумом, одна часть почти пуста, глубина рекурсии становится n, а суммарная работа — O(n²). Случайный или медианный pivot уменьшает риск, но не отменяет худший случай.\"\nassert quick_sort([3, 1, 3, 2, 3]) == [1, 2, 3, 3, 3] and len(QUICK_NOTE) >= 180\n"),
+    ]
+    return lesson, hw, sol
+
+
+def lesson04() -> tuple[list, list, list]:
+    lesson = [
+        ("## 1. Quality gate до измерений", "def selection_sort(values):\n    # TODO\n    ...\n\ndef merge_sort(values):\n    # TODO\n    ...\n\ncases = [[], [1], [2, 1], [3, 1, 3], list(range(30, -1, -1))]\ngate = []  # TODO\nassert len(gate) == 2 * len(cases) and all(gate)\n"),
+        ("## 2. Median runtime", "def median_runtime(function, values, repeats=3):\n    # TODO: подготовка values уже сделана; вернуть медиану\n    ...\n\nprobe_time = median_runtime(sorted, amount_list[:100])\nassert isinstance(probe_time, float) and probe_time >= 0\n"),
+        ("## 3. Таблица четырёх размеров", "sizes = [80, 160, 320, 640]\nrows = []  # TODO: dict n, selection_s, merge_s\nbenchmark = pd.DataFrame(rows)\nassert list(benchmark.columns) == [\"n\", \"selection_s\", \"merge_s\"]\nassert benchmark[\"n\"].tolist() == sizes\nassert (benchmark[[\"selection_s\", \"merge_s\"]] >= 0).all().all()\n"),
+        ("## 4. Нормированный рост", "benchmark[\"selection_per_n2\"] = None  # TODO\nbenchmark[\"merge_per_nlogn\"] = None  # TODO\nassert benchmark[[\"selection_per_n2\", \"merge_per_nlogn\"]].notna().all().all()\n"),
+        ("## 5. Встроенный baseline", "builtin_s = None  # TODO\nassert isinstance(builtin_s, float) and builtin_s >= 0\n"),
+        ("## 6. Рост, а не победитель одного запуска", "growth_selection = None  # TODO: last / first, с защитой от нуля\ngrowth_merge = None  # TODO\nassert growth_selection >= 0 and growth_merge >= 0\n"),
+        ("## 7. Повторяемость", "repeat_table = []  # TODO: 5 замеров sorted на одном input\nassert len(repeat_table) == 5\nassert all(value >= 0 for value in repeat_table)\n"),
+        ("## 8. Честный вывод", "BENCH_NOTE = \"\"  # TODO: тренд, шум, машина, Big O, production sorted\nassert len(BENCH_NOTE) >= 240\nassert \"o(n\" in BENCH_NOTE.lower()\n"),
+        ("## 9. Acceptance", "acceptance = {\"correct\": None, \"four_sizes\": None, \"median\": None, \"baseline\": None, \"honest_note\": None}  # TODO\nassert set(acceptance.values()) == {True}\n"),
+    ]
+    hw = [
+        ("### Part A — обязательно\n\n## A1. Бенчмарк risk_score", "risk_rows = []  # TODO: n=100, 300, 600; selection и merge\nassert len(risk_rows) == 3\nassert all(len(row) == 3 for row in risk_rows)\n"),
+        ("## A2. Две формы входа", "ordered = amount_list[:500]\nreversed_values = list(reversed(ordered))\nshape_times = {}  # TODO: merge для ordered/reversed\nassert set(shape_times) == {\"ordered\", \"reversed\"}\nassert all(v >= 0 for v in shape_times.values())\n"),
+        ("## A3. Встроенная сортировка", "built_rows = []  # TODO: sorted для тех же трёх n\nassert len(built_rows) == 3\nassert all(t >= 0 for _, t in built_rows)\n"),
+        ("### Challenge\n\n## B1. Счётчик сравнений", "def selection_sort_count(values):\n    # TODO: вернуть sorted_values, comparisons\n    ...\n\nresult, comparisons = selection_sort_count([4, 3, 2, 1])\nassert result == [1, 2, 3, 4] and comparisons == 6\n"),
+        ("## B2. Методологическая записка", "METHOD_NOTE = \"\"  # TODO: warm-up, repeats, median, одинаковый input, ограничения\nassert len(METHOD_NOTE) >= 240\nassert all(word in METHOD_NOTE.lower() for word in [\"median\", \"input\"])\n"),
+    ]
+    sol = [
+        ("## Урок. 1–2. Gate и таймер", COMMON_SOLUTION + "\ncases = [[], [1], [2, 1], [3, 1, 3], list(range(30, -1, -1))]\ngate = [fn(case) == sorted(case) for case in cases for fn in (selection_sort, merge_sort)]\nprobe_time = median_runtime(sorted, amount_list[:100])\nassert all(gate) and probe_time >= 0\n"),
+        ("## Урок. 3–4. Таблица", "sizes = [80, 160, 320, 640]\nrows = []\nfor n in sizes:\n    values = [r[1] for r in unsorted_txns[:n]]\n    rows.append({\"n\": n, \"selection_s\": median_runtime(selection_sort, values), \"merge_s\": median_runtime(merge_sort, values)})\nbenchmark = pd.DataFrame(rows)\nbenchmark[\"selection_per_n2\"] = benchmark[\"selection_s\"] / benchmark[\"n\"].pow(2)\nbenchmark[\"merge_per_nlogn\"] = benchmark[\"merge_s\"] / (benchmark[\"n\"] * benchmark[\"n\"].map(math.log2))\nassert len(benchmark) == 4\n"),
+        ("## Урок. 5–7. Baseline и повторы", "builtin_s = median_runtime(sorted, amount_list[:640], 5)\ndef safe_ratio(a, b): return a / b if b else 0.0\ngrowth_selection = safe_ratio(benchmark.iloc[-1].selection_s, benchmark.iloc[0].selection_s)\ngrowth_merge = safe_ratio(benchmark.iloc[-1].merge_s, benchmark.iloc[0].merge_s)\nrepeat_table = [median_runtime(sorted, amount_list[:640], 1) for _ in range(5)]\nassert len(repeat_table) == 5\n"),
+        ("## Урок. 8–9. Вывод", "BENCH_NOTE = \"Таблица показывает тренд: ручной selection растёт ближе к O(n²), а merge — к O(n log n). Отдельный замер шумит из-за машины и планировщика, поэтому использована median повторов. Эксперимент согласуется с моделью, но не доказывает Big O. Для production выбираем встроенный sorted как протестированный baseline.\"\nacceptance = {\"correct\": all(gate), \"four_sizes\": len(benchmark) == 4, \"median\": True, \"baseline\": builtin_s >= 0, \"honest_note\": len(BENCH_NOTE) >= 240}\nassert set(acceptance.values()) == {True}\n"),
+        ("## ДЗ. Part A", "risk_rows = []\nfor n in (100, 300, 600):\n    values = [r[3] for r in unsorted_txns[:n]]\n    risk_rows.append([n, median_runtime(selection_sort, values), median_runtime(merge_sort, values)])\nordered = amount_list[:500]; reversed_values = list(reversed(ordered))\nshape_times = {\"ordered\": median_runtime(merge_sort, ordered), \"reversed\": median_runtime(merge_sort, reversed_values)}\nbuilt_rows = [(n, median_runtime(sorted, amount_list[:n])) for n in (100, 300, 600)]\nassert len(risk_rows) == len(built_rows) == 3\n"),
+        ("## ДЗ. Challenge", "def selection_sort_count(values):\n    result = list(values); comparisons = 0\n    for i in range(len(result)):\n        smallest = i\n        for j in range(i + 1, len(result)):\n            comparisons += 1\n            if result[j] < result[smallest]: smallest = j\n        result[i], result[smallest] = result[smallest], result[i]\n    return result, comparisons\n\nMETHOD_NOTE = \"Перед серией нужен короткий warm-up. Все алгоритмы получают одинаковый input, созданный до таймера; каждый запуск работает с копией. Используются repeats и median, а не минимум одного запуска. Ограничения: фоновые процессы, версия Python и малый диапазон n влияют на числа, поэтому интерпретируем форму роста, а не абсолютный рекорд.\"\nassert selection_sort_count([4, 3, 2, 1])[1] == 6 and len(METHOD_NOTE) >= 240\n"),
+    ]
+    return lesson, hw, sol
+
+
+def lesson05() -> tuple[list, list, list]:
+    lesson = [
+        ("## 1. `key` по amount", "by_amount_local = None  # TODO\nassert by_amount_local == sorted(unsorted_txns, key=lambda row: row[1])\nassert [r[1] for r in by_amount_local] == sorted(r[1] for r in unsorted_txns)\n"),
+        ("## 2. Два ключа\n\nRisk по убыванию, при равенстве amount по возрастанию.", "by_risk_amount = None  # TODO\nassert by_risk_amount == sorted(unsorted_txns, key=lambda row: (-row[3], row[1]))\n"),
+        ("## 3. Трасса указателей", "toy = [2, 5, 9, 14, 21]\ntarget = 23\npointer_trace = []  # TODO: (left, right, sum) до встречи\nassert pointer_trace and pointer_trace[0] == (0, 4, 23)\n"),
+        ("## 4. Ближайшая сумма пары", "def two_sum_closest(sorted_values, target):\n    # TODO: вернуть (left_value, right_value, absolute_difference)\n    ...\n\nassert two_sum_closest([1, 4, 8, 13], 10) == (1, 8, 1)\nresult = two_sum_closest(amount_list, 40000)\nassert len(result) == 3 and result[0] <= result[1] and result[2] >= 0\n"),
+        ("## 5. Число пар не ниже порога", "def count_pairs_ge(sorted_values, threshold):\n    # TODO\n    ...\n\ntoy_values = [1, 3, 5, 8]\nassert count_pairs_ge(toy_values, 9) == 3\n"),
+        ("## 6. Oracle на малом списке", "small = amount_list[:40]\nthreshold = 12000\nfast_count = None  # TODO\nslow_count = sum(small[i] + small[j] >= threshold for i in range(len(small)) for j in range(i + 1, len(small)))\nassert fast_count == slow_count\n"),
+        ("## 7. Несколько целей после одной сортировки", "targets = [20000, 30000, 40000, 50000]\nclosest_rows = []  # TODO\nassert len(closest_rows) == len(targets)\nassert all(len(row) == 4 for row in closest_rows)  # target, a, b, diff\n"),
+        ("## 8. Стоимость pipeline", "POINTER_NOTE = \"\"  # TODO: сортировка O(n log n), запрос O(n), повторное использование\nassert len(POINTER_NOTE) >= 200\nassert \"o(n\" in POINTER_NOTE.lower()\n"),
+        ("## 9. Самопроверка", "checks = {\"keys\": None, \"closest\": None, \"count_oracle\": None, \"distinct_indices\": None}  # TODO\nassert set(checks.values()) == {True}\n"),
+    ]
+    hw = [
+        ("### Part A — обязательно\n\n## A1. Top-15 risk", "top_risk_ids = None  # TODO\nexpected = [r[0] for r in sorted(unsorted_txns, key=lambda r: (-r[3], r[1]))[:15]]\nassert top_risk_ids == expected\n"),
+        ("## A2. Ближайшие пары для трёх целей", "targets = [25000, 45000, 65000]\nanswers = None  # TODO: target -> (a, b, diff)\nassert set(answers) == set(targets)\nassert all(len(value) == 3 for value in answers.values())\n"),
+        ("## A3. Пары от 45000", "pairs_45k = None  # TODO\nslow_45k = sum(amount_list[i] + amount_list[j] >= 45000 for i in range(len(amount_list)) for j in range(i + 1, len(amount_list)))\nassert pairs_45k == slow_45k\n"),
+        ("### Challenge\n\n## B1. Вернуть id транзакций", "def closest_transaction_pair(rows, target):\n    # TODO: rows сортируются по amount; вернуть два txn_id и diff\n    ...\n\npair = closest_transaction_pair(tiny_txns, 40000)\nassert len(pair) == 3 and pair[0] != pair[1] and pair[2] >= 0\n"),
+        ("## B2. Доказательство движения", "MOVE_NOTE = \"\"  # TODO: почему малая сумма двигает left, большая — right\nassert len(MOVE_NOTE) >= 200\nassert all(word in MOVE_NOTE.lower() for word in [\"left\", \"right\"])\n"),
+    ]
+    sol = [
+        ("## Урок. 1–3. Ключи и трасса", "by_amount_local = sorted(unsorted_txns, key=lambda row: row[1])\nby_risk_amount = sorted(unsorted_txns, key=lambda row: (-row[3], row[1]))\ntoy = [2, 5, 9, 14, 21]; target = 23; left, right, pointer_trace = 0, 4, []\nwhile left < right:\n    total = toy[left] + toy[right]; pointer_trace.append((left, right, total))\n    if total < target: left += 1\n    else: right -= 1\nassert pointer_trace[0] == (0, 4, 23)\n"),
+        ("## Урок. 4–5. Два указателя", "def two_sum_closest(sorted_values, target):\n    left, right = 0, len(sorted_values) - 1\n    best = (sorted_values[left], sorted_values[right], abs(sorted_values[left] + sorted_values[right] - target))\n    while left < right:\n        total = sorted_values[left] + sorted_values[right]; diff = abs(total - target)\n        if diff < best[2]: best = (sorted_values[left], sorted_values[right], diff)\n        if total < target: left += 1\n        else: right -= 1\n    return best\n\ndef count_pairs_ge(sorted_values, threshold):\n    left, right, count = 0, len(sorted_values) - 1, 0\n    while left < right:\n        if sorted_values[left] + sorted_values[right] >= threshold:\n            count += right - left; right -= 1\n        else: left += 1\n    return count\n\nassert two_sum_closest([1, 4, 8, 13], 10) == (1, 8, 1)\nassert count_pairs_ge([1, 3, 5, 8], 9) == 3\n"),
+        ("## Урок. 6–7. Oracle и queries", "small = amount_list[:40]; threshold = 12000\nfast_count = count_pairs_ge(small, threshold)\nslow_count = sum(small[i] + small[j] >= threshold for i in range(len(small)) for j in range(i + 1, len(small)))\ntargets = [20000, 30000, 40000, 50000]\nclosest_rows = [(target, *two_sum_closest(amount_list, target)) for target in targets]\nassert fast_count == slow_count\n"),
+        ("## Урок. 8–9. Вывод", "POINTER_NOTE = \"Сначала данные сортируются за O(n log n). После этого один запрос двумя указателями проходит массив за O(n), причём индексы не возвращаются назад. Если запросов много, один и тот же отсортированный список используется повторно, и стоимость preprocessing не платится каждый раз.\"\nchecks = {\"keys\": [row[1] for row in by_amount_local] == amount_list, \"closest\": len(two_sum_closest(amount_list, 40000)) == 3, \"count_oracle\": fast_count == slow_count, \"distinct_indices\": True}\nassert set(checks.values()) == {True}\n"),
+        ("## ДЗ. Part A", "top_risk_ids = [r[0] for r in sorted(unsorted_txns, key=lambda r: (-r[3], r[1]))[:15]]\ntargets = [25000, 45000, 65000]\nanswers = {target: two_sum_closest(amount_list, target) for target in targets}\npairs_45k = count_pairs_ge(amount_list, 45000)\nslow_45k = sum(amount_list[i] + amount_list[j] >= 45000 for i in range(len(amount_list)) for j in range(i + 1, len(amount_list)))\nassert pairs_45k == slow_45k\n"),
+        ("## ДЗ. Challenge", "def closest_transaction_pair(rows, target):\n    ordered = sorted(rows, key=lambda r: r[1]); left, right = 0, len(ordered) - 1\n    best = (ordered[left][0], ordered[right][0], abs(ordered[left][1] + ordered[right][1] - target))\n    while left < right:\n        total = ordered[left][1] + ordered[right][1]; diff = abs(total - target)\n        if diff < best[2]: best = (ordered[left][0], ordered[right][0], diff)\n        if total < target: left += 1\n        else: right -= 1\n    return best\n\npair = closest_transaction_pair(tiny_txns, 40000)\nMOVE_NOTE = \"Если сумма меньше цели, уменьшение right сделает её ещё меньше, поэтому двигаем left к большему значению. Если сумма больше цели, увеличение left только ухудшит превышение, поэтому двигаем right к меньшему значению. Сортировка делает эти выводы гарантированными.\"\nassert pair[0] != pair[1] and len(MOVE_NOTE) >= 200\n"),
+    ]
+    return lesson, hw, sol
+
+
+def lesson06() -> tuple[list, list, list]:
+    lesson = [
+        ("## 1. Merge строк по amount", "def merge_rows_by_amount(left_rows, right_rows):\n    # TODO\n    ...\n\nleft_rows, right_rows = amount_txns[:40], amount_txns[40:80]\nmerged = merge_rows_by_amount(left_rows, right_rows)\nassert len(merged) == 80\nassert merged == sorted(left_rows + right_rows, key=lambda r: r[1])\n"),
+        ("## 2. Минимальный разрыв двух окон", "def min_gap_between_sorted(left_values, right_values):\n    # TODO\n    ...\n\nwindow_a, window_b = amount_list[40:120], amount_list[400:480]\ngap = min_gap_between_sorted(window_a, window_b)\nslow_gap = min(abs(a - b) for a in window_a for b in window_b)\nassert gap == slow_gap\n"),
+        ("## 3. Пересечение sorted id", "def intersect_sorted(left_values, right_values):\n    # TODO\n    ...\n\nassert intersect_sorted([1, 2, 4, 8], [2, 3, 4, 9]) == [2, 4]\n"),
+        ("## 4. Multi-key рейтинг", "top10 = None  # TODO: risk desc, day asc, amount desc\nexpected = sorted(unsorted_txns, key=lambda r: (-r[3], r[2], -r[1]))[:10]\nassert top10 == expected\n"),
+        ("## 5. Oracle для min gap", "toy_cases = [([1], [8]), ([1, 5, 10], [2, 9]), ([1, 2], [2, 3])]\ngap_checks = []  # TODO\nassert len(gap_checks) == len(toy_cases) and all(gap_checks)\n"),
+        ("## 6. Два окна id из лога", "first_ids = sorted(r[0] for r in unsorted_txns[:500])\nsecond_ids = sorted(r[0] for r in unsorted_txns[300:800])\nshared_ids = None  # TODO\nassert shared_ids == sorted(set(first_ids) & set(second_ids))\n"),
+        ("## 7. Сводка результатов", "summary = {\"merged_rows\": None, \"min_gap\": None, \"shared_ids\": None, \"top_risk\": None}  # TODO\nassert summary[\"merged_rows\"] == 80\nassert summary[\"min_gap\"] == gap\nassert summary[\"shared_ids\"] == len(shared_ids)\n"),
+        ("## 8. Мини-отчёт", "MINI_REPORT = \"\"  # TODO: 220+ символов, только проверенные числа, без причинности\nassert len(MINI_REPORT) >= 220\nassert str(gap) in MINI_REPORT and str(len(shared_ids)) in MINI_REPORT\n"),
+        ("## 9. Acceptance", "acceptance = {\"merge\": None, \"gap_oracle\": None, \"intersection\": None, \"report\": None}  # TODO\nassert set(acceptance.values()) == {True}\n"),
+    ]
+    hw = [
+        ("### Part A — обязательно\n\n## A1. Tiny по трём ключам", "tiny_sorted = None  # TODO: day asc, risk desc, amount asc\nassert tiny_sorted == sorted(tiny_txns, key=lambda r: (r[2], -r[3], r[1]))\n"),
+        ("## A2. Разрыв половин tiny", "left_amounts = sorted(r[1] for r in tiny_txns[:40])\nright_amounts = sorted(r[1] for r in tiny_txns[40:])\ntiny_gap = None  # TODO\nassert tiny_gap == min(abs(a - b) for a in left_amounts for b in right_amounts)\n"),
+        ("## A3. Общие id двух выборок", "a_ids = sorted(r[0] for r in unsorted_txns[:250])\nb_ids = sorted(r[0] for r in unsorted_txns[150:400])\ncommon = None  # TODO\nassert common == sorted(set(a_ids) & set(b_ids))\n"),
+        ("### Challenge\n\n## B1. Audit function", "def audit_windows(rows_a, rows_b):\n    # TODO: merged_by_amount, min_amount_gap, shared_ids\n    ...\n\nreport = audit_windows(unsorted_txns[:100], unsorted_txns[50:150])\nassert set(report) == {\"merged_by_amount\", \"min_amount_gap\", \"shared_ids\"}\nassert report[\"shared_ids\"] == sorted(set(r[0] for r in unsorted_txns[:100]) & set(r[0] for r in unsorted_txns[50:150]))\n"),
+        ("## B2. Ops note", "OPS_NOTE = \"\"  # TODO: что вычислено, сложность, ограничение интерпретации\nassert len(OPS_NOTE) >= 240\nassert \"o(n\" in OPS_NOTE.lower()\n"),
+    ]
+    sol = [
+        ("## Урок. 1. Merge rows", "def merge_rows_by_amount(left_rows, right_rows):\n    i = j = 0; result = []\n    while i < len(left_rows) and j < len(right_rows):\n        if left_rows[i][1] <= right_rows[j][1]: result.append(left_rows[i]); i += 1\n        else: result.append(right_rows[j]); j += 1\n    return result + left_rows[i:] + right_rows[j:]\n\nleft_rows, right_rows = amount_txns[:40], amount_txns[40:80]\nmerged = merge_rows_by_amount(left_rows, right_rows)\nassert merged == sorted(left_rows + right_rows, key=lambda r: r[1])\n"),
+        ("## Урок. 2–3. Gap и intersection", "def min_gap_between_sorted(left_values, right_values):\n    i = j = 0; best = math.inf\n    while i < len(left_values) and j < len(right_values):\n        best = min(best, abs(left_values[i] - right_values[j]))\n        if best == 0: return 0\n        if left_values[i] < right_values[j]: i += 1\n        else: j += 1\n    return best\n\ndef intersect_sorted(left_values, right_values):\n    i = j = 0; result = []\n    while i < len(left_values) and j < len(right_values):\n        if left_values[i] == right_values[j]: result.append(left_values[i]); i += 1; j += 1\n        elif left_values[i] < right_values[j]: i += 1\n        else: j += 1\n    return result\n\nwindow_a, window_b = amount_list[40:120], amount_list[400:480]\ngap = min_gap_between_sorted(window_a, window_b)\nassert gap == min(abs(a - b) for a in window_a for b in window_b)\n"),
+        ("## Урок. 4–6. Рейтинг и oracles", "top10 = sorted(unsorted_txns, key=lambda r: (-r[3], r[2], -r[1]))[:10]\ntoy_cases = [([1], [8]), ([1, 5, 10], [2, 9]), ([1, 2], [2, 3])]\ngap_checks = [min_gap_between_sorted(a, b) == min(abs(x-y) for x in a for y in b) for a, b in toy_cases]\nfirst_ids = sorted(r[0] for r in unsorted_txns[:500]); second_ids = sorted(r[0] for r in unsorted_txns[300:800])\nshared_ids = intersect_sorted(first_ids, second_ids)\nassert all(gap_checks) and shared_ids == sorted(set(first_ids) & set(second_ids))\n"),
+        ("## Урок. 7–9. Summary", "summary = {\"merged_rows\": len(merged), \"min_gap\": gap, \"shared_ids\": len(shared_ids), \"top_risk\": top10[0][0]}\nMINI_REPORT = f\"Слияние сохранило {len(merged)} строк в порядке amount. Минимальный разрыв сумм между окнами равен {gap}; oracle полного перебора дал то же значение. Пересечение окон содержит {len(shared_ids)} txn_id. Это описание структуры выборок, а не доказательство причины риска или поведения клиента.\"\nacceptance = {\"merge\": len(merged) == 80, \"gap_oracle\": all(gap_checks), \"intersection\": shared_ids == sorted(set(first_ids) & set(second_ids)), \"report\": len(MINI_REPORT) >= 220}\nassert set(acceptance.values()) == {True}\n"),
+        ("## ДЗ. Part A", "tiny_sorted = sorted(tiny_txns, key=lambda r: (r[2], -r[3], r[1]))\nleft_amounts = sorted(r[1] for r in tiny_txns[:40]); right_amounts = sorted(r[1] for r in tiny_txns[40:])\ntiny_gap = min_gap_between_sorted(left_amounts, right_amounts)\na_ids = sorted(r[0] for r in unsorted_txns[:250]); b_ids = sorted(r[0] for r in unsorted_txns[150:400])\ncommon = intersect_sorted(a_ids, b_ids)\nassert common == sorted(set(a_ids) & set(b_ids))\n"),
+        ("## ДЗ. Challenge", "def audit_windows(rows_a, rows_b):\n    left = sorted(rows_a, key=lambda r: r[1]); right = sorted(rows_b, key=lambda r: r[1])\n    return {\"merged_by_amount\": merge_rows_by_amount(left, right), \"min_amount_gap\": min_gap_between_sorted([r[1] for r in left], [r[1] for r in right]), \"shared_ids\": intersect_sorted(sorted(r[0] for r in rows_a), sorted(r[0] for r in rows_b))}\n\nreport = audit_windows(unsorted_txns[:100], unsorted_txns[50:150])\nOPS_NOTE = \"После сортировки каждого окна слияние и пересечение выполняются за O(n + m); минимальный разрыв также требует одного прохода. Audit возвращает воспроизводимые факты о двух выборках. Ограничение: совпадение id и близость amount не объясняют риск и требуют бизнес-контекста.\"\nassert len(OPS_NOTE) >= 240\n"),
+    ]
+    return lesson, hw, sol
+
+
+def lesson07() -> tuple[list, list, list]:
+    lesson = [
+        ("## 1. Контракт библиотеки", "API = [\"linear_search\", \"binary_search\", \"lower_bound\", \"upper_bound\", \"selection_sort\", \"merge_sort\"]\nassert len(API) == len(set(API)) == 6\n"),
+        ("## 2. Search API", "def linear_search(values, target):\n    # TODO\n    ...\n\ndef binary_search(values, target):\n    # TODO\n    ...\n\ndef lower_bound(values, target):\n    # TODO\n    ...\n\ndef upper_bound(values, target):\n    # TODO\n    ...\n"),
+        ("## 3. Sort API", "def selection_sort(values):\n    # TODO\n    ...\n\ndef merge_sort(values):\n    # TODO\n    ...\n"),
+        ("## 4. Параметризованный quality gate", "cases = [[], [1], [2, 1], [3, 1, 3], list(range(25, -1, -1))]\nquality = {\"linear\": None, \"binary\": None, \"bounds\": None, \"selection\": None, \"merge\": None, \"input_preserved\": None}  # TODO\nassert set(quality.values()) == {True}\n"),
+        ("## 5. Benchmark четырёх размеров", "sizes = [80, 160, 320, 640]\nbenchmark_rows = []  # TODO: n, selection_s, merge_s, ratio\nbenchmark = pd.DataFrame(benchmark_rows)\nassert len(benchmark) == 4\nassert {\"n\", \"selection_s\", \"merge_s\", \"ratio\"} == set(benchmark.columns)\nassert (benchmark[[\"selection_s\", \"merge_s\", \"ratio\"]] >= 0).all().all()\n"),
+        ("## 6. Проверка диапазонного запроса", "lo, hi = None, None  # TODO: 10000..20000\nrange_rows = None  # TODO\nassert range_rows == [r for r in amount_txns if 10000 <= r[1] <= 20000]\n"),
+        ("## 7. Acceptance checklist", "acceptance = pd.Series({\"api_complete\": None, \"quality_gate\": None, \"benchmark_4_sizes\": None, \"range_query\": None, \"report_ready\": None})  # TODO\nassert acceptance.index.tolist() == [\"api_complete\", \"quality_gate\", \"benchmark_4_sizes\", \"range_query\", \"report_ready\"]\n"),
+        ("## 8. Итоговый REPORT", "REPORT = \"\"  # TODO: ≥350 символов; evidence, O(n²)/O(n log n), sorted baseline, ограничения\nREADY = None  # TODO: вычислить из acceptance\nassert len(REPORT) >= 350\nassert READY is True\nassert all(token in REPORT.lower() for token in [\"o(n\", \"огранич\"])\n"),
+        ("## 9. Экспорт артефакта", "artifact_manifest = {\"library\": \"bank_logs.py\", \"benchmark\": \"benchmark.csv\", \"report\": \"REPORT.md\", \"ready\": READY}\nassert artifact_manifest[\"ready\"] is True\nassert set(artifact_manifest) == {\"library\", \"benchmark\", \"report\", \"ready\"}\n"),
+    ]
+    hw = [
+        ("### Part A — обязательно\n\n## A1. Gate на новых случаях", "new_cases = [[0, -1, 0], [5] * 20, list(range(50))]\nnew_gate = []  # TODO: selection и merge\nassert len(new_gate) == 2 * len(new_cases) and all(new_gate)\n"),
+        ("## A2. Benchmark risk_score", "risk_rows = []  # TODO: n=100, 300, 600\nassert len(risk_rows) == 3\nassert all(len(row) == 4 for row in risk_rows)\n"),
+        ("## A3. Сравнение с sorted", "builtin_rows = []  # TODO: те же n, median runtime sorted\nassert len(builtin_rows) == 3\nassert all(t >= 0 for _, t in builtin_rows)\n"),
+        ("### Challenge\n\n## B1. Единая функция аудита", "def audit_algorithms(values, targets):\n    # TODO: sorted copy, позиции targets, quality bool\n    ...\n\nresult = audit_algorithms([5, 1, 3, 3], [1, 3, 9])\nassert result[\"sorted\"] == [1, 3, 3, 5]\nassert result[\"positions\"] == [0, 1, -1]\nassert result[\"quality\"] is True\n"),
+        ("## B2. Рефлексия блока", "REFLECTION = \"\"  # TODO: ≥300 символов; поиск, сортировка, pointers, evidence, limitation\nassert len(REFLECTION) >= 300\nassert all(word in REFLECTION.lower() for word in [\"поиск\", \"сорт\", \"указател\", \"огранич\"])\n"),
+    ]
+    sol = [
+        ("## Урок. 1–3. Полный API", COMMON_SOLUTION + "\nAPI = [\"linear_search\", \"binary_search\", \"lower_bound\", \"upper_bound\", \"selection_sort\", \"merge_sort\"]\nassert len(API) == 6\n"),
+        ("## Урок. 4. Quality gate", "cases = [[], [1], [2, 1], [3, 1, 3], list(range(25, -1, -1))]\nprobe = [3, 1, 3]; selection_sort(probe); merge_sort(probe)\nquality = {\"linear\": linear_search([1, 2], 3) == -1, \"binary\": binary_search([1, 2], 2) == 1, \"bounds\": lower_bound([1, 2, 2], 2) == 1 and upper_bound([1, 2, 2], 2) == 3, \"selection\": all(selection_sort(c) == sorted(c) for c in cases), \"merge\": all(merge_sort(c) == sorted(c) for c in cases), \"input_preserved\": probe == [3, 1, 3]}\nassert set(quality.values()) == {True}\n"),
+        ("## Урок. 5. Benchmark", "sizes = [80, 160, 320, 640]; benchmark_rows = []\nfor n in sizes:\n    values = [r[1] for r in unsorted_txns[:n]]\n    ts = median_runtime(selection_sort, values); tm = median_runtime(merge_sort, values)\n    benchmark_rows.append({\"n\": n, \"selection_s\": ts, \"merge_s\": tm, \"ratio\": ts / tm if tm else 0.0})\nbenchmark = pd.DataFrame(benchmark_rows)\nassert len(benchmark) == 4\n"),
+        ("## Урок. 6. Range query", "lo, hi = lower_bound(amount_list, 10000), upper_bound(amount_list, 20000)\nrange_rows = amount_txns[lo:hi]\nassert range_rows == [r for r in amount_txns if 10000 <= r[1] <= 20000]\n"),
+        ("## Урок. 7–9. Acceptance и REPORT", "REPORT = \"Библиотека реализует линейный и бинарный поиск, границы диапазона, selection sort и mergesort. Quality gate проверяет пустые списки, дубликаты, отсутствие цели и сохранение входа. Benchmark на четырёх размерах даёт evidence согласованного роста: selection соответствует O(n²), merge — O(n log n), а встроенный sorted остаётся production baseline. Диапазонный запрос проверен прямой фильтрацией. Ограничение: учебные размеры, конкретная машина и шум времени не доказывают асимптотику и не объясняют банковский риск.\"\nacceptance = pd.Series({\"api_complete\": len(API) == 6, \"quality_gate\": all(quality.values()), \"benchmark_4_sizes\": len(benchmark) == 4, \"range_query\": range_rows == [r for r in amount_txns if 10000 <= r[1] <= 20000], \"report_ready\": len(REPORT) >= 350})\nREADY = bool(acceptance.all())\nartifact_manifest = {\"library\": \"bank_logs.py\", \"benchmark\": \"benchmark.csv\", \"report\": \"REPORT.md\", \"ready\": READY}\nassert READY is True\n"),
+        ("## ДЗ. Part A", "new_cases = [[0, -1, 0], [5] * 20, list(range(50))]\nnew_gate = [fn(c) == sorted(c) for c in new_cases for fn in (selection_sort, merge_sort)]\nrisk_rows = []\nfor n in (100, 300, 600):\n    values = [r[3] for r in unsorted_txns[:n]]; ts = median_runtime(selection_sort, values); tm = median_runtime(merge_sort, values)\n    risk_rows.append([n, ts, tm, ts / tm if tm else 0.0])\nbuiltin_rows = [(n, median_runtime(sorted, [r[3] for r in unsorted_txns[:n]])) for n in (100, 300, 600)]\nassert all(new_gate) and len(risk_rows) == len(builtin_rows) == 3\n"),
+        ("## ДЗ. Challenge", "def audit_algorithms(values, targets):\n    ordered = merge_sort(values)\n    positions = [binary_search(ordered, target) for target in targets]\n    return {\"sorted\": ordered, \"positions\": positions, \"quality\": ordered == sorted(values) and values == list(values)}\n\nresult = audit_algorithms([5, 1, 3, 3], [1, 3, 9])\nREFLECTION = \"Блок связал поиск с предпосылкой порядка: линейный поиск универсален, бинарный использует сортировку. Selection и mergesort показали разный рост, а два указателя превратили порядок в правило движения без вложенного перебора. Решение принимается по evidence тестов и benchmark, не по одному замеру. Ограничение: учебные данные и время машины не заменяют production profiling и бизнес-проверку.\"\nassert result[\"positions\"] == [0, 1, -1] and len(REFLECTION) >= 300\n"),
+    ]
+    return lesson, hw, sol
+
+
+BUILDERS = [lesson01, lesson02, lesson03, lesson04, lesson05, lesson06, lesson07]
+
+
+def lesson_plan(meta: dict) -> str:
+    outcomes = [item.strip() for item in meta["outcomes"].split(";")]
+    stage_rows = "\n".join(
+        f"| {i} | {name} | {minutes} | {student} | {teacher} | `{material}` | {criterion} |"
+        for i, (name, minutes, student, teacher, material, criterion) in enumerate(meta["stages"], 1)
+    )
+    error_rows = "\n".join(f"| {symptom} | {response} |" for symptom, response in meta["errors"])
+    outcome_rows = "\n".join(f"{i}. {text[0].upper() + text[1:]}." for i, text in enumerate(outcomes, 1))
+    next_link = (
+        f"[{meta['next'].split(' — ')[0]}](../{LESSONS[LESSONS.index(meta) + 1]['dir']}/LESSON.md)"
+        if meta is not LESSONS[-1]
+        else meta["next"]
+    )
+    return f"""# Lesson Design: {meta["title"]}
+
+## A. Сценарий пары
+
+| Поле | Значение |
+|---|---|
+| Модуль | Массивы: поиск и сортировка (`08_07`) |
+| Название урока | {meta["title"]} |
+| Пара КТП | **{meta["pair"]}** |
+| Длительность | 2 академических часа (**80 минут**) |
+| Роль | {meta["role"]} |
+| Пререквизиты | {meta["prereq"]} |
+| **Открыть** | [lesson.ipynb](lesson.ipynb) — копия на ученика; первая code-ячейка загружает локальные CSV |
+| **Первая фраза** | «{meta["first"]}» |
+| **Минимум сдачи** | {meta["minimum"]} |
+| **Домашнее задание** | [homework.ipynb](homework.ipynb) — Part A обязательно; Challenge по возможности (~1 ч) |
+| **Дальше** | {next_link} |
+| **Canvas** | не опубликовано |
+
+### A. Чего хотим от пары
+
+Главное — {meta["idea"][0].lower() + meta["idea"][1:]} Ученик не копирует готовый алгоритм: каждая функция начинается со stub и завершается исполняемым контрактом через `assert`.
+
+Побочно ученик читает банковский лог как массив кортежей `(txn_id, amount, day, risk_score)`. Поля клиента не интерпретируются как причины риска: данные задают реалистичный контекст для алгоритма.
+
+---
+
+## B. Ход пары
+
+| # | Этап | ~мин | Ученик | Учитель | Материал | Критерий закрытия |
+|---|---|---:|---|---|---|---|
+{stage_rows}
+
+Обязательные этапы для минимума сдачи: **1–6**. Последний этап включает самостоятельную проверку и постановку ДЗ.
+
+---
+
+## C. Если сбились
+
+### Типичные ошибки
+
+| Симптом / мысль ученика | Что сказать или показать |
+|---|---|
+{error_rows}
+
+### Дифференциация (кратко)
+
+| | |
+|---|---|
+| Слабее базы | Выполнить §§1–6 с трассировкой на toy-списке; в ДЗ — Part A без Challenge |
+| Сильнее базы | Выполнить §§7–9 без подсказок; в ДЗ — оба задания Challenge и дополнительный edge case |
+
+---
+
+## D. Проектирование
+
+### Зачем урок
+
+{meta["idea"]} Это часть сквозного артефакта `bank_logs.py`: результат пары должен переноситься из ноутбука в проверяемую функцию, а не оставаться устным определением.
+
+### Центральная идея
+
+| Поле | Значение |
+|---|---|
+| Центральная идея | {meta["idea"]} |
+| Что поддерживает, но не отвлекает | pandas используется только для чтения CSV; алгоритмы работают со списками и кортежами |
+| Данные урока | четыре CSV-копии рядом с ноутбуком; схема и канон — [data/README.md](../../data/README.md) |
+
+### Результаты обучения
+
+{outcome_rows}
+
+### Профессиональный контекст
+
+Поиск идентификатора, диапазонный запрос, сортировка событий и сравнение роста встречаются в preprocessing и инфраструктуре данных. Здесь это алгоритмы в памяти: индексы БД, внешняя сортировка и hash map остаются вне scope модуля.
+
+### Решения учащегося
+
+| # | Какой выбор делает учащийся | На что влияет |
+|---|---|---|
+| 1 | Какой инвариант и контракт сохранить | Корректность на edge cases и возможность повторного использования |
+| 2 | Как проверить результат независимо | Доверие к выводу: `assert`, oracle или benchmark protocol |
+| 3 | Как сформулировать ограничение | Различение измерения, асимптотики и бизнес-интерпретации |
+
+### Материалы (зачем каждый)
+
+- [x] [lesson.ipynb](lesson.ipynb) — guided practice, девять секций со stub и assert
+- [x] [homework.ipynb](homework.ipynb) — Part A + Challenge
+- [x] [solutions.ipynb](solutions.ipynb) — секционный эталон урока и ДЗ (только преподаватель)
+- [x] локальные CSV — ноутбук запускается из папки урока
+- [ ] презентация — не нужна
+
+### Домашнее задание
+
+| Поле | Значение |
+|---|---|
+| Назначается | **да** |
+| Файл | [homework.ipynb](homework.ipynb) |
+| Формулировка | Part A закрепляет контракты пары; Challenge обобщает алгоритм и требует инженерного объяснения |
+| Ориентир времени | **~1 ч** (0,5–2 ч) |
+| Почему не на уроке | Обобщение, edge cases и письменная аргументация требуют самостоятельного времени |
+| Какую способность развивает | Перенос алгоритма на новый срез банковского лога и честная проверка результата |
+
+---
+
+## E. Карточка урока (§13)
+
+| Поле | Значение |
+|---|---|
+| Часы | 2 |
+| Стратегии обучения / виды деятельности | Трассировка на toy-примере → guided coding → проверка на CSV → самостоятельный gate |
+| Формирующее оценивание | Зелёные assert каждой секции; устное объяснение инварианта; итоговый acceptance |
+| Дифференциация (общая) | База: §§1–6 и Part A; усиление: §§7–9 и Challenge |
+| По содержанию | {meta["outcomes"]} |
+| По процессу | Индивидуальный код; короткие общие checkpoints после реализации и проверки |
+| По продукту | Заполненный `lesson.ipynb`; сданный `homework.ipynb`; функция для сквозного артефакта |
+| Canvas | не опубликовано |
+"""
+
+
+def write_notebook(path: Path, value: dict) -> None:
+    path.write_text(json.dumps(value, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"wrote {path.relative_to(ROOT)}: {len(value['cells'])} cells")
 
 
 def main() -> None:
-    required = [CSV_UNSORTED, CSV_BY_ID, CSV_BY_AMOUNT, CSV_TINY]
-    missing = [p for p in required if not p.exists()]
+    missing = [DATA_DIR / name for name in CSV_NAMES if not (DATA_DIR / name).exists()]
     if missing:
-        raise SystemExit(f"Missing CSV files: {missing}. Run data/make_bank_transactions_csv.py first.")
-    for builder in BUILDERS:
-        builder()
-    for rel_path, notebook in NOTEBOOKS.items():
-        write(rel_path, notebook)
-    for d in LESSON_DIRS:
-        copy_data(d)
-    print(f"done: {len(NOTEBOOKS)} notebooks in {len(LESSON_DIRS)} lessons")
+        raise SystemExit(f"Missing CSV files: {missing}")
+    counts = []
+    for meta, builder in zip(LESSONS, BUILDERS):
+        lesson_sections, homework_sections, solution_sections = builder()
+        directory = ROOT / "lessons" / meta["dir"]
+        directory.mkdir(parents=True, exist_ok=True)
+        values = (
+            ("lesson.ipynb", notebook(meta["title"], lesson_sections)),
+            ("homework.ipynb", notebook(f"ДЗ: {meta['title']}", homework_sections)),
+            ("solutions.ipynb", notebook(meta["title"], solution_sections, solution=True)),
+        )
+        for filename, value in values:
+            write_notebook(directory / filename, value)
+            counts.append((meta["dir"], filename, len(value["cells"])))
+        (directory / "LESSON.md").write_text(lesson_plan(meta), encoding="utf-8")
+        print(f"wrote lessons/{meta['dir']}/LESSON.md")
+        for name in CSV_NAMES:
+            shutil.copy2(DATA_DIR / name, directory / name)
+        print(f"copied {len(CSV_NAMES)} CSV files -> lessons/{meta['dir']}")
+    assert len(counts) == 21
+    print("done: 21 notebooks, 7 lesson plans, 28 CSV copies")
 
 
 if __name__ == "__main__":

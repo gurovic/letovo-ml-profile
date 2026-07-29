@@ -3,7 +3,7 @@
 **Класс:** 8  
 **КТП:** пары 42–48  
 
-**Статус:** материалы модуля (UNIT, LESSON, ноутбуки, артефакт)
+**Статус:** полностью переписан и проверен — 7 пар, 21 ноутбук, 7 подробных `LESSON.md`; solutions gate **7/7 PASS**
 
 Сюжет: банк «Надёжный» ищет транзакции в отсортированных логах.
 
@@ -40,6 +40,14 @@ python modules/08_07_bank_arrays_search/data/make_bank_transactions_csv.py
 python modules/08_07_bank_arrays_search/generate_notebooks.py
 python scripts/run_solutions.py modules/08_07_bank_arrays_search
 ```
+
+`generate_notebooks.py` — источник истины: создаёт для каждой пары `lesson.ipynb`
+(20 ячеек), `homework.ipynb` (12 ячеек), секционный `solutions.ipynb`
+(14–16 ячеек), полный план A–E и копирует четыре CSV в папку урока.
+Ученические ноутбуки содержат stubs и исполняемые `assert`; ДЗ разделено на
+обязательную `Part A` и `Challenge`.
+
+Последняя локальная проверка: **7 passed, 0 failed**.
 
 Артефакт: [artifact/PROJECT.md](artifact/PROJECT.md)  
 План модуля: [UNIT.md](UNIT.md)
