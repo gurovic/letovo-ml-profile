@@ -2,10 +2,10 @@
 
 **Класс:** 8  
 **КТП:** пары **60-64**  
-**Статус:** полный комплект материалов (UNIT, LESSON, ноутбуки, артефакт)
+**Статус:** перепроектирован под планку модуля 1; Canvas не опубликован
 
 Сюжет модуля: аналитик банковской кампании прогнозирует отклик на депозит (`y`) и выбирает рабочий порог классификации.  
-Критическое правило модуля: `duration` не используется в признаках модели (leakage).
+Критическое правило модуля: `duration` не используется в признаках модели (leakage). Запрет проверяется assert в ноутбуках, teacher solutions и CLI.
 
 ## Данные
 
@@ -28,6 +28,8 @@ python modules/08_10_churn_logreg/data/make_bank_marketing_slim.py
 python modules/08_10_churn_logreg/generate_notebooks.py
 python scripts/run_solutions.py modules/08_10_churn_logreg
 ```
+
+Генератор — источник истины для 15 ноутбуков. В каждой паре: `lesson.ipynb` со stubs и assert, отдельное ДЗ Part A + Challenge и секционный `solutions.ipynb`.
 
 CLI для пары 63:
 

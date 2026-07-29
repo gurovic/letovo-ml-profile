@@ -1,7 +1,7 @@
 # Unit Planner: логистическая регрессия и venv
 
 **Класс:** 8  
-**Статус:** полный комплект материалов (`LESSON.md`, ноутбуки, артефакт, данные)  
+**Статус:** перепроектирован под планку модуля 1; Canvas не опубликован  
 **Длительность:** 5 пар по КТП (10 академических часов)
 
 **Сквозная линия модуля:** сигмоида → logreg fit/predict → метрики дисбаланса → CLI → venv → README эксперимента.
@@ -248,9 +248,12 @@
 
 - [x] план по парам КТП согласован с [docs/ktp/08.md](../../docs/ktp/08.md)
 - [x] рефлексия автора (§17), глоссарий (§18)
-- [x] `LESSON.md` и §13 заполнены для пар 60-64
-- [x] `generate_notebooks.py`, `train_cli.py` и `artifact/PROJECT.md` собраны
+- [x] `LESSON.md` зон A–E и §13 заполнены для пар 60-64
+- [x] `generate_notebooks.py` создаёт 15 глубоких ноутбуков: stubs + assert, ДЗ Part A + Challenge, секционные решения
+- [x] CSV копируется в каждую папку урока; `train_cli.py` и `artifact/PROJECT.md` собраны
+- [x] `duration` запрещена в каждом modeling pipeline и проверяется assert / CLI gate
 - [x] `python scripts/run_solutions.py modules/08_10_churn_logreg` -> 5 passed
+- [ ] Canvas не опубликован
 
 ---
 

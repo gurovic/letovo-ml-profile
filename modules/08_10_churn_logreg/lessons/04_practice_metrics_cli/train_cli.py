@@ -33,7 +33,11 @@ def train_and_score(data_path: Path, threshold: float, test_size: float, seed: i
         X, y, test_size=test_size, random_state=seed, stratify=y
     )
 
-    model = LogisticRegression(max_iter=1200)
+    model = LogisticRegression(
+        max_iter=1000,
+        solver="liblinear",
+        class_weight="balanced",
+    )
     model.fit(X_train, y_train)
     proba = model.predict_proba(X_test)[:, 1]
     pred = (proba >= threshold).astype(int)
