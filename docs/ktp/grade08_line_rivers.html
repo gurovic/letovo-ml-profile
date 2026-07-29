@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>8 класс — семь линий через модули</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:opsz,wght@9..144,500;9..144,650;9..144,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg0: #0f1412;
+      --bg1: #1a221e;
+      --paper: #f4f1ea;
+      --ink: #121816;
+      --muted: #5c655f;
+      --soft: #e8e4db;
+      --gap: 6px;
+      --label-w: 128px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: "DM Sans", system-ui, sans-serif;
+      color: var(--paper);
+      background:
+        radial-gradient(ellipse 80% 50% at 10% -10%, rgba(94, 184, 158, 0.18), transparent 55%),
+        radial-gradient(ellipse 60% 40% at 90% 0%, rgba(232, 168, 92, 0.14), transparent 50%),
+        linear-gradient(165deg, var(--bg0), var(--bg1) 55%, #121a22);
+      min-height: 100vh;
+    }
+
+    .shell { max-width: none; width: 100%; margin: 0 auto; padding: 24px 16px 56px; }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: rgba(244, 241, 234, 0.55);
+    }
+    .eyebrow a { color: rgba(244, 241, 234, 0.75); text-decoration: none; border-bottom: 1px solid rgba(244,241,234,0.25); }
+    .eyebrow a:hover { color: #fff; }
+
+    h1 {
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 650;
+      font-size: clamp(1.75rem, 3.6vw, 2.65rem);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      margin: 0 0 12px;
+      max-width: 18ch;
+    }
+    .lead {
+      margin: 0 0 22px;
+      max-width: 62ch;
+      font-size: 1.05rem;
+      line-height: 1.5;
+      color: rgba(244, 241, 234, 0.72);
+    }
+    .lead strong { color: #fff; font-weight: 600; }
+
+    .board {
+      position: relative;
+      border-radius: 22px;
+      background: var(--paper);
+      color: var(--ink);
+      box-shadow:
+        0 1px 0 rgba(255,255,255,0.06) inset,
+        0 40px 80px rgba(0,0,0,0.35);
+      overflow: hidden;
+    }
+    .board::before {
+      content: "";
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(18, 24, 22, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(18, 24, 22, 0.04) 1px, transparent 1px);
+      background-size: 24px 24px;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .scroll {
+      position: relative;
+      overflow-x: hidden;
+      overflow-y: visible;
+      padding: 14px 10px 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: var(--label-w) repeat(11, minmax(0, 1fr));
+      gap: 0 var(--gap);
+      width: 100%;
+      align-items: stretch;
+    }
+
+    .modhead {
+      position: sticky; top: 0; z-index: 3;
+      padding: 8px 4px 12px;
+      text-align: center;
+      border-bottom: 1px solid rgba(18,24,22,0.08);
+      background: linear-gradient(180deg, #f4f1ea 70%, rgba(244,241,234,0.85));
+      min-width: 0;
+    }
+    .modhead .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px; border-radius: 999px;
+      font-family: Fraunces, Georgia, serif; font-weight: 700; font-size: 12px;
+      background: var(--ink); color: var(--paper);
+      margin-bottom: 4px;
+    }
+    .modhead .name {
+      font-size: 10.5px; font-weight: 600; line-height: 1.2;
+      color: var(--muted); letter-spacing: 0.01em;
+      overflow-wrap: anywhere;
+    }
+    .modhead .pairs {
+      margin-top: 3px; font-size: 9.5px; color: rgba(92,101,95,0.75);
+      font-variant-numeric: tabular-nums;
+    }
+    .corner {
+      position: sticky; left: 0; z-index: 4;
+      background: var(--paper);
+      border-bottom: 1px solid rgba(18,24,22,0.08);
+    }
+    .corner-inner {
+      height: 100%;
+      display: flex; align-items: flex-end;
+      padding: 0 10px 16px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted);
+    }
+
+    .line-label {
+      position: sticky; left: 0; z-index: 2;
+      display: flex; align-items: center; gap: 8px;
+      padding: 12px 8px 12px 6px;
+      background: var(--paper);
+      border-right: 1px solid rgba(18,24,22,0.06);
+      min-width: 0;
+    }
+    .swatch {
+      width: 8px; height: 38px; border-radius: 999px; flex: 0 0 auto;
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--c) 18%, transparent);
+      background: var(--c);
+    }
+    .line-label .txt { min-width: 0; }
+    .line-label .title {
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 650; font-size: 12.5px; line-height: 1.15;
+      color: var(--ink); margin: 0 0 2px;
+    }
+    .line-label .sub {
+      margin: 0; font-size: 9.5px; line-height: 1.2; color: var(--muted);
+    }
+
+    .river {
+      position: relative;
+      display: contents;
+    }
+
+    .cell {
+      position: relative;
+      min-height: 78px;
+      padding: 14px 2px;
+      display: flex; align-items: center; justify-content: center;
+      min-width: 0;
+    }
+    .cell::before {
+      content: "";
+      position: absolute;
+      left: calc(var(--gap) / -2); right: calc(var(--gap) / -2);
+      top: 50%; transform: translateY(-50%);
+      height: 8px;
+      background: color-mix(in srgb, var(--c) 22%, transparent);
+      border-radius: 999px;
+      z-index: 0;
+    }
+    .cell[data-w="0"]::before {
+      height: 3px;
+      background: color-mix(in srgb, var(--c) 12%, transparent);
+      opacity: 0.55;
+    }
+    .cell[data-w="0"] .pebble { display: none; }
+
+    .pebble {
+      position: relative; z-index: 1;
+      width: 100%;
+      max-width: none;
+      padding: 7px 5px;
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--c) 14%, #fff);
+      border: 1px solid color-mix(in srgb, var(--c) 38%, transparent);
+      box-shadow: 0 6px 14px color-mix(in srgb, var(--c) 12%, transparent);
+      text-align: center;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .cell[data-w="3"] .pebble {
+      background: color-mix(in srgb, var(--c) 22%, #fff);
+      border-color: color-mix(in srgb, var(--c) 55%, transparent);
+      box-shadow: 0 8px 18px color-mix(in srgb, var(--c) 18%, transparent);
+    }
+    .cell[data-w="1"] .pebble {
+      opacity: 0.85;
+      background: color-mix(in srgb, var(--c) 9%, #fff);
+    }
+    .pebble:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 12px 22px color-mix(in srgb, var(--c) 22%, transparent);
+    }
+    .pebble .tag {
+      display: block;
+      font-size: 9.5px; font-weight: 700; line-height: 1.2;
+      color: color-mix(in srgb, var(--c) 75%, var(--ink));
+      letter-spacing: 0.01em;
+      overflow-wrap: anywhere;
+    }
+
+    .row-sep {
+      grid-column: 1 / -1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(18,24,22,0.08), transparent);
+      margin: 2px 0;
+    }
+
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 8px 14px;
+      margin: 18px 0 0; padding: 0 4px;
+      font-size: 12px; color: rgba(244,241,234,0.65);
+    }
+    .legend span {
+      display: inline-flex; align-items: center; gap: 7px;
+    }
+    .legend i {
+      width: 10px; height: 10px; border-radius: 999px; display: inline-block;
+      background: var(--c);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 25%, transparent);
+    }
+
+    .foot {
+      margin: 18px 4px 0;
+      font-size: 12.5px; line-height: 1.45;
+      color: rgba(244,241,234,0.5);
+      max-width: 72ch;
+    }
+    .foot a { color: rgba(244,241,234,0.78); }
+
+    @media (max-width: 900px) {
+      :root { --label-w: 104px; --gap: 4px; }
+      .line-label .sub { display: none; }
+      .modhead .name { font-size: 9.5px; }
+      .pebble .tag { font-size: 9px; }
+      h1 { max-width: none; }
+    }
+
+    @media print {
+      body { background: #fff; color: #000; }
+      .board { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <p class="eyebrow"><a href="08.md">КТП 8</a> · <a href="grade-08.unified.ktp.md">unified</a> · линии года</p>
+    <h1>Семь линий через модули 8 класса</h1>
+    <p class="lead">
+      Горизонталь — одна линия навыков. Вертикаль — модули M1–M11 (68 пар).
+      <strong>Камни на реке</strong> — где линия звучит в модуле; тонкая полоса — линия «спит», но год продолжается.
+      Читать можно целиком, без кликов.
+    </p>
+
+    <div class="board" id="board"></div>
+
+    <div class="legend" id="legend"></div>
+    <p class="foot">
+      Источник модулей: <a href="08.md">docs/ktp/08.md</a> (Draft 3, 4 ч/нед).
+      Толщина камня: сильный фокус модуля / заметный вклад / касание.
+    </p>
+  </div>
+
+  <script>
+    const MODULES = [
+      { id: "M1", name: "Функции & pipeline", pairs: "1–8" },
+      { id: "M2", name: "Pandas & регрессия", pairs: "9–16" },
+      { id: "M3", name: "Titanic EDA", pairs: "17–23" },
+      { id: "M4", name: "Вероятность & kNN", pairs: "24–29" },
+      { id: "M5", name: "Feature eng.", pairs: "30–35" },
+      { id: "M6", name: "A/B & вывод", pairs: "36–41" },
+      { id: "M7", name: "Поиск & сорт", pairs: "42–48" },
+      { id: "M8", name: "Структуры & кластеры", pairs: "49–54" },
+      { id: "M9", name: "Динамическое прогр.", pairs: "55–59" },
+      { id: "M10", name: "Логрег & venv", pairs: "60–64" },
+      { id: "M11", name: "Градиент", pairs: "65–68" },
+    ];
+
+    /** weight: 0 none, 1 touch, 2 solid, 3 peak */
+    const LINES = [
+      {
+        id: "data",
+        title: "Анализ данных",
+        sub: "таблица → осмотр → вывод",
+        color: "#0f766e",
+        cells: [
+          { w: 2, t: "proto-EDA на списках" },
+          { w: 3, t: "pandas, роли столбцов" },
+          { w: 3, t: "полный EDA Titanic" },
+          { w: 0, t: "" },
+          { w: 3, t: "признаки & RFM" },
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+          { w: 2, t: "осмотр late / частоты" },
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+        ],
+      },
+      {
+        id: "ml",
+        title: "Классический ML",
+        sub: "модель, метрика, fit",
+        color: "#c2410c",
+        cells: [
+          { w: 2, t: "модель = f(x)" },
+          { w: 3, t: "LinearRegression" },
+          { w: 0, t: "" },
+          { w: 3, t: "kNN + метрики" },
+          { w: 0, t: "" },
+          { w: 2, t: "множ. регрессия" },
+          { w: 0, t: "" },
+          { w: 3, t: "k-means, DBSCAN" },
+          { w: 0, t: "" },
+          { w: 3, t: "логист. регрессия" },
+          { w: 2, t: "градиентный спуск" },
+        ],
+      },
+      {
+        id: "prog",
+        title: "Программирование",
+        sub: "функции, коллекции, HOF",
+        color: "#1d4ed8",
+        cells: [
+          { w: 3, t: "функции, scope" },
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+          { w: 2, t: "itertools" },
+          { w: 3, t: "lambda / apply" },
+          { w: 0, t: "" },
+          { w: 3, t: "массивы, sorted" },
+          { w: 3, t: "стек, dict, set" },
+          { w: 2, t: "рекурсия / memo" },
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+        ],
+      },
+      {
+        id: "algo",
+        title: "Алгоритмы",
+        sub: "поиск, сорт, DP, структуры",
+        color: "#5b21b6",
+        cells: [
+          { w: 2, t: "рекурсия" },
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+          { w: 3, t: "поиск & сортировки" },
+          { w: 3, t: "очереди & hash map" },
+          { w: 3, t: "DP 1D / 2D" },
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+        ],
+      },
+      {
+        id: "stats",
+        title: "Вероятность и статистика",
+        sub: "случайность, вывод, распределения",
+        color: "#166534",
+        cells: [
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+          { w: 3, t: "центр, bias, ЦПТ" },
+          { w: 3, t: "вероятность, комбинаторика" },
+          { w: 0, t: "" },
+          { w: 3, t: "H₀, p-value, ДИ" },
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+        ],
+      },
+      {
+        id: "viz",
+        title: "Визуализация",
+        sub: "график как аргумент",
+        color: "#b45309",
+        cells: [
+          { w: 0, t: "" },
+          { w: 3, t: "scatter признак→цена" },
+          { w: 3, t: "boxplot, гистограммы" },
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+        ],
+      },
+      {
+        id: "eng",
+        title: "Инженерные практики",
+        sub: "ошибки, лог, среда, отчёт",
+        color: "#44403c",
+        cells: [
+          { w: 2, t: "отладка, артефакт" },
+          { w: 2, t: "try/except, отчёт" },
+          { w: 2, t: "воспроизв. отчёт" },
+          { w: 0, t: "" },
+          { w: 3, t: "raise, лог, pipeline" },
+          { w: 2, t: "протокол A/B" },
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+          { w: 0, t: "" },
+          { w: 3, t: "venv, README, CLI" },
+          { w: 0, t: "" },
+        ],
+      },
+    ];
+
+    const board = document.getElementById("board");
+    const scroll = document.createElement("div");
+    scroll.className = "scroll";
+    const grid = document.createElement("div");
+    grid.className = "grid";
+
+    const corner = document.createElement("div");
+    corner.className = "corner modhead";
+    corner.innerHTML = `<div class="corner-inner">Линия ↓</div>`;
+    grid.appendChild(corner);
+
+    MODULES.forEach((m) => {
+      const h = document.createElement("div");
+      h.className = "modhead";
+      h.innerHTML = `<div class="num">${m.id.slice(1)}</div><div class="name">${m.name}</div><div class="pairs">${m.pairs}</div>`;
+      grid.appendChild(h);
+    });
+
+    LINES.forEach((line, li) => {
+      if (li > 0) {
+        const sep = document.createElement("div");
+        sep.className = "row-sep";
+        grid.appendChild(sep);
+      }
+
+      const lab = document.createElement("div");
+      lab.className = "line-label";
+      lab.style.setProperty("--c", line.color);
+      lab.innerHTML = `<span class="swatch" style="--c:${line.color};background:${line.color}"></span><div class="txt"><p class="title">${line.title}</p><p class="sub">${line.sub}</p></div>`;
+      grid.appendChild(lab);
+
+      line.cells.forEach((cell) => {
+        const el = document.createElement("div");
+        el.className = "cell";
+        el.style.setProperty("--c", line.color);
+        el.dataset.w = String(cell.w);
+        el.innerHTML = cell.w
+          ? `<div class="pebble"><span class="tag">${cell.t}</span></div>`
+          : "";
+        grid.appendChild(el);
+      });
+    });
+
+    scroll.appendChild(grid);
+    board.appendChild(scroll);
+
+    const legend = document.getElementById("legend");
+    LINES.forEach((line) => {
+      const s = document.createElement("span");
+      s.innerHTML = `<i style="--c:${line.color};background:${line.color}"></i>${line.title}`;
+      legend.appendChild(s);
+    });
+  </script>
+</body>
+</html>

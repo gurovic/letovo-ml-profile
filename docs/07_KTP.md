@@ -28,7 +28,7 @@
 
 | Класс | Документ | Статус |
 |---|---|---|
-| 8 | [08.md](ktp/08.md) | Draft 3, **68 пар** (4 ч/нед × 34 нед); описания — [08_module_descriptions.md](ktp/08_module_descriptions.md) |
+| 8 | [08.md](ktp/08.md) | Draft 3, **68 пар** (4 ч/нед × 34 нед); описания — [08_module_descriptions.md](ktp/08_module_descriptions.md); unified — [grade-08.unified.ktp.md](ktp/grade-08.unified.ktp.md); линии — [grade08_line_rivers.html](ktp/grade08_line_rivers.html) |
 | 9 | — | TODO |
 | 10 | — | TODO |
 | 11 | — | TODO |

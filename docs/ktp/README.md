@@ -12,7 +12,10 @@
 
 | Класс | Файл | Пар |
 |---|---|---:|
-| 8 | [08.md](08.md) | 85 |
+| 8 | [08.md](08.md) | 68 |
+| 8 (unified KTP) | [grade-08.unified.ktp.md](grade-08.unified.ktp.md) | 68 |
+
+**Unified KTP** (формат `grade-NN.unified.ktp.md`, маркеры `{M01 P10 L06}` на каждом уроке): [grade-08.unified.ktp.md](grade-08.unified.ktp.md) — содержание из [08.md](08.md); копия для внешнего репозитория программы: `ai-school-program/data/program/`.
 
 **Описания модулей (горизонт для учителя):** [08_module_descriptions.md](08_module_descriptions.md).
 
@@ -27,6 +30,7 @@
 | Каталог | [concept_catalog.html](concept_catalog.html) | семейства столбцами, абстракции в порядке таксономии (M → P → L) |
 | Карта годов | [concept_years.html](concept_years.html) | классы как колонки, семейства внутри года |
 | Реки семейств | [concept_rivers.html](concept_rivers.html) | семейство = горизонтальная река с подписанными карточками |
+| Линии 8 класса | [grade08_line_rivers.html](grade08_line_rivers.html) | 7 сквозных линий (данные / ML / код / алгоритмы / стат / viz / инженерия) через M1–M11 |
 
 Карта доступных инструментов (Python, данные, ML, математика): [08.md § Карта инструментов](08.md#карта-инструментов).
 
