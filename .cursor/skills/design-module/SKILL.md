@@ -81,4 +81,4 @@ modules/<grade>_<nn>_<slug>/
 
 Рекомендуется прогон skill `test-teacher` по `UNIT.md` и ключевым `LESSON.md` перед формальным `review-edu-material`.
 
-- [ ] После успешного прохода по модулю: в `docs/AGENT_PASSES.md` поставить в ячейку (модуль × этот skill) текущее локальное время ISO `YYYY-MM-DDTHH:MM:SS+07:00`.
+- [ ] ОБЯЗАТЕЛЬНО в том же цикле (до финального отчёта): после успешного прохода по модулю обновить `docs/AGENT_PASSES.md` в ячейке (модуль × этот skill) текущим локальным временем ISO `YYYY-MM-DDTHH:MM:SS+07:00`.
