@@ -2,7 +2,7 @@
 
 **Класс:** 8  
 **КТП:** пары **36–41**  
-**Статус:** материалы модуля (UNIT, LESSON, ноутбуки, артефакт)
+**Статус:** полностью переписан; 6/6 пар имеют LESSON A–E, student stubs/asserts, ДЗ A+Challenge и секционные решения
 
 Сюжет: стартап тестирует два дизайна лендинга, оценивает статистическую значимость uplift и формирует отчёт для product-решения.
 
@@ -31,6 +31,8 @@ python modules/08_06_ab_startup/data/make_startup_ab_csv.py
 python modules/08_06_ab_startup/generate_notebooks.py
 python scripts/run_solutions.py modules/08_06_ab_startup
 ```
+
+Последняя локальная проверка при переписывании: **PASS 6/6**. `generate_notebooks.py` — единственный источник истины для 18 ноутбуков; при генерации один и тот же `startup_ab.csv` копируется во все шесть папок уроков. Размеры пар: lesson **12–18** ячеек, homework **13**, solutions **18–28**; каждый `LESSON.md` содержит полные разделы A–E.
 
 Артефакт: [artifact/PROJECT.md](artifact/PROJECT.md)  
 План модуля: [UNIT.md](UNIT.md)

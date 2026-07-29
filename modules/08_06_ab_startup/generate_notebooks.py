@@ -7,6 +7,7 @@ Pattern: stubs + asserts in lesson/homework; full solutions.
 
 from __future__ import annotations
 
+import ast
 import json
 import shutil
 from pathlib import Path
@@ -83,6 +84,121 @@ LESSON_DIRS = [
     "lessons/05_peeking_multireg",
     "lessons/06_practice_report",
 ]
+
+LESSON_CONTEXT = {
+    "01_hypotheses_pvalue": (
+        "От наблюдаемого uplift к проверяемой гипотезе",
+        "Сначала измеряем конверсии A и B, затем строим нулевое распределение перестановками. "
+        "Каждое число сопровождаем смыслом: что именно было зафиксировано до анализа и какой вывод допустим.",
+    ),
+    "02_practice_permutation": (
+        "Воспроизводимая функция перестановочного теста",
+        "Собираем расчёт в функцию с явными параметрами `n_iter` и `seed`, проверяем её на сегментах "
+        "и отделяем величину эффекта от статистической совместимости с H0.",
+    ),
+    "03_ci_correlation": (
+        "Неопределённость эффекта и границы корреляции",
+        "Bootstrap показывает диапазон правдоподобных uplift, а корреляции помогают искать связи. "
+        "Ни один из этих инструментов сам по себе не доказывает причинность.",
+    ),
+    "04_practice_ci_corr": (
+        "Устойчивость вывода по сегментам",
+        "Сравниваем источники трафика, устройства и скидки. Малый сегмент даёт широкий интервал, "
+        "поэтому знак точечной оценки нельзя превращать в уверенный product-вывод.",
+    ),
+    "05_peeking_multireg": (
+        "Честный stop-rule и модель факторов",
+        "Накопительные p-value демонстрируют риск peeking. Множественная регрессия дополняет A/B-анализ, "
+        "но её коэффициенты описывают условные связи, а не автоматически причинные эффекты.",
+    ),
+    "06_practice_report": (
+        "От расчётов к проверяемому решению",
+        "Собираем метрику, p-value, CI, модель факторов и ограничения в единый отчёт. "
+        "Рекомендация считается готовой только тогда, когда каждое утверждение опирается на число.",
+    ),
+}
+
+
+def enrich_student_notebook(notebook: dict, lesson_key: str, kind: str) -> dict:
+    """Add teaching narrative without hiding executable student work."""
+    title, framing = LESSON_CONTEXT[lesson_key]
+    cells = notebook["cells"]
+    intro = (
+        f"## Маршрут работы\n\n**Фокус:** {title}.\n\n{framing}\n\n"
+        "**Правило работы:** выполняйте ячейки сверху вниз, заменяйте `None` и пустые строки, "
+        "а после каждого шага добивайтесь зелёных `assert`. Не удаляйте проверки: они задают контракт результата.\n\n"
+        "**Что сдаём:** выполненный ноутбук, численный результат и короткую интерпретацию без причинных обещаний."
+    )
+    cells.insert(1, md(intro))
+    if kind == "lesson":
+        cells.append(md(
+            "## Выходной билет\n\n"
+            "1. Запишите одним предложением, что измеряет полученное число.\n"
+            "2. Назовите одно ограничение анализа.\n"
+            "3. Укажите, какое решение нельзя принимать только по точечной оценке.\n\n"
+            "Перед сдачей перезапустите ноутбук целиком: `Restart & Run All` должен пройти без ошибок."
+        ))
+    else:
+        cells.insert(2, md(
+            "## A. Закрепление и Challenge\n\n"
+            "Задачи **A** повторяют основной приём пары на новом срезе данных. "
+            "Задачи **Challenge** требуют самостоятельно выбрать процедуру и защитить интерпретацию. "
+            "Сначала добейтесь корректного кода, затем пишите вывод."
+        ))
+        cells.append(md(
+            "## Чек-лист домашней работы\n\n"
+            "- [ ] Все `assert` зелёные.\n"
+            "- [ ] Seed сохранён, результат воспроизводится.\n"
+            "- [ ] В выводе названы эффект, неопределённость и ограничение.\n"
+            "- [ ] Корреляция или коэффициент модели не названы доказательством причины."
+        ))
+    return notebook
+
+
+def sectionalize_solution(notebook: dict, lesson_key: str) -> dict:
+    """Turn a monolithic answer dump into readable, executable sections."""
+    title, framing = LESSON_CONTEXT[lesson_key]
+    original = notebook["cells"]
+    load_cell = original[1]
+    source = "".join(original[2]["source"])
+    tree = ast.parse(source)
+    chunks: list[str] = []
+    current: list[str] = []
+    for node in tree.body:
+        segment = ast.get_source_segment(source, node)
+        if segment is None:
+            continue
+        current.append(segment)
+        if len(current) >= 3 or isinstance(node, (ast.FunctionDef, ast.For)):
+            chunks.append("\n\n".join(current))
+            current = []
+    if current:
+        chunks.append("\n\n".join(current))
+
+    cells = [
+        original[0],
+        md(
+            f"## Карта эталона\n\n**Фокус:** {title}.\n\n{framing}\n\n"
+            "Эталон разделён на исполняемые секции в том же порядке, что `lesson.ipynb` и `homework.ipynb`. "
+            "После каждой секции сверяйте не только значение, но и способ вычисления."
+        ),
+        load_cell,
+    ]
+    for index, chunk in enumerate(chunks, start=1):
+        cells.append(md(
+            f"## Решение {index}\n\n"
+            "Выполните секцию после всех предыдущих: переменные намеренно переиспользуются, "
+            "чтобы эталон воспроизводил полный аналитический pipeline."
+        ))
+        cells.append(code(chunk))
+    cells.append(md(
+        "## Проверка преподавателя\n\n"
+        "Запустите `Run All`. Эталон должен завершиться без исключений; итоговые числа должны совпадать "
+        "при повторном запуске благодаря фиксированным seed. Текстовый вывод проверяется на согласованность "
+        "с направлением uplift, p-value и границами CI."
+    ))
+    notebook["cells"] = cells
+    return notebook
 
 
 def add_lesson01() -> None:
@@ -162,7 +278,7 @@ def add_lesson01() -> None:
             "assert p_desktop is not None and 0 <= float(p_desktop) <= 1\n"
             "print(round(float(p_desktop), 5))"
         ),
-        md("### B. Вызов\n\n## 3. Односторонняя альтернатива"),
+        md("### Challenge\n\n## 3. Односторонняя альтернатива"),
         code(
             "p_one_sided = None\n"
             "ONE_NOTE = ''\n"
@@ -289,7 +405,7 @@ def add_lesson02() -> None:
             "assert half_idx is not None and p_half is not None\n"
             "print(len(half_idx), p_half)"
         ),
-        md("### B. Вызов\n\n## 3. Функция с возвращением таблицы симуляций"),
+        md("### Challenge\n\n## 3. Функция с возвращением таблицы симуляций"),
         code(
             "sim_table = None\n"
             "assert sim_table is not None\n"
@@ -416,7 +532,7 @@ def add_lesson03() -> None:
             "assert ci_rev is not None and len(ci_rev) == 2\n"
             "print(ci_rev)"
         ),
-        md("### B. Вызов\n\n## 3. Корреляции в разрезе device"),
+        md("### Challenge\n\n## 3. Корреляции в разрезе device"),
         code(
             "corr_table = None\n"
             "assert corr_table is not None\n"
@@ -530,7 +646,7 @@ def add_lesson04() -> None:
             "assert corr_prior is not None\n"
             "print(corr_prior)"
         ),
-        md("### B. Вызов\n\n## 3. Мини-вывод по устойчивости эффекта"),
+        md("### Challenge\n\n## 3. Мини-вывод по устойчивости эффекта"),
         code(
             "STABILITY_NOTE = ''\n"
             "assert len(STABILITY_NOTE) > 150\n"
@@ -672,7 +788,7 @@ def add_lesson05() -> None:
             "assert coef_variant is not None and coef_pages is not None\n"
             "print(coef_variant, coef_pages)"
         ),
-        md("### B. Вызов\n\n## 3. Мини-правила против peeking"),
+        md("### Challenge\n\n## 3. Мини-правила против peeking"),
         code(
             "ANTI_PEEK = ''\n"
             "assert len(ANTI_PEEK) > 150\n"
@@ -806,7 +922,7 @@ def add_lesson06() -> None:
             "assert len(RISKS) > 180\n"
             "print(RISKS)"
         ),
-        md("### B. Вызов\n\n## 3. План следующего эксперимента"),
+        md("### Challenge\n\n## 3. План следующего эксперимента"),
         code(
             "NEXT_AB = ''\n"
             "assert len(NEXT_AB) > 200\n"
@@ -902,6 +1018,14 @@ def main() -> None:
         raise SystemExit(f"Missing {DATA_CSV}. Run data/make_startup_ab_csv.py first.")
     for builder in BUILDERS:
         builder()
+    for rel, notebook in NOTEBOOKS.items():
+        lesson_key = Path(rel).parent.name
+        if rel.endswith("solutions.ipynb"):
+            sectionalize_solution(notebook, lesson_key)
+        elif rel.endswith("lesson.ipynb"):
+            enrich_student_notebook(notebook, lesson_key, "lesson")
+        elif rel.endswith("homework.ipynb"):
+            enrich_student_notebook(notebook, lesson_key, "homework")
     for rel, notebook in NOTEBOOKS.items():
         write(rel, notebook)
     for d in LESSON_DIRS:
