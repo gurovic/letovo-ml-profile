@@ -118,6 +118,189 @@ LESSON_CONTEXT = {
     ),
 }
 
+LESSON_DEEPENING = {
+    "02_practice_permutation": [
+        (
+            "## 0.1. Контракт перестановочного теста",
+            "До функции зафиксируйте estimand, альтернативу, число симуляций и seed. "
+            "Контракт не должен зависеть от результата конкретного запуска.",
+            "test_contract = {\n"
+            "    'estimand': '',\n"
+            "    'alternative': '',\n"
+            "    'n_iter': None,\n"
+            "    'seed': None,\n"
+            "}\n"
+            "assert test_contract['estimand'] == 'conv_B - conv_A'\n"
+            "assert test_contract['alternative'] == 'two-sided'\n"
+            "assert int(test_contract['n_iter']) >= 2000\n"
+            "assert isinstance(test_contract['seed'], int)\n"
+            "print(test_contract)",
+            "test_contract = {\n"
+            "    'estimand': 'conv_B - conv_A',\n"
+            "    'alternative': 'two-sided',\n"
+            "    'n_iter': 3000,\n"
+            "    'seed': 37,\n"
+            "}\n"
+            "assert test_contract['alternative'] == 'two-sided'",
+        ),
+        (
+            "## 0.2. Проверка входных данных",
+            "Докажите, что обе группы присутствуют, target бинарный, а пропуски не попадут в симуляцию. "
+            "Сохраните результат в компактной `Series`.",
+            "data_check = None\n"
+            "assert data_check is not None\n"
+            "assert int(data_check['n_rows']) == len(df)\n"
+            "assert int(data_check['n_variants']) == 2\n"
+            "assert int(data_check['missing_target']) == 0\n"
+            "assert bool(data_check['binary_target'])\n"
+            "print(data_check)",
+            "data_check = pd.Series({\n"
+            "    'n_rows': len(df),\n"
+            "    'n_variants': df['variant'].nunique(),\n"
+            "    'missing_target': df['converted'].isna().sum(),\n"
+            "    'binary_target': set(df['converted'].unique()) <= {0, 1},\n"
+            "})\n"
+            "assert bool(data_check['binary_target'])",
+        ),
+        (
+            "## 0.3. План проверки воспроизводимости",
+            "Запишите две пары настроек: одинаковые seed должны повторить результат, разные seed могут дать "
+            "небольшой Monte Carlo-разброс. Здесь мы проверяем протокол, а не ищем удобное p-value.",
+            "repro_seeds = None\n"
+            "REPRO_NOTE = ''\n"
+            "assert repro_seeds is not None and tuple(repro_seeds) == (37, 37, 38)\n"
+            "assert len(REPRO_NOTE) > 90\n"
+            "print(repro_seeds, REPRO_NOTE)",
+            "repro_seeds = (37, 37, 38)\n"
+            "REPRO_NOTE = (\n"
+            "    'Два запуска с seed=37 должны совпасть; seed=38 оценивает допустимый Monte Carlo-шум, '\n"
+            "    'но не используется для выбора более удобного результата.'\n"
+            ")\n"
+            "assert len(REPRO_NOTE) > 90",
+        ),
+    ],
+    "03_ci_correlation": [
+        (
+            "## 0.1. Точечная оценка uplift",
+            "Перед bootstrap посчитайте estimand B−A. Интервал далее должен описывать неопределённость "
+            "именно этой величины, а не отдельных конверсий.",
+            "point_uplift = None\n"
+            "assert point_uplift is not None\n"
+            "assert -0.2 < float(point_uplift) < 0.2\n"
+            "print(round(float(point_uplift), 5))",
+            "point_uplift = float(\n"
+            "    df.loc[df['variant'] == 'B', 'converted'].mean()\n"
+            "    - df.loc[df['variant'] == 'A', 'converted'].mean()\n"
+            ")\n"
+            "assert -0.2 < point_uplift < 0.2",
+        ),
+        (
+            "## 0.2. Контракт bootstrap",
+            "Зафиксируйте единицу ресемплирования, число повторов и квантили до расчёта. "
+            "Группы A и B ресемплируются раздельно и с возвращением.",
+            "bootstrap_plan = None\n"
+            "assert bootstrap_plan is not None\n"
+            "assert bootstrap_plan['unit'] == 'user'\n"
+            "assert bootstrap_plan['replace'] is True\n"
+            "assert int(bootstrap_plan['n_iter']) >= 1000\n"
+            "assert tuple(bootstrap_plan['quantiles']) == (0.025, 0.975)\n"
+            "print(bootstrap_plan)",
+            "bootstrap_plan = {\n"
+            "    'unit': 'user', 'replace': True, 'n_iter': 2500,\n"
+            "    'quantiles': (0.025, 0.975), 'groups': 'resample separately',\n"
+            "}\n"
+            "assert bootstrap_plan['replace'] is True",
+        ),
+    ],
+    "04_practice_ci_corr": [
+        (
+            "## 0.1. Предзаданные сегменты",
+            "Перечислите сегменты до просмотра uplift. Это защищает практику от post-hoc выбора только "
+            "тех групп, где случайно получился удобный знак.",
+            "planned_segments = None\n"
+            "assert planned_segments is not None\n"
+            "assert tuple(planned_segments) == ('traffic_source', 'device')\n"
+            "assert all(col in df.columns for col in planned_segments)\n"
+            "print(planned_segments)",
+            "planned_segments = ('traffic_source', 'device')\n"
+            "assert all(col in df.columns for col in planned_segments)",
+        ),
+        (
+            "## 0.2. Размеры групп и баланс вариантов",
+            "Соберите таблицу `segment_n` по source, device и variant. До CI убедитесь, что каждая "
+            "запланированная ячейка содержит наблюдения обеих групп.",
+            "segment_n = None\n"
+            "assert segment_n is not None\n"
+            "assert {'traffic_source', 'device', 'variant', 'n'} <= set(segment_n.columns)\n"
+            "assert int(segment_n['n'].sum()) == len(df)\n"
+            "assert int(segment_n['n'].min()) >= 20\n"
+            "print(segment_n.head())",
+            "segment_n = (\n"
+            "    df.groupby(['traffic_source', 'device', 'variant'])\n"
+            "    .size().rename('n').reset_index()\n"
+            ")\n"
+            "assert int(segment_n['n'].sum()) == len(df)",
+        ),
+    ],
+    "05_peeking_multireg": [
+        (
+            "## 0.1. Fixed-horizon stop-rule",
+            "До построения накопительных p-value задайте горизонт, уровень alpha и правило остановки. "
+            "Промежуточная траектория служит демонстрацией риска, а не разрешением остановиться раньше.",
+            "horizon_day = None\n"
+            "alpha = None\n"
+            "STOP_RULE = ''\n"
+            "assert horizon_day == 30\n"
+            "assert alpha == 0.05\n"
+            "assert len(STOP_RULE) > 100\n"
+            "print(horizon_day, alpha, STOP_RULE)",
+            "horizon_day = 30\n"
+            "alpha = 0.05\n"
+            "STOP_RULE = (\n"
+            "    'Собираем данные до конца дня 30 и выполняем одну итоговую проверку; '\n"
+            "    'промежуточные p-value не используются для досрочного решения.'\n"
+            ")\n"
+            "assert len(STOP_RULE) > 100",
+        ),
+    ],
+    "06_practice_report": [
+        (
+            "## 0.1. Адресат и решение отчёта",
+            "До расчётов зафиксируйте, кто читает отчёт и какое решение он поддерживает. "
+            "Это определяет нужные единицы, ограничения и уровень детализации.",
+            "report_contract = None\n"
+            "assert report_contract is not None\n"
+            "assert report_contract['audience'] == 'product team'\n"
+            "assert report_contract['decision'] in {'ship B', 'keep A', 'continue experiment'}\n"
+            "assert report_contract['estimand'] == 'conv_B - conv_A'\n"
+            "print(report_contract)",
+            "report_contract = {\n"
+            "    'audience': 'product team',\n"
+            "    'decision': 'continue experiment',\n"
+            "    'estimand': 'conv_B - conv_A',\n"
+            "}\n"
+            "assert report_contract['estimand'] == 'conv_B - conv_A'",
+        ),
+        (
+            "## 0.2. Практический порог эффекта",
+            "Задайте минимально полезный uplift в абсолютных долях до просмотра результата. "
+            "Статистическая значимость не заменяет проверку продуктовой значимости.",
+            "min_practical_uplift = None\n"
+            "MDE_NOTE = ''\n"
+            "assert min_practical_uplift is not None\n"
+            "assert 0 < float(min_practical_uplift) < 0.1\n"
+            "assert len(MDE_NOTE) > 90\n"
+            "print(min_practical_uplift, MDE_NOTE)",
+            "min_practical_uplift = 0.01\n"
+            "MDE_NOTE = (\n"
+            "    'Порог 0.01 означает рост конверсии на один процентный пункт; '\n"
+            "    'его сравнивают с uplift и всем доверительным интервалом.'\n"
+            ")\n"
+            "assert len(MDE_NOTE) > 90",
+        ),
+    ],
+}
+
 
 def enrich_student_notebook(notebook: dict, lesson_key: str, kind: str) -> dict:
     """Add teaching narrative without hiding executable student work."""
@@ -131,6 +314,21 @@ def enrich_student_notebook(notebook: dict, lesson_key: str, kind: str) -> dict:
     )
     cells.insert(1, md(intro))
     if kind == "lesson":
+        for cell in cells:
+            if cell["cell_type"] != "markdown":
+                continue
+            source = "".join(cell["source"])
+            if source.startswith("## ") and not source.startswith("## Маршрут"):
+                source += (
+                    "\n\n**Контракт раздела.** Сначала назовите ожидаемый объект и его смысл, затем "
+                    "замените заглушки. Проверяйте не только тип, но и диапазон, форму или инвариант; "
+                    "после зелёного `assert` объясните результат одной фразой без причинного вывода."
+                )
+                cell["source"] = source.splitlines(keepends=True)
+        insert_at = 3  # after title, route and data-loading cell
+        for heading, setup, stub, _solution in LESSON_DEEPENING.get(lesson_key, []):
+            cells[insert_at:insert_at] = [md(f"{heading}\n\n{setup}"), code(stub)]
+            insert_at += 2
         cells.append(md(
             "## Выходной билет\n\n"
             "1. Запишите одним предложением, что измеряет полученное число.\n"
@@ -184,6 +382,12 @@ def sectionalize_solution(notebook: dict, lesson_key: str) -> dict:
         ),
         load_cell,
     ]
+    for heading, setup, _stub, solution in LESSON_DEEPENING.get(lesson_key, []):
+        cells.append(md(
+            f"{heading}\n\n{setup}\n\n"
+            "**Эталон.** Эта ячейка фиксирует тот же контракт, который ученик заполняет до основного расчёта."
+        ))
+        cells.append(code(solution))
     for index, chunk in enumerate(chunks, start=1):
         cells.append(md(
             f"## Решение {index}\n\n"
