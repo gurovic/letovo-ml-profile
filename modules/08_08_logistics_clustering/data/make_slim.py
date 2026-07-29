@@ -83,19 +83,23 @@ def build_from_olist() -> bool:
 
 
 def build_synthetic() -> None:
+    """Classroom synthetic: ~2000 строк — частоты и кластеры на паре осмысленны."""
     rng = np.random.default_rng(SEED)
-    n = 240
+    n = 2000
     seller_states = np.array(["SP", "RJ", "MG", "PR", "SC", "BA"])
     customer_states = np.array(["SP", "RJ", "MG", "RS", "PR", "BA", "PE", "GO"])
 
     start = np.datetime64("2018-01-01")
-    purchase_day = rng.integers(0, 120, size=n)
+    purchase_day = rng.integers(0, 180, size=n)
     purchase = start + purchase_day.astype("timedelta64[D]")
 
     estimated_days = rng.integers(5, 18, size=n)
-    state_penalty = rng.choice([0, 0, 1, 2, 3], size=n, p=[0.45, 0.2, 0.2, 0.1, 0.05])
+    # Дальние штаты чаще дают штраф по сроку.
+    cust = rng.choice(customer_states, size=n, p=[0.35, 0.16, 0.12, 0.1, 0.1, 0.07, 0.06, 0.04])
+    far = np.isin(cust, ["BA", "PE", "GO", "RS"])
+    state_penalty = np.where(far, rng.integers(1, 4, size=n), rng.choice([0, 0, 1, 2], size=n))
     random_noise = rng.normal(0, 2, size=n).round().astype(int)
-    delivery_days = np.clip(estimated_days + state_penalty + random_noise, 2, 35)
+    delivery_days = np.clip(estimated_days + state_penalty + random_noise, 2, 40)
     delay_days = delivery_days - estimated_days
 
     freight_base = rng.normal(32, 8, size=n)
@@ -105,9 +109,9 @@ def build_synthetic() -> None:
     df = pd.DataFrame(
         {
             "order_id": [f"ol_{i:05d}" for i in range(n)],
-            "seller_id": [f"sl_{i:04d}" for i in rng.integers(1, 65, size=n)],
+            "seller_id": [f"sl_{i:04d}" for i in rng.integers(1, 120, size=n)],
             "seller_state": rng.choice(seller_states, size=n, p=[0.45, 0.18, 0.12, 0.1, 0.08, 0.07]),
-            "customer_state": rng.choice(customer_states, size=n, p=[0.35, 0.16, 0.12, 0.1, 0.1, 0.07, 0.06, 0.04]),
+            "customer_state": cust,
             "order_purchase_timestamp": pd.to_datetime(purchase),
             "order_estimated_delivery_date": pd.to_datetime(purchase + estimated_days.astype("timedelta64[D]")),
             "order_delivered_customer_date": pd.to_datetime(purchase + delivery_days.astype("timedelta64[D]")),
@@ -120,17 +124,20 @@ def build_synthetic() -> None:
         }
     )
 
-    # Добавляем явные аномалии для пар 53-54.
-    idx = rng.choice(df.index, size=6, replace=False)
-    df.loc[idx, "freight_value"] = (df.loc[idx, "freight_value"] * 2.3).round(2)
-    df.loc[idx, "delivery_days"] = df.loc[idx, "delivery_days"] + rng.integers(8, 16, size=len(idx))
+    # Явные аномалии для пар 53–54 (далеко по freight/delivery).
+    n_anom = 25
+    idx = rng.choice(df.index, size=n_anom, replace=False)
+    df.loc[idx, "freight_value"] = (df.loc[idx, "freight_value"] * 2.8 + 40).round(2)
+    df.loc[idx, "delivery_days"] = df.loc[idx, "delivery_days"] + rng.integers(10, 22, size=len(idx))
     df.loc[idx, "delay_days"] = df.loc[idx, "delivery_days"] - df.loc[idx, "estimated_days"]
     df.loc[idx, "is_late"] = 1
-    df["order_delivered_customer_date"] = df["order_purchase_timestamp"] + pd.to_timedelta(df["delivery_days"], unit="D")
+    df["order_delivered_customer_date"] = df["order_purchase_timestamp"] + pd.to_timedelta(
+        df["delivery_days"], unit="D"
+    )
 
     df = df.sort_values("order_purchase_timestamp").reset_index(drop=True)
     df.to_csv(OUT, index=False)
-    print("wrote synthetic classroom slim:", OUT, "rows:", len(df))
+    print("wrote synthetic classroom slim:", OUT, "rows:", len(df), "late_rate:", round(df["is_late"].mean(), 3))
 
 
 def main() -> None:

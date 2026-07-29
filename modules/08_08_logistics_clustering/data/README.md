@@ -6,7 +6,7 @@
 |---|---|
 | Базовый источник | [Olist Brazilian E-Commerce](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) |
 | Raw-файлы (если доступны) | `olist_orders_dataset.csv`, `olist_order_items_dataset.csv`, `olist_customers_dataset.csv`, `olist_sellers_dataset.csv` в `data/raw/` |
-| Fallback | classroom synthetic с Olist-подобными колонками |
+| Fallback | classroom synthetic (~2000 строк) с Olist-подобными колонками |
 | Скрипт сборки | `make_slim.py` |
 
 ## Файл модуля
