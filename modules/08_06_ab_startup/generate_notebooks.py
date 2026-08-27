@@ -20,19 +20,23 @@ SOL_BANNER = (
     "Не показывать ученикам до сдачи."
 )
 
-LOAD_DATA = (
-    "from pathlib import Path\n"
-    "import numpy as np\n"
-    "import pandas as pd\n\n\n"
-    "def _find(name: str) -> Path:\n"
-    "    for p in (Path(name), Path(f'../../data/{name}'), Path(f'../data/{name}')):\n"
-    "        if p.exists():\n"
-    "            return p.resolve()\n"
-    "    raise FileNotFoundError(f'{name} не найден рядом с ноутбуком')\n\n\n"
-    "CSV_PATH = _find('startup_ab.csv')\n"
-    "df = pd.read_csv(CSV_PATH)\n"
-    "df['variant_b'] = (df['variant'] == 'B').astype(int)\n"
-)
+LOAD_DATA = '''from pathlib import Path
+import numpy as np
+import pandas as pd
+
+
+def _find(name: str):
+    for p in (Path(name), Path(f"../../data/{name}"), Path(f"../data/{name}"), Path(f"../../../data/{name}")):
+        if p.exists():
+            return p.resolve()
+    return "https://raw.githubusercontent.com/gurovic/letovo-ml-profile/main/modules/08_06_ab_startup/data/" + name
+
+
+CSV_PATH = _find("startup_ab.csv")
+df = pd.read_csv(CSV_PATH)
+df["variant_b"] = (df["variant"] == "B").astype(int)
+'''
+
 
 
 def md(source: str):

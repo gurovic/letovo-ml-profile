@@ -12,8 +12,8 @@
 
 | Класс | Файл | Пар |
 |---|---|---:|
-| 8 | [08.md](08.md) | 68 |
-| 8 (unified KTP) | [grade-08.unified.ktp.md](grade-08.unified.ktp.md) | 68 |
+| 8 | [08.md](08.md) | 58 (+5 доп.) |
+| 8 (unified KTP) | [grade-08.unified.ktp.md](grade-08.unified.ktp.md) | 63 в расписании |
 
 **Unified KTP** (формат `grade-NN.unified.ktp.md`, маркеры `{M01 P10 L06}` на каждом уроке): [grade-08.unified.ktp.md](grade-08.unified.ktp.md) — содержание из [08.md](08.md); копия для внешнего репозитория программы: `ai-school-program/data/program/`.
 

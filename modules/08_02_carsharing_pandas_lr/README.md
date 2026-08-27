@@ -1,7 +1,7 @@
 # Краткосрочная аренда: pandas и линейная регрессия
 
 **Класс:** 8  
-**КТП:** пары 9–16  
+**КТП:** пары 9–16 (Draft 4)  
 **Статус:** материалы (уроки, ноутбуки, артефакт)
 
 Сюжет: аналитический отдел краткосрочной аренды «StayLocal» прогнозирует ночную цену по таблице объявлений.
@@ -20,14 +20,16 @@
 
 | Пара | Папка | Роль |
 |---|---|---|
-| 9 | [01_pandas_dataframe](lessons/01_pandas_dataframe/) | введение |
-| 10 | [02_practice_filters](lessons/02_practice_filters/) | отработка |
-| 11 | [03_eda_scatter](lessons/03_eda_scatter/) | введение |
-| 12 | [04_train_test_lr](lessons/04_train_test_lr/) | введение |
-| 13 | [05_practice_metrics](lessons/05_practice_metrics/) | отработка |
-| 14 | [06_try_except_csv](lessons/06_try_except_csv/) | введение |
-| 15 | [07_practice_features](lessons/07_practice_features/) | отработка (+ обзор multi) |
-| 16 | [08_report](lessons/08_report/) | интеграция (сборка + сдача) |
+| 9 | [01_pandas_dataframe](lessons/01_pandas_dataframe/) (+ [filters/](lessons/01_pandas_dataframe/filters/)) | введение + фильтры |
+| 10 | [02_eda_scatter](lessons/02_eda_scatter/) | введение |
+| 11 | [03_train_test_lr](lessons/03_train_test_lr/) | введение |
+| 12 | [04_practice_metrics](lessons/04_practice_metrics/) | отработка |
+| 13 | [05_try_except_csv](lessons/05_try_except_csv/) | введение |
+| 14 | [06_practice_features](lessons/06_practice_features/) | отработка (+ обзор multi) |
+| 15 | [07_report_build](lessons/07_report_build/) | интеграция (сборка) |
+| 16 | [08_report_submit](lessons/08_report_submit/) | интеграция (сдача) |
+
+Перенос Draft 3→4: фильтры **переехали** в подпапку пары 9 (тема не переписывалась); отчёт разнесён на две пары с теми же ноутбуками.
 
 ## Пересборка ноутбуков
 

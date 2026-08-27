@@ -16,7 +16,7 @@
 | **Минимум сдачи** | квартили age; boxplot age/fare по группам; png; краткий вывод по группам |
 | **Деятельность** | Ученик **пишет** код в stubs; assert проверяет диапазон/форму, не готовую формулу ответа |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) (~1 ч) |
-| **Дальше** | bias / ЦПТ / пропуски — [пара 21](../05_bias_clt_missing/LESSON.md) |
+| **Дальше** | [пара 21](../05_bias_clt_missing/LESSON.md) |
 | **Canvas** | Курс 6465, модуль 54690; [урок Colab](https://colab.research.google.com/gist/gurovic/b885fdbe408639efd6b8608745fb2396/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/b885fdbe408639efd6b8608745fb2396/homework.ipynb)) |
 
 ### A. Чего хотим от пары

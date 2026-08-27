@@ -6,7 +6,7 @@
 
 **Смысл для класса:** частоты слов в текстах двух классов отзывов; простой классификатор «позитив / негатив» без pandas и sklearn.
 
-Данные: `TEXTS_POSITIVE`, `TEXTS_NEGATIVE` в [data/module_datasets.py](../data/module_datasets.py).
+Данные: `TEXTS_POSITIVE`, `TEXTS_NEGATIVE` в [data/module_datasets.py](../data/module_datasets.py) (локально или raw GitHub — см. [data/README.md](../data/README.md)).
 
 ---
 

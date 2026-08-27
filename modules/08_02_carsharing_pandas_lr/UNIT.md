@@ -10,14 +10,14 @@
 
 | Пара | Роль | План |
 |---|---|---|
-| 9 | введение | [01_pandas_dataframe](lessons/01_pandas_dataframe/LESSON.md) |
-| 10 | отработка | [02_practice_filters](lessons/02_practice_filters/LESSON.md) |
-| 11 | введение | [03_eda_scatter](lessons/03_eda_scatter/LESSON.md) |
-| 12 | введение | [04_train_test_lr](lessons/04_train_test_lr/LESSON.md) |
-| 13 | отработка | [05_practice_metrics](lessons/05_practice_metrics/LESSON.md) |
-| 14 | введение | [06_try_except_csv](lessons/06_try_except_csv/LESSON.md) |
-| 15 | отработка | [07_practice_features](lessons/07_practice_features/LESSON.md) |
-| 16 | интеграция | [08_report](lessons/08_report/LESSON.md) |
+| 9 | введение + фильтры | [01_pandas_dataframe](lessons/01_pandas_dataframe/LESSON.md) |
+| 10 | введение | [02_eda_scatter](lessons/02_eda_scatter/LESSON.md) |
+| 11 | введение | [03_train_test_lr](lessons/03_train_test_lr/LESSON.md) |
+| 12 | отработка | [04_practice_metrics](lessons/04_practice_metrics/LESSON.md) |
+| 13 | введение | [05_try_except_csv](lessons/05_try_except_csv/LESSON.md) |
+| 14 | отработка | [06_practice_features](lessons/06_practice_features/LESSON.md) |
+| 15 | интеграция | [07_report_build](lessons/07_report_build/LESSON.md) |
+| 16 | интеграция | [08_report_submit](lessons/08_report_submit/LESSON.md) |
 
 ---
 
@@ -140,7 +140,7 @@
 | Исследование | Сравнивать альтернативные признаки как гипотезы |
 | Самоорганизация | Фиксировать шаги эксперимента в отчёте |
 
-**Процесс формирования:** пары 9–12 — осмотр и разбиение; 13–15 — модель, устойчивость кода, сравнение признаков; 16 — отчёт и сдача.
+**Процесс формирования:** пара 9 — схема таблицы и фильтры; 10–11 — EDA и LR; 12–14 — метрики, устойчивость, сравнение признаков; 15–16 — сборка и сдача отчёта.
 
 ---
 
@@ -148,14 +148,14 @@
 
 | Пара КТП | Тема | Часы | Роль | LESSON | Вклад в артефакт |
 |---|---|---|---|---|---|
-| 9 | pandas: `read_csv`, DataFrame, object / feature / target | 2 | введение | [LESSON](lessons/01_pandas_dataframe/LESSON.md) | схема данных |
-| 10 | Практика: выборка, фильтры, типы | 2 | отработка | [LESSON](lessons/02_practice_filters/LESSON.md) | срезы таблицы |
-| 11 | EDA: `describe()`, scatter признак → цена | 2 | введение | [LESSON](lessons/03_eda_scatter/LESSON.md) | график и гипотеза |
-| 12 | train/test; `LinearRegression` fit/predict (один признак) | 2 | введение | [LESSON](lessons/04_train_test_lr/LESSON.md) | обученная модель |
-| 13 | Практика: MSE, R², сравнение прогнозов | 2 | отработка | [LESSON](lessons/05_practice_metrics/LESSON.md) | метрики на test |
-| 14 | `try/except` при загрузке и очистке CSV | 2 | введение | [LESSON](lessons/06_try_except_csv/LESSON.md) | устойчивая загрузка |
-| 15 | Практика: другой признак; обзорно несколько признаков | 2 | отработка | [LESSON](lessons/07_practice_features/LESSON.md) | таблица сравнения + one vs two |
-| 16 | Мини-отчёт — сборка и сдача | 2 | интеграция | [LESSON](lessons/08_report/LESSON.md) | итоговый документ |
+| 9 | pandas: DataFrame, feature/target; фильтры и срезы | 2 | введение + отработка | [LESSON](lessons/01_pandas_dataframe/LESSON.md) | схема + срезы |
+| 10 | EDA: `describe()`, scatter признак → цена | 2 | введение | [LESSON](lessons/02_eda_scatter/LESSON.md) | график и гипотеза |
+| 11 | train/test; `LinearRegression` fit/predict (один признак) | 2 | введение | [LESSON](lessons/03_train_test_lr/LESSON.md) | обученная модель |
+| 12 | Практика: MSE, R², сравнение прогнозов | 2 | отработка | [LESSON](lessons/04_practice_metrics/LESSON.md) | метрики на test |
+| 13 | `try/except` при загрузке и очистке CSV | 2 | введение | [LESSON](lessons/05_try_except_csv/LESSON.md) | устойчивая загрузка |
+| 14 | Практика: другой признак; обзорно несколько признаков | 2 | отработка | [LESSON](lessons/06_practice_features/LESSON.md) | таблица сравнения |
+| 15 | Мини-отчёт — сборка | 2 | интеграция | [LESSON](lessons/07_report_build/LESSON.md) | черновик отчёта |
+| 16 | Мини-отчёт — продолжение и сдача | 2 | интеграция | [LESSON](lessons/08_report_submit/LESSON.md) | итоговый документ |
 
 ---
 
@@ -176,10 +176,10 @@
 
 | Тип | Трудность | Адресация |
 |---|---|---|
-| Data | Путают индекс строки и значение признака | пары 9–10: явные имена столбцов |
-| ML | Метрики на train | пары 12–14: правило test-only для оценки |
+| Data | Путают индекс строки и значение признака | пара 9: имена столбцов и фильтры |
+| ML | Метрики на train | пары 11–12: правило test-only для оценки |
 | Code | `SettingWithCopyWarning` | минимизировать цепочки присваивания; копия при очистке |
-| Math | R² «чем больше, тем лучше» без контекста | пара 13: связь с разбросом цели |
+| Math | R² «чем больше, тем лучше» без контекста | пара 12: связь с разбросом цели |
 
 ---
 
@@ -224,7 +224,7 @@
 | Этап | Содержание |
 |---|---|
 | До начала | Достаточно ли модуля 1 для связи `predict_price` → `model.predict`? Риск: sklearn воспринимают как чёрный ящик. |
-| Во время | Пара 14 (`try/except`) часто съедает время — не смешивать с первым знакомством pandas. Multi-feature сжат в конец пары 15 — не раздувать. |
+| Во время | Пара 13 (`try/except`) часто съедает время — не смешивать с первым знакомством pandas. Multi-feature сжат в конец пары 14 — не раздувать. Отчёт: пара 15 сборка, 16 сдача. |
 | После | Проверить переход к EDA на «Титанике» без повторного объяснения `read_csv`. |
 
 ---

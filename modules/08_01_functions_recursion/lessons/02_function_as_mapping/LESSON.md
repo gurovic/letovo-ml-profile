@@ -14,7 +14,7 @@
 | **Первая фраза** | «Сегодня одно правило цены превратим в функцию, научимся мерить ошибку и выбирать параметры по данным — всё в одном ноутбуке» |
 | **Минимум сдачи** | (1) зелёные assert у `predict_price`, `batch_predict`, `mae`; (2) в §5 записан лучший коэффициент и MAE; (3) устно: почему `print` нельзя подставить в метрику |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
-| **Дальше** | transform — [пара 3](../03_parameters_and_return/LESSON.md) |
+| **Дальше** | [пара 3](../03_parameters_and_return/LESSON.md) |
 | **Canvas** | Модуль 54688: план и решения скрыты; [урок (Colab)](https://colab.research.google.com/gist/gurovic/cfc377717ba193c512a9e88593405ab8/lesson.ipynb); ДЗ — Assignment «Домашнее задание» ([Colab в описании](https://colab.research.google.com/gist/gurovic/15255de29367ddc86fb8d141f63b5cfd/homework.ipynb)) |
 
 ### A. Чего хотим от пары

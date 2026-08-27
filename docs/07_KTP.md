@@ -28,7 +28,7 @@
 
 | Класс | Документ | Статус |
 |---|---|---|
-| 8 | [08.md](ktp/08.md) | Draft 3, **68 пар** (4 ч/нед × 34 нед); описания — [08_module_descriptions.md](ktp/08_module_descriptions.md); unified — [grade-08.unified.ktp.md](ktp/grade-08.unified.ktp.md); линии — [grade08_line_rivers.html](ktp/grade08_line_rivers.html) |
+| 8 | [08.md](ktp/08.md) | Draft 4: **58** обяз. пар (M1–M10) + **5** доп. DP (M11, 59–63) + резерв; описания — [08_module_descriptions.md](ktp/08_module_descriptions.md); unified — [grade-08.unified.ktp.md](ktp/grade-08.unified.ktp.md) |
 | 9 | — | TODO |
 | 10 | — | TODO |
 | 11 | — | TODO |
@@ -59,11 +59,11 @@
 
 Строка КТП → `modules/<grade>_<nn>_<slug>/` (Unit Planner).
 
-**8 класс:** 11 модулей, **68 пар** — индекс в [README.md](../README.md#модули-8-класса); КТП: [ktp/08.md](ktp/08.md); описания модулей для учителя: [ktp/08_module_descriptions.md](ktp/08_module_descriptions.md). Журнал последних проходов агентов по модулям: [AGENT_PASSES.md](AGENT_PASSES.md).
+**8 класс:** 10 обязательных модулей (**58** пар) + доп. DP (`08_09_courier_dp`, пары **59–63**) — индекс в [README.md](../README.md#модули-8-класса); КТП: [ktp/08.md](ktp/08.md); описания: [ktp/08_module_descriptions.md](ktp/08_module_descriptions.md). Журнал проходов: [AGENT_PASSES.md](AGENT_PASSES.md).
 
 **Описания модулей (1–2 абзаца для учителя):** [ktp/08_module_descriptions.md](ktp/08_module_descriptions.md) — горизонт всего блока; не дублировать в `UNIT.md` §2. Правила написания — в том же файле.
 
-Пример: пары 1–8 → [modules/08_01_functions_recursion/](../modules/08_01_functions_recursion/) (вводная + функции); пары 9–16 → [modules/08_02_carsharing_pandas_lr/](../modules/08_02_carsharing_pandas_lr/).
+Пример: пары 1–8 → [modules/08_01_functions_recursion/](../modules/08_01_functions_recursion/); пары 9–16 → [modules/08_02_carsharing_pandas_lr/](../modules/08_02_carsharing_pandas_lr/); доп. 59–63 → [modules/08_09_courier_dp/](../modules/08_09_courier_dp/).
 
 ### Матрица навыков
 

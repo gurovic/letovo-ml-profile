@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Generate lesson notebooks for module 08_02 (KTP pairs 9–16).
 
 Source of truth for .ipynb: edit this file, then run it.
@@ -13,17 +13,32 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 
-LOAD_DATA = (
-    "from pathlib import Path\n"
-    "import pandas as pd\n\n\n"
-    "def find_listings_csv() -> Path:\n"
-    "    for p in (Path('listings.csv'), Path('../../data/listings.csv'), Path('../data/listings.csv')):\n"
-    "        if p.exists():\n"
-    "            return p.resolve()\n"
-    "    raise FileNotFoundError('listings.csv не найден')\n\n\n"
-    "LISTINGS_PATH = find_listings_csv()\n"
-    "df = pd.read_csv(LISTINGS_PATH)\n"
+LOAD_DATA = '''from pathlib import Path
+import pandas as pd
+
+
+LISTINGS_URL = (
+    "https://raw.githubusercontent.com/gurovic/letovo-ml-profile/main/"
+    "modules/08_02_carsharing_pandas_lr/data/listings.csv"
 )
+
+
+def find_listings_csv():
+    for p in (
+        Path("listings.csv"),
+        Path("../listings.csv"),
+        Path("../../data/listings.csv"),
+        Path("../../../data/listings.csv"),
+        Path("../data/listings.csv"),
+    ):
+        if p.exists():
+            return p.resolve()
+    return LISTINGS_URL
+
+
+LISTINGS_PATH = find_listings_csv()
+df = pd.read_csv(LISTINGS_PATH)
+'''
 
 IMPORTS_MPL = "import matplotlib.pyplot as plt\n"
 IMPORTS_SKLEARN = (
@@ -355,7 +370,7 @@ def add_lesson01() -> None:
 
 
 def add_lesson02() -> None:
-    base = "lessons/02_practice_filters"
+    base = "lessons/01_pandas_dataframe/filters"
     lesson = nb(
         md(
             "# Практика: фильтры и типы\n\n"
@@ -594,7 +609,7 @@ def add_lesson02() -> None:
 
 
 def add_lesson03() -> None:
-    base = "lessons/03_eda_scatter"
+    base = "lessons/02_eda_scatter"
     lesson = nb(
         md(
             "# EDA: describe и scatter\n\n"
@@ -882,7 +897,7 @@ def add_lesson03() -> None:
 
 
 def add_lesson04() -> None:
-    base = "lessons/04_train_test_lr"
+    base = "lessons/03_train_test_lr"
     lesson = nb(
         md(
             "# train/test и LinearRegression\n\n"
@@ -1124,7 +1139,7 @@ def add_lesson04() -> None:
 
 
 def add_lesson05() -> None:
-    base = "lessons/05_practice_metrics"
+    base = "lessons/04_practice_metrics"
     starter = LOAD_DATA + IMPORTS_SKLEARN
     lesson = nb(
         md(
@@ -1384,7 +1399,7 @@ def add_lesson05() -> None:
 
 
 def add_lesson06() -> None:
-    base = "lessons/06_try_except_csv"
+    base = "lessons/05_try_except_csv"
     stubs = (
         "from pathlib import Path\n"
         "import pandas as pd\n\n\n"
@@ -1415,14 +1430,25 @@ def add_lesson06() -> None:
         "        if col not in frame.columns:\n"
         "            raise ValueError(f'нет столбца {col}')\n"
     )
-    path_finder = (
-        "LISTINGS_PATH = None\n"
-        "for p in (Path('listings.csv'), Path('../../data/listings.csv'), Path('../data/listings.csv')):\n"
-        "    if p.exists():\n"
-        "        LISTINGS_PATH = p.resolve()\n"
-        "        break\n"
-        "assert LISTINGS_PATH is not None\n"
-    )
+    path_finder = '''LISTINGS_URL = (
+    "https://raw.githubusercontent.com/gurovic/letovo-ml-profile/main/"
+    "modules/08_02_carsharing_pandas_lr/data/listings.csv"
+)
+LISTINGS_PATH = None
+for p in (
+    Path("listings.csv"),
+    Path("../listings.csv"),
+    Path("../../data/listings.csv"),
+    Path("../../../data/listings.csv"),
+    Path("../data/listings.csv"),
+):
+    if p.exists():
+        LISTINGS_PATH = p.resolve()
+        break
+if LISTINGS_PATH is None:
+    LISTINGS_PATH = LISTINGS_URL
+assert LISTINGS_PATH is not None
+'''
     lesson = nb(
         md(
             "# try/except при загрузке CSV\n\n"
@@ -1661,7 +1687,7 @@ def add_lesson06() -> None:
 
 def add_lesson07() -> None:
     """Pair 15: compare features + brief multi-feature overview."""
-    base = "lessons/07_practice_features"
+    base = "lessons/06_practice_features"
     fit_stub = (
         "def eval_feature(feature_name: str, random_state: int = 42):\n"
         "    \"\"\"Вернуть (mse, r2) LinearRegression на одном признаке, test 20%, seed.\"\"\"\n"
@@ -1894,13 +1920,13 @@ def add_lesson07() -> None:
 
 
 def add_lesson08() -> None:
-    """Pair 16: report draft + submit in one pair."""
-    base = "lessons/08_report"
+    """Pair 15: report build (pair 16 submit reuses the same notebooks via copy)."""
+    base = "lessons/07_report_build"
     lesson = nb(
         md(
-            "# Мини-отчёт: сборка и сдача\n\n"
-            "Одна пара: каркас по PROJECT → числа на test → сравнение признаков → "
-            "рекомендация → сдача `report_starter.ipynb`."
+            "# Мини-отчёт: сборка\n\n"
+            "Пара 15: каркас по PROJECT → числа на test → сравнение признаков → "
+            "черновик рекомендации. Сдача — пара 16 (те же файлы)."
         ),
         code(LOAD_DATA + IMPORTS_SKLEARN + IMPORTS_MPL),
         md(
@@ -2171,11 +2197,20 @@ def main() -> None:
     add_report_starter()
     for rel, notebook in NOTEBOOKS.items():
         write(rel, notebook)
+    # Pair 16 = same report notebooks (topic moved, not rewritten)
+    build = ROOT / "lessons" / "07_report_build"
+    submit = ROOT / "lessons" / "08_report_submit"
+    if build.is_dir() and submit.is_dir():
+        for name in ("lesson.ipynb", "homework.ipynb", "solutions.ipynb"):
+            src = build / name
+            if src.exists():
+                shutil.copy2(src, submit / name)
+                print("synced", submit / name)
     src_csv = ROOT / "data" / "listings.csv"
     if src_csv.exists():
         targets = [ROOT / "artifact" / "starter" / "listings.csv"]
-        for lesson_dir in (ROOT / "lessons").iterdir():
-            if lesson_dir.is_dir() and not lesson_dir.name.startswith("_"):
+        for lesson_dir in (ROOT / "lessons").rglob("*"):
+            if lesson_dir.is_dir() and (lesson_dir / "lesson.ipynb").exists():
                 targets.append(lesson_dir / "listings.csv")
         for dst in targets:
             shutil.copy(src_csv, dst)

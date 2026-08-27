@@ -10,11 +10,11 @@
 | Длительность | 2 академических часа (**80 минут**) |
 | Роль | введение + отработка (рекурсия; серия lambda/pipeline) |
 | Пререквизиты | Пары 2–6: функции, `return`, отладка, метрики |
-| **Открыть** | [lesson.ipynb](lesson.ipynb) — сначала `NESTED_LIST` / `CATEGORY_TREE`, затем блоки A→B→C |
+| **Открыть** | [lesson.ipynb](lesson.ipynb) — сначала `NESTED_LIST` / `CATEGORY_TREE`, затем блоки A→B→C; импорт `module_datasets`: локально или raw GitHub (Colab) |
 | **Первая фраза** | «Сначала разворачиваем вложенные данные рекурсией; потом — короткие функции и цепочка шагов» |
 | **Минимум сдачи** | (1) `flatten` + assert; (2) `walk_categories` с отступом; (3) A1 `extract_ids`; (4) B1–B2 lambda; (5) C1 `apply_pipeline` на `FEATURE_ROWS[0]` |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — A3, B3, C2 + Fibonacci-рефлексия (~1 ч) |
-| **Дальше** | артефакт — [пара 8](../08_artifact/LESSON.md) |
+| **Дальше** | [пара 8](../08_artifact/LESSON.md) |
 | **Canvas** | Модуль 54688: планы старых пар 7–8 (gist recursion / pipeline); ДЗ Assignment **198700** (последнее ДЗ модуля; пара 8 без ДЗ). **Canvas republish:** объединить страницы para-7 и para-8 под пару КТП 7 |
 
 ### A. Чего хотим от пары
@@ -83,7 +83,7 @@ Fibonacci — антипример в ДЗ (markdown), не на паре. Уг�
 | Поле | Значение |
 |---|---|
 | Центральная идея | Рекурсия с базовым случаем + lambda/pipeline как композиция функций над данными |
-| Данные | `NESTED_LIST`, `CATEGORY_TREE`, `NESTED_API_RESPONSE`, `MODEL_RUNS`, `FEATURE_ROWS` — [data/module_datasets.py](../../data/module_datasets.py) |
+| Данные | `NESTED_LIST`, `CATEGORY_TREE`, `NESTED_API_RESPONSE`, `MODEL_RUNS`, `FEATURE_ROWS` — [data/module_datasets.py](../../data/module_datasets.py); в Colab — raw GitHub ([data/README.md](../../data/README.md)) |
 
 ### Результаты обучения
 

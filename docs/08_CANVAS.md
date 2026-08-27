@@ -352,6 +352,8 @@ python scripts/canvas_api.py raw courses --param enrollment_type=teacher --param
 
 **Не использовать** nbviewer — ученик работает в Colab, не в просмотрщике.
 
+**Данные (CSV / `module_datasets.py`):** в Colab из gist соседние файлы **не** появляются в cwd. Канон загрузки в ноутбуках: сначала локальный путь репозитория, иначе `https://raw.githubusercontent.com/gurovic/letovo-ml-profile/main/modules/…/data/…`. Это **машинный** URL файла данных, не ссылка ученику «открой репозиторий». Паттерн уже в модулях 1–10; `08_11` данных не читает.
+
 Название элемента урока — `Ноутбук урока` (§11.1). ДЗ — только Assignment `Домашнее задание`.
 
 **Инструменты gist (на выбор):** веб-интерфейс gist.github.com; `gh gist create file.ipynb --public`. Токены gist — в `.env`, не в docs.

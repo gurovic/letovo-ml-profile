@@ -27,10 +27,23 @@ import csv
 
 
 def find_data(name):
-    for path in (Path(name), Path("../../data") / name):
+    import urllib.request
+    for path in (
+        Path(name),
+        Path("../") / name,
+        Path("../../data") / name,
+        Path("../data") / name,
+        Path("../../../data") / name,
+    ):
         if path.exists():
             return path.resolve()
-    raise FileNotFoundError(f"{name} не найден")
+    url = (
+        "https://raw.githubusercontent.com/gurovic/letovo-ml-profile/main/"
+        "modules/08_09_courier_dp/data/" + name
+    )
+    dest = Path(name)
+    urllib.request.urlretrieve(url, dest)
+    return dest.resolve()
 
 
 def load_coin_cases():

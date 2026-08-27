@@ -15,17 +15,32 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 DATA_CSV = ROOT / "data" / "titanic.csv"
 
-LOAD_DATA = (
-    "from pathlib import Path\n"
-    "import pandas as pd\n\n\n"
-    "def find_titanic_csv() -> Path:\n"
-    "    for p in (Path('titanic.csv'), Path('../../data/titanic.csv'), Path('../data/titanic.csv')):\n"
-    "        if p.exists():\n"
-    "            return p.resolve()\n"
-    "    raise FileNotFoundError('titanic.csv не найден — положите файл рядом с ноутбуком')\n\n\n"
-    "TITANIC_PATH = find_titanic_csv()\n"
-    "df = pd.read_csv(TITANIC_PATH)\n"
+LOAD_DATA = '''from pathlib import Path
+import pandas as pd
+
+
+DATA_URL = (
+    "https://raw.githubusercontent.com/gurovic/letovo-ml-profile/main/modules/08_03_titanic_eda/data/titanic.csv"
 )
+
+
+def find_titanic_csv():
+    for p in (
+        Path("titanic.csv"),
+        Path("../titanic.csv"),
+        Path("../../data/titanic.csv"),
+        Path("../data/titanic.csv"),
+        Path("../../../data/titanic.csv"),
+    ):
+        if p.exists():
+            return p.resolve()
+    return DATA_URL
+
+
+TITANIC_PATH = find_titanic_csv()
+df = pd.read_csv(TITANIC_PATH)
+'''
+
 
 IMPORTS_MPL = "import matplotlib.pyplot as plt\n"
 
@@ -1282,7 +1297,7 @@ def add_lesson06() -> None:
 
 def add_lesson07() -> None:
     """Pair 23: EDA report draft + submit (old 28+29)."""
-    base = "lessons/07_eda_report"
+    base = "lessons/08_eda_report"
     lesson = nb(
         md(
             "# EDA-отчёт: сборка и сдача (без модели)\n\n"
@@ -1501,7 +1516,7 @@ def main() -> None:
         "lessons/04_practice_boxplot",
         "lessons/05_bias_clt_missing",
         "lessons/06_practice_groups",
-        "lessons/07_eda_report",
+        "lessons/08_eda_report",
     ]
     for rel, notebook in NOTEBOOKS.items():
         write(rel, notebook)

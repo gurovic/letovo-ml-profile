@@ -227,3 +227,6 @@ modules/**/artifact/*.zip
 
 # Inside Airbnb raw cache (module 08_02)
 modules/08_02_carsharing_pandas_lr/data/_cache/
+
+# Simulation reports
+sim/results/

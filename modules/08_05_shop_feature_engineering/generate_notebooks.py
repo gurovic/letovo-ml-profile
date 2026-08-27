@@ -17,15 +17,21 @@ DIRS = (
     "01_feature_types_apply", "02_practice_apply_orders", "03_rfm_groupby",
     "04_practice_aggregates", "05_logging_raise", "06_practice_pipeline",
 )
-LOAD = """from pathlib import Path
+LOAD = '''from pathlib import Path
 import pandas as pd
 import numpy as np
 
 def find_csv(name):
-    for path in (Path(name), Path("../../data") / name):
+    for path in (
+        Path(name),
+        Path("../") / name,
+        Path("../../data") / name,
+        Path("../data") / name,
+        Path("../../../data") / name,
+    ):
         if path.exists():
             return path.resolve()
-    raise FileNotFoundError(f"{name} не найден рядом с ноутбуком или в ../../data")
+    return "https://raw.githubusercontent.com/gurovic/letovo-ml-profile/main/modules/08_05_shop_feature_engineering/data/" + name
 
 orders = pd.read_csv(find_csv("orders_slim.csv"), parse_dates=["order_purchase_timestamp", "order_delivered_customer_date"])
 customers = pd.read_csv(find_csv("customers_slim.csv"))
@@ -33,7 +39,8 @@ payments = pd.read_csv(find_csv("payments_slim.csv"))
 assert len(orders) and len(customers) and len(payments)
 assert orders["order_id"].is_unique and customers["customer_id"].is_unique
 print(f"orders={len(orders)}, customers={len(customers)}, payments={len(payments)}")
-"""
+'''
+
 INTRO = """
 Работаем как команда CRM маркетплейса: из трёх связанных таблиц нужно получить
 объяснимые признаки, а не просто добиться вывода без ошибки. Перед каждой

@@ -5,6 +5,20 @@
 | `listings.csv` | Учебный срез объявлений Airbnb (Porto, ~300 строк) |
 | `generate_listings.py` | Пересборка CSV: Inside Airbnb → фильтр → sample (seed 42); при сбое сети — synthetic |
 
+## Загрузка в ноутбуке (локально / Colab)
+
+Порядок как в модуле 1: сначала файл на диске, иначе **raw GitHub**.
+
+```python
+LISTINGS_URL = (
+    "https://raw.githubusercontent.com/gurovic/letovo-ml-profile/main/"
+    "modules/08_02_carsharing_pandas_lr/data/listings.csv"
+)
+# find_listings_csv() → Path или LISTINGS_URL; pd.read_csv принимает оба
+```
+
+В материалах для учеников — только raw-URL данных, не обзор репозитория.
+
 ## Источник
 
 - **Inside Airbnb**, город Porto (Norte, Portugal), снимок `2024-12-14`

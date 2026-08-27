@@ -28,12 +28,19 @@ import numpy as np
 import pandas as pd
 
 
-def find_orders_csv() -> Path:
-    for path in (Path("orders_slim.csv"), Path("../../data/orders_slim.csv")):
+def find_orders_csv():
+    for path in (
+        Path("orders_slim.csv"),
+        Path("../orders_slim.csv"),
+        Path("../../data/orders_slim.csv"),
+        Path("../data/orders_slim.csv"),
+        Path("../../../data/orders_slim.csv"),
+    ):
         if path.exists():
             return path.resolve()
-    raise FileNotFoundError(
-        "orders_slim.csv не найден рядом с ноутбуком или в ../../data/"
+    return (
+        "https://raw.githubusercontent.com/gurovic/letovo-ml-profile/main/"
+        "modules/08_08_logistics_clustering/data/orders_slim.csv"
     )
 
 

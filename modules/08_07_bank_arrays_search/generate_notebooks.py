@@ -222,10 +222,16 @@ import pandas as pd
 
 
 def find_csv(name):
-    for path in (Path(name), Path("../../data") / name, Path("../data") / name):
+    for path in (
+        Path(name),
+        Path("../") / name,
+        Path("../../data") / name,
+        Path("../data") / name,
+        Path("../../../data") / name,
+    ):
         if path.exists():
             return path.resolve()
-    raise FileNotFoundError(f"{name} не найден рядом с ноутбуком или в data/")
+    return "https://raw.githubusercontent.com/gurovic/letovo-ml-profile/main/modules/08_07_bank_arrays_search/data/" + name
 
 
 unsorted_df = pd.read_csv(find_csv("bank_transactions_unsorted.csv"))

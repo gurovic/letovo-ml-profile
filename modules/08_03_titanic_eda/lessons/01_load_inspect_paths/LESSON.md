@@ -16,7 +16,7 @@
 | **Минимум сдачи** | shape 891×15; `survival_rate`; NA age/embarked; роли столбцов; png в `figures/`; `NO_MODEL_YET` |
 | **Деятельность** | Ученик **пишет** код в stubs; assert проверяет диапазон/форму, не готовую формулу ответа |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) (~1 ч) |
-| **Дальше** | практика осмотра — [пара 18](../02_practice_inspect/LESSON.md) |
+| **Дальше** | [пара 18](../02_practice_inspect/LESSON.md) |
 | **Canvas** | Курс 6465, модуль 54690; [урок Colab](https://colab.research.google.com/gist/gurovic/85d0d71c8de72063202de742366c2a64/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/85d0d71c8de72063202de742366c2a64/homework.ipynb)) |
 
 ### A. Чего хотим от пары

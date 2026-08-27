@@ -14,7 +14,7 @@
 | **Первая фраза** | «Контракты с прошлой пары — те же; данные и вопросы — новые: другая выборка, два признака, порог как решение, цепочка transform» |
 | **Минимум сдачи** | (1) describe на `LAB_SCORES`; (2) scale двух списков с assert; (3) порог с ровно 4 сдавшими на `LAB_SCORES`; (4) `apply_transform` + describe после scale |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
-| **Дальше** | метрики и отладка — [пара 5](../05_scope_and_debugging/LESSON.md) |
+| **Дальше** | [пара 5](../05_scope_and_debugging/LESSON.md) |
 | **Canvas** | Модуль 54688: план [wiki](https://canvas.letovo.ru/courses/6465/pages/para-4-plan-uroka-dlia-priepodavatielia) (скрыт); [урок Colab](https://colab.research.google.com/gist/gurovic/b2932e06a264060214da958de1b26ddb/lesson.ipynb); ДЗ Assignment 198692 |
 
 ### A. Чего хотим от пары

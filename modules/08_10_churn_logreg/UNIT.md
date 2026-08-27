@@ -1,8 +1,8 @@
 # Unit Planner: логистическая регрессия и venv
 
 **Класс:** 8  
-**Статус:** перепроектирован под планку модуля 1; Canvas не опубликован  
-**Длительность:** 5 пар по КТП (10 академических часов)
+**Статус:** перепроектирован под планку модуля 1; Canvas: —  
+**Длительность:** 4 пар по КТП (8 академических часов) — Draft 4
 
 **Сквозная линия модуля:** сигмоида → logreg fit/predict → метрики дисбаланса → CLI → venv → README эксперимента.
 
@@ -16,7 +16,7 @@
 |---|---|
 | Название | Логистическая регрессия и venv |
 | Класс | 8 |
-| Длительность (оценка) | 10 академических часов (5 пар КТП) |
+| Длительность (оценка) | 8 академических часов (4 пар КТП 51–54) |
 | Сюжет модуля | Аналитик кампании банка: кому звонить в первую очередь, чтобы повысить долю подписок на депозит при ограниченном бюджете обзвона |
 | Место в траектории 8–11 | Классификация с **вероятностью**; первый **воспроизводимый** ML-эксперимент в терминале |
 
@@ -127,25 +127,17 @@
 
 ---
 
-## 11. Последовательность (план по парам КТП)
+## 11. Последовательность уроков
 
-| Пара КТП | Тема | Часы | Задача на Bank Marketing | Вклад в артефакт |
-|---|---|---|---|---|
-| 60 | Логистическая регрессия — вероятность, сигмоида, порог; запрет leakage `duration` | 2 | Осмотр `bank_marketing_slim.csv`; доля `yes`; **запрет `duration`** | схема модели + список признаков |
-| 61 | Практика: fit/predict, выбор порога (без `duration`) | 2 | `LogisticRegression` без `duration`; порог под precision/recall | обученная модель |
-| 62 | Метрики на несбалансированных классах | 2 | Сравнение accuracy vs F1 / recall при дисбалансе `y` | таблица метрик |
-| 63 | Практика: метрики; CLI — запуск скрипта | 2 | `python train_cli.py --data ...` на slim | CLI-вход |
-| 64 | venv, requirements.txt, README эксперимента — сдача | 2 | Изоляция зависимостей + README: данные, leakage, порог, метрики | итоговый README |
+| # | Урок | Роль | Часы | Пара КТП | LESSON | Data/ML-фокус |
+|---|---|---|---|---|---|---|
+| 1 | Логистическая регрессия — вероятность, сигмоида, порог | введение | 2 | 60 | [01](lessons/01_logreg_sigmoid_threshold/LESSON.md) | осмотр CSV; доля `yes`; запрет `duration` |
+| 2 | Практика: fit/predict, выбор порога | отработка | 2 | 61 | [02](lessons/02_practice_fit_threshold/LESSON.md) | `LogisticRegression` без `duration`; порог под precision/recall |
+| 3 | Метрики на несбалансированных классах | введение | 2 | 62 | [03](lessons/03_imbalance_metrics/LESSON.md) | accuracy vs F1 / recall при дисбалансе `y` |
+| 4 | Практика: метрики; CLI — запуск скрипта | отработка | 2 | 63 | [04](lessons/04_practice_metrics_cli/LESSON.md) | `python train_cli.py --data ...` |
+| 5 | venv, requirements.txt, README эксперимента — сдача | интеграция | 2 | 64 | [05](lessons/05_venv_requirements_readme/LESSON.md) | README: данные, leakage, порог, метрики |
 
-### Ссылки на уроки (заполненная §13)
-
-| Пара КТП | Урок |
-|---|---|
-| 60 | [lessons/01_logreg_sigmoid_threshold/LESSON.md](lessons/01_logreg_sigmoid_threshold/LESSON.md) |
-| 61 | [lessons/02_practice_fit_threshold/LESSON.md](lessons/02_practice_fit_threshold/LESSON.md) |
-| 62 | [lessons/03_imbalance_metrics/LESSON.md](lessons/03_imbalance_metrics/LESSON.md) |
-| 63 | [lessons/04_practice_metrics_cli/LESSON.md](lessons/04_practice_metrics_cli/LESSON.md) |
-| 64 | [lessons/05_venv_requirements_readme/LESSON.md](lessons/05_venv_requirements_readme/LESSON.md) |
+Итого: 5 пар КТП (10 ч). Карточка §13 (зона E) — в каждом `LESSON.md`. Артефакт: [artifact/PROJECT.md](artifact/PROJECT.md).
 
 ---
 
@@ -246,14 +238,14 @@
 
 ## 19. Чек-лист модуля
 
-- [x] план по парам КТП согласован с [docs/ktp/08.md](../../docs/ktp/08.md)
+- [x] план по парам КТП согласован с [docs/ktp/08.md](../../docs/ktp/08.md) (модуль 10 = пары 60–64)
 - [x] рефлексия автора (§17), глоссарий (§18)
 - [x] `LESSON.md` зон A–E и §13 заполнены для пар 60-64
 - [x] `generate_notebooks.py` создаёт 15 глубоких ноутбуков: stubs + assert, ДЗ Part A + Challenge, секционные решения
 - [x] CSV копируется в каждую папку урока; `train_cli.py` и `artifact/PROJECT.md` собраны
 - [x] `duration` запрещена в каждом modeling pipeline и проверяется assert / CLI gate
 - [x] `python scripts/run_solutions.py modules/08_10_churn_logreg` -> 5 passed
-- [ ] Canvas не опубликован
+- [ ] Canvas: —
 
 ---
 
@@ -263,6 +255,3 @@
 
 ---
 
-## 21. Согласование с КТП
-
-Годовой КТП (модуль 10 = пары 60–64): [docs/ktp/08.md](../../docs/ktp/08.md)

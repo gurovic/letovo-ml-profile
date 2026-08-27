@@ -14,7 +14,7 @@
 | **Первая фраза** | «Метрика — такая же функция, как predict: баг в метрике — и вы думаете, что модель хорошая, хотя она плохая» |
 | **Минимум сдачи** | (1) `my_accuracy` совпадает с эталоном; (2) `count_correct` без `global`; (3) рабочий `predict_pass`; (4) устно: почему `accuracy_buggy` даёт `None` |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
-| **Дальше** | серия метрик — [пара 6](../06_practice_metrics/LESSON.md) |
+| **Дальше** | [пара 6](../06_practice_metrics/LESSON.md) |
 | **Canvas** | Модуль 54688: [план](https://canvas.letovo.ru/courses/6465/pages/para-5-plan-uroka-dlia-priepodavatielia) (скрыт); [урок Colab](https://colab.research.google.com/gist/gurovic/02894e0df1c20220b44e6b451ba96f2d/lesson.ipynb); ДЗ Assignment 198693 |
 
 ### A. Чего хотим от пары

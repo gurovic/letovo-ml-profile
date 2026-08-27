@@ -16,7 +16,7 @@
 | **Минимум сдачи** | hist/bar png; rates sex×pclass; WHEN_A; share deck; CAREFUL_CLAIM; summary |
 | **Деятельность** | Ученик **пишет** код в stubs; assert проверяет диапазон/форму, не готовую формулу ответа |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) (~1 ч) |
-| **Дальше** | сборка и сдача отчёта — [пара 23](../07_eda_report/LESSON.md) |
+| **Дальше** | [пара 23](../07_kmeans_dbscan_eda/LESSON.md) |
 | **Canvas** | Курс 6465, модуль 54690; [урок Colab](https://colab.research.google.com/gist/gurovic/c168f803fb3b23ee1aabca4dd0780c85/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/c168f803fb3b23ee1aabca4dd0780c85/homework.ipynb)) |
 
 ### A. Чего хотим от пары

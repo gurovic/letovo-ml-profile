@@ -1,0 +1,826 @@
+{
+  "modules": {
+    "08_01_functions_recursion": 56225,
+    "08_02_carsharing_pandas_lr": 56226,
+    "08_03_titanic_eda": 56227,
+    "08_04_mnist_knn": 56228,
+    "08_05_shop_feature_engineering": 56229,
+    "08_06_ab_startup": 56230,
+    "08_07_bank_arrays_search": 56231,
+    "08_08_logistics_clustering": 56232,
+    "08_10_churn_logreg": 56233,
+    "08_11_virtual_polygon": 56234,
+    "08_09_courier_dp": 56235
+  },
+  "pairs": {
+    "1": {
+      "orientation": true,
+      "page": "para-1-plan-uroka-dlia-priepodavatielia"
+    },
+    "2": {
+      "pair": 2,
+      "page": "para-2-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503611,
+        503612,
+        503613,
+        503614
+      ],
+      "homework": 207526,
+      "gist_id": "0ea316100e0e8b082099240605e8d981"
+    },
+    "3": {
+      "pair": 3,
+      "page": "para-3-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503616,
+        503617,
+        503618,
+        503619
+      ],
+      "homework": 207527,
+      "gist_id": "b7494e5d152bd59b70cc55e3ae97e928"
+    },
+    "4": {
+      "pair": 4,
+      "page": "para-4-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503621,
+        503622,
+        503623,
+        503624
+      ],
+      "homework": 207528,
+      "gist_id": "8947d3618d9839afe10dd1d481a9a7b1"
+    },
+    "5": {
+      "pair": 5,
+      "page": "para-5-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503626,
+        503627,
+        503628,
+        503629
+      ],
+      "homework": 207529,
+      "gist_id": "b5ba1ff726ad2a5b867d31d90aa0b1aa"
+    },
+    "6": {
+      "pair": 6,
+      "page": "para-6-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503631,
+        503632,
+        503633,
+        503634
+      ],
+      "homework": 207530,
+      "gist_id": "bd748e58cb16d953e7ca8e28ba1c1394"
+    },
+    "7": {
+      "pair": 7,
+      "page": "para-7-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503636,
+        503637,
+        503638,
+        503639
+      ],
+      "homework": 207531,
+      "gist_id": "65792704a1335db9a2e85cd495e49499"
+    },
+    "8": {
+      "pair": 8,
+      "page": "para-8-plan-uroka-dlia-priepodavatielia",
+      "artifact": true,
+      "extras": {
+        "pair": 9,
+        "docs": {
+          "zip": {
+            "id": 3163259,
+            "display_name": "text_stats_starter.zip",
+            "url": "https://canvas.letovo.ru/files/3163259/download?download_frd=1&verifier=BGDVBoW3b57RaBwJqPn1tjdqHO7mRcUgc5Yg5zl7",
+            "download_href": "/courses/6465/files/3163259/download?download_frd=1",
+            "local_path": "C:\\Users\\Гуровиц Владимир\\letovo-ml-profile\\modules\\08_01_functions_recursion\\artifact\\text_stats_starter.zip"
+          },
+          "pages": {
+            "artifact-project": {
+              "page_id": 312688,
+              "url": "artifact-project"
+            },
+            "artifact-starter-readme": {
+              "page_id": 312689,
+              "url": "artifact-starter-readme"
+            },
+            "artifact-starter-code": {
+              "page_id": 312690,
+              "url": "artifact-starter-code"
+            }
+          },
+          "download_href": "/courses/6465/files/3163259/download?download_frd=1"
+        },
+        "page": {
+          "page_id": 312683,
+          "url": "para-9-artifact-materialy"
+        },
+        "materials_item": {
+          "id": 503643,
+          "type": "Page",
+          "title": "Материалы артефакта",
+          "page_url": "para-9-artifact-materialy",
+          "published": true
+        },
+        "doc_items": [
+          {
+            "id": 503644,
+            "type": "Page",
+            "title": "Задание: text_stats",
+            "page_url": "artifact-project",
+            "published": true
+          },
+          {
+            "id": 503645,
+            "type": "Page",
+            "title": "Как делать (шаги)",
+            "page_url": "artifact-starter-readme",
+            "published": true
+          },
+          {
+            "id": 503646,
+            "type": "File",
+            "content_id": 3163259,
+            "title": "Стартовый код (zip)"
+          }
+        ],
+        "submit_item": null
+      },
+      "submit": {
+        "assignment_id": 207532,
+        "id": 503647,
+        "type": "Assignment",
+        "title": "Сдача артефакта text_stats",
+        "published": true
+      }
+    },
+    "9": {
+      "pair": 9,
+      "page": "para-9-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503648,
+        503649,
+        503650,
+        503651
+      ],
+      "homework": 207533,
+      "gist_id": "c8b0da61ed238293495bdb0bebce10bf"
+    },
+    "10": {
+      "pair": 10,
+      "page": "para-10-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503653,
+        503654,
+        503655,
+        503656
+      ],
+      "homework": 207534,
+      "gist_id": "f918686fc6fffe0253af6b8e7dd5c52a"
+    },
+    "11": {
+      "pair": 11,
+      "page": "para-11-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503658,
+        503659,
+        503660,
+        503661
+      ],
+      "homework": 207535,
+      "gist_id": "a7cfbaae938d7dad4219f89a1fd15926"
+    },
+    "12": {
+      "pair": 12,
+      "page": "para-12-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503663,
+        503664,
+        503665,
+        503666
+      ],
+      "homework": 207536,
+      "gist_id": "c8925643b5d3e50c5c64808a3b738e20"
+    },
+    "13": {
+      "pair": 13,
+      "page": "para-13-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503668,
+        503669,
+        503670,
+        503671
+      ],
+      "homework": 207537,
+      "gist_id": "9121b460bb41b474fe6cf2fbbd865109"
+    },
+    "14": {
+      "pair": 14,
+      "page": "para-14-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503673,
+        503674,
+        503675,
+        503676
+      ],
+      "homework": 207538,
+      "gist_id": "0ab4b87aee91c5c3d99039b868928b16"
+    },
+    "15": {
+      "pair": 15,
+      "page": "para-15-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503678,
+        503679,
+        503680,
+        503681
+      ],
+      "homework": 207539,
+      "gist_id": "4ec291116c1a043848f001e524f517b9"
+    },
+    "16": {
+      "pair": 16,
+      "page": "para-16-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503683,
+        503684,
+        503685,
+        503686
+      ],
+      "homework": 207540,
+      "gist_id": "309b19ed62cf789e49532c5df6532e7b"
+    },
+    "17": {
+      "pair": 17,
+      "page": "para-17-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503688,
+        503689,
+        503690,
+        503691
+      ],
+      "homework": 207541,
+      "gist_id": "3ea1fc7ea0678f3aaaaf1686612355f9"
+    },
+    "18": {
+      "pair": 18,
+      "page": "para-18-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503693,
+        503694,
+        503695,
+        503696
+      ],
+      "homework": 207542,
+      "gist_id": "fe82fee9b7ca115c043e501d2882fb82"
+    },
+    "19": {
+      "pair": 19,
+      "page": "para-19-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503698,
+        503699,
+        503700,
+        503701
+      ],
+      "homework": 207543,
+      "gist_id": "8bace2afd0cb27d84c3720e6a959802c"
+    },
+    "20": {
+      "pair": 20,
+      "page": "para-20-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503703,
+        503704,
+        503705,
+        503706
+      ],
+      "homework": 207544,
+      "gist_id": "524d09dc930c6407a1c5dd325f5b2de4"
+    },
+    "21": {
+      "pair": 21,
+      "page": "para-21-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503708,
+        503709,
+        503710,
+        503711
+      ],
+      "homework": 207545,
+      "gist_id": "dce8a4c1dbc801764e38fa44b423fad6"
+    },
+    "22": {
+      "pair": 22,
+      "page": "para-22-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503713,
+        503714,
+        503715,
+        503716
+      ],
+      "homework": 207546,
+      "gist_id": "ae48107540ae024cf6c759a26e825c60"
+    },
+    "23": {
+      "pair": 23,
+      "page": "para-23-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503718,
+        503719,
+        503720,
+        503721
+      ],
+      "homework": 207547,
+      "gist_id": "04e202e1355cde2a3f69c77d3980f24f"
+    },
+    "24": {
+      "pair": 24,
+      "page": "para-24-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503723,
+        503724,
+        503725,
+        503726
+      ],
+      "homework": 207548,
+      "gist_id": "cdaa20560e79683b589b30d6e6ca1c41"
+    },
+    "25": {
+      "pair": 25,
+      "page": "para-25-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503728,
+        503729,
+        503730,
+        503731
+      ],
+      "homework": 207549,
+      "gist_id": "bcb11afe9ea27fc5af6a7a3fe0b680fa"
+    },
+    "26": {
+      "pair": 26,
+      "page": "para-26-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503733,
+        503734,
+        503735,
+        503736
+      ],
+      "homework": 207550,
+      "gist_id": "399986c8e480dad3fc261e71f1c44da6"
+    },
+    "27": {
+      "pair": 27,
+      "page": "para-27-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503738,
+        503739,
+        503740,
+        503741
+      ],
+      "homework": 207551,
+      "gist_id": "26205b5a11e20d20c90d5644e6180141"
+    },
+    "28": {
+      "pair": 28,
+      "page": "para-28-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503743,
+        503744,
+        503745,
+        503746
+      ],
+      "homework": 207552,
+      "gist_id": "54cbcbbd34ba869d2d2834b50e71f2b6"
+    },
+    "29": {
+      "pair": 29,
+      "page": "para-29-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503748,
+        503749,
+        503750,
+        503751
+      ],
+      "homework": 207553,
+      "gist_id": "b2537bbb4f274765abdfd42caaca5f84"
+    },
+    "30": {
+      "pair": 30,
+      "page": "para-30-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503753,
+        503754,
+        503755,
+        503756
+      ],
+      "homework": 207554,
+      "gist_id": "749ecd985b2e3394af100f5e72671789"
+    },
+    "31": {
+      "pair": 31,
+      "page": "para-31-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503758,
+        503759,
+        503760,
+        503761
+      ],
+      "homework": 207555,
+      "gist_id": "5b606edac1ebd29da360140b000e0189"
+    },
+    "32": {
+      "pair": 32,
+      "page": "para-32-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503763,
+        503764,
+        503765,
+        503766
+      ],
+      "homework": 207556,
+      "gist_id": "7af54e96c3df2915c3b3fa41dcba2bbe"
+    },
+    "33": {
+      "pair": 33,
+      "page": "para-33-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503768,
+        503769,
+        503770,
+        503771
+      ],
+      "homework": 207557,
+      "gist_id": "2d52485a411f3575b94a50234146278f"
+    },
+    "34": {
+      "pair": 34,
+      "page": "para-34-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503773,
+        503774,
+        503775,
+        503776
+      ],
+      "homework": 207558,
+      "gist_id": "684f64e61479e8593c386f49031cc922"
+    },
+    "35": {
+      "pair": 35,
+      "page": "para-35-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503778,
+        503779,
+        503780,
+        503781
+      ],
+      "homework": 207559,
+      "gist_id": "962b29a9a17c3219d0d44f8df07b1738"
+    },
+    "36": {
+      "pair": 36,
+      "page": "para-36-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503783,
+        503784,
+        503785,
+        503786
+      ],
+      "homework": 207560,
+      "gist_id": "9fe9b0494e5ddfc537f0ce5acad2dead"
+    },
+    "37": {
+      "pair": 37,
+      "page": "para-37-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503788,
+        503789,
+        503790,
+        503791
+      ],
+      "homework": 207561,
+      "gist_id": "cbccb2b35388b80d413470cc5eabd765"
+    },
+    "38": {
+      "pair": 38,
+      "page": "para-38-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503793,
+        503794,
+        503795,
+        503796
+      ],
+      "homework": 207562,
+      "gist_id": "6d2453452a9525ccc5032813ecfcdff2"
+    },
+    "39": {
+      "pair": 39,
+      "page": "para-39-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503798,
+        503799,
+        503800,
+        503801
+      ],
+      "homework": 207563,
+      "gist_id": "16609696b53630d655ba777acc06e1cf"
+    },
+    "40": {
+      "pair": 40,
+      "page": "para-40-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503803,
+        503804,
+        503805,
+        503806
+      ],
+      "homework": 207564,
+      "gist_id": "d8f39739930acf56f87464fa2c3d0b00"
+    },
+    "41": {
+      "pair": 41,
+      "page": "para-41-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503808,
+        503809,
+        503810,
+        503811
+      ],
+      "homework": 207565,
+      "gist_id": "9b8789e471fa189fad0b4a24fcedca8b"
+    },
+    "42": {
+      "pair": 42,
+      "page": "para-42-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503813,
+        503814,
+        503815,
+        503816
+      ],
+      "homework": 207566,
+      "gist_id": "a18f18a8df372e1d04d810747e3cf324"
+    },
+    "43": {
+      "pair": 43,
+      "page": "para-43-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503818,
+        503819,
+        503820,
+        503821
+      ],
+      "homework": 207567,
+      "gist_id": "8717823feaf81d6c759935fa1aa8d2f7"
+    },
+    "44": {
+      "pair": 44,
+      "page": "para-44-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503823,
+        503824,
+        503825,
+        503826
+      ],
+      "homework": 207568,
+      "gist_id": "52a830cf8f85737b86f5721ebf0a704a"
+    },
+    "45": {
+      "pair": 45,
+      "page": "para-45-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503828,
+        503829,
+        503830,
+        503831
+      ],
+      "homework": 207569,
+      "gist_id": "a7f0b9209f48fdc63e39cf626fc6455b"
+    },
+    "46": {
+      "pair": 46,
+      "page": "para-46-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503833,
+        503834,
+        503835,
+        503836
+      ],
+      "homework": 207570,
+      "gist_id": "9375fdeb6446a085703a7670a7c8be5d"
+    },
+    "47": {
+      "pair": 47,
+      "page": "para-47-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503838,
+        503839,
+        503840,
+        503841
+      ],
+      "homework": 207571,
+      "gist_id": "8630f64f92f1d9e30f909c51bba67d97"
+    },
+    "48": {
+      "pair": 48,
+      "page": "para-48-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503843,
+        503844,
+        503845,
+        503846
+      ],
+      "homework": 207572,
+      "gist_id": "3601ee475b2f892297a3a5cf7c9d72e1"
+    },
+    "49": {
+      "pair": 49,
+      "page": "para-49-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503848,
+        503849,
+        503850,
+        503851
+      ],
+      "homework": 207573,
+      "gist_id": "d9287c594c45d2148b0305a4d3787aa4"
+    },
+    "50": {
+      "pair": 50,
+      "page": "para-50-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503853,
+        503854,
+        503855,
+        503856
+      ],
+      "homework": 207574,
+      "gist_id": "88fb7da14d00ddbe74c1cca23744b8d1"
+    },
+    "51": {
+      "pair": 51,
+      "page": "para-51-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503858,
+        503859,
+        503860,
+        503861
+      ],
+      "homework": 207575,
+      "gist_id": "792188dbee2f0d1ad4493d0c05ad4cfc"
+    },
+    "52": {
+      "pair": 52,
+      "page": "para-52-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503863,
+        503864,
+        503865,
+        503866
+      ],
+      "homework": 207576,
+      "gist_id": "e345d5b9c4384aef27241bbfdf49c4c6"
+    },
+    "53": {
+      "pair": 53,
+      "page": "para-53-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503868,
+        503869,
+        503870,
+        503871
+      ],
+      "homework": 207577,
+      "gist_id": "1d3687637aebd9b130c4b9c01b50e106"
+    },
+    "54": {
+      "pair": 54,
+      "page": "para-54-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503873,
+        503874,
+        503875,
+        503876
+      ],
+      "homework": 207578,
+      "gist_id": "0d11c484f5e19b47794fb6c97882a322"
+    },
+    "55": {
+      "pair": 55,
+      "page": "para-55-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503878,
+        503879,
+        503880,
+        503881
+      ],
+      "homework": 207579,
+      "gist_id": "84340ec2ca1429962d39a0e7577a9f25"
+    },
+    "56": {
+      "pair": 56,
+      "page": "para-56-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503883,
+        503884,
+        503885,
+        503886
+      ],
+      "homework": 207580,
+      "gist_id": "3e7ff1728bada442703bd8c7113ef60e"
+    },
+    "57": {
+      "pair": 57,
+      "page": "para-57-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503888,
+        503889,
+        503890,
+        503891
+      ],
+      "homework": 207581,
+      "gist_id": "f1234d9af81c029bec016b2e160e9dec"
+    },
+    "58": {
+      "pair": 58,
+      "page": "para-58-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503893,
+        503894,
+        503895,
+        503896
+      ],
+      "homework": 207582,
+      "gist_id": "f402f134dd24e1b2c7201b6843c96e36"
+    },
+    "59": {
+      "pair": 59,
+      "page": "para-59-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503898,
+        503899,
+        503900,
+        503901
+      ],
+      "homework": 207583,
+      "gist_id": "731fda11dab8c4068a7480907e7c930f"
+    },
+    "60": {
+      "pair": 60,
+      "page": "para-60-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503903,
+        503904,
+        503905,
+        503906
+      ],
+      "homework": 207584,
+      "gist_id": "e342d4893bde474a1f2595db32a552b8"
+    },
+    "61": {
+      "pair": 61,
+      "page": "para-61-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503908,
+        503909,
+        503910,
+        503911
+      ],
+      "homework": 207585,
+      "gist_id": "444b00fab1669caca808b715398b808a"
+    },
+    "62": {
+      "pair": 62,
+      "page": "para-62-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503913,
+        503914,
+        503915,
+        503916
+      ],
+      "homework": 207586,
+      "gist_id": "27b8382e39c16d3b16699367a97f9943"
+    },
+    "63": {
+      "pair": 63,
+      "page": "para-63-plan-uroka-dlia-priepodavatielia",
+      "items": [
+        503918,
+        503919,
+        503920,
+        503921
+      ],
+      "homework": 207587,
+      "gist_id": "28dd81d6e38da5f15ca878b765aa07c7"
+    }
+  }
+}

@@ -16,7 +16,7 @@
 | **Минимум сдачи** | фильтры sex×pclass; value_counts; ложный вывод опровергнут; частоты embarked |
 | **Деятельность** | Ученик **пишет** код в stubs; assert проверяет диапазон/форму, не готовую формулу ответа |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) (~1 ч) |
-| **Дальше** | mean/median/std — [пара 19](../03_mean_median_std/LESSON.md) |
+| **Дальше** | [пара 19](../03_mean_median_std/LESSON.md) |
 | **Canvas** | Курс 6465, модуль 54690; [урок Colab](https://colab.research.google.com/gist/gurovic/b8142cb5d78d874f1f2604bbfee8ba91/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/b8142cb5d78d874f1f2604bbfee8ba91/homework.ipynb)) |
 
 ### A. Чего хотим от пары

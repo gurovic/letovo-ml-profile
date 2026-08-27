@@ -15,11 +15,14 @@
   test_naive_classify_*      → naive_classify
 """
 
+import importlib.util
 import sys
+import urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+_MODULE_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(_MODULE_ROOT))
 
 from text_stats import (
     apply_pipeline,
@@ -32,7 +35,22 @@ from text_stats import (
     word_frequencies,
     analyze_text,
 )
-from data.module_datasets import TEXTS_NEGATIVE, TEXTS_POSITIVE
+
+try:
+    from data.module_datasets import TEXTS_NEGATIVE, TEXTS_POSITIVE
+except ImportError:
+    _RAW = (
+        "https://raw.githubusercontent.com/gurovic/letovo-ml-profile/main/"
+        "modules/08_01_functions_recursion/data/module_datasets.py"
+    )
+    _dest = Path("module_datasets.py")
+    urllib.request.urlretrieve(_RAW, _dest)
+    _spec = importlib.util.spec_from_file_location("module_datasets", _dest)
+    _md = importlib.util.module_from_spec(_spec)
+    assert _spec.loader is not None
+    _spec.loader.exec_module(_md)
+    TEXTS_NEGATIVE = _md.TEXTS_NEGATIVE
+    TEXTS_POSITIVE = _md.TEXTS_POSITIVE
 
 
 def test_tokenize():

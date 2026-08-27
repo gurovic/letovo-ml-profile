@@ -16,7 +16,7 @@
 | **Минимум сдачи** | ручной mean/median; pandas mean/median/std; WHEN_MEDIAN; сравнение групп |
 | **Деятельность** | Ученик **пишет** код в stubs; assert проверяет диапазон/форму, не готовую формулу ответа |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) (~1 ч) |
-| **Дальше** | практика boxplot — [пара 20](../04_practice_boxplot/LESSON.md) |
+| **Дальше** | [пара 20](../04_practice_boxplot/LESSON.md) |
 | **Canvas** | Курс 6465, модуль 54690; [урок Colab](https://colab.research.google.com/gist/gurovic/5ba1b63f70d7a9e3b28ac29b31b94542/lesson.ipynb); ДЗ — Assignment ([Colab](https://colab.research.google.com/gist/gurovic/5ba1b63f70d7a9e3b28ac29b31b94542/homework.ipynb)) |
 
 ### A. Чего хотим от пары

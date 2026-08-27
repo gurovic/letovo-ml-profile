@@ -15,18 +15,32 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 DATA_CSV = ROOT / "data" / "digits.csv"
 
-LOAD_DATA = (
-    "from pathlib import Path\n"
-    "import pandas as pd\n\n\n"
-    "def find_digits_csv() -> Path:\n"
-    "    for p in (Path('digits.csv'), Path('../../data/digits.csv'), Path('../data/digits.csv')):\n"
-    "        if p.exists():\n"
-    "            return p.resolve()\n"
-    "    raise FileNotFoundError('digits.csv не найден — положите файл рядом с ноутбуком')\n\n\n"
-    "DIGITS_PATH = find_digits_csv()\n"
-    "df = pd.read_csv(DIGITS_PATH)\n"
-    "PIXELS = [c for c in df.columns if c.startswith('p')]\n"
+LOAD_DATA = '''from pathlib import Path
+import pandas as pd
+
+
+DATA_URL = (
+    "https://raw.githubusercontent.com/gurovic/letovo-ml-profile/main/modules/08_04_mnist_knn/data/digits.csv"
 )
+
+
+def find_digits_csv():
+    for p in (
+        Path("digits.csv"),
+        Path("../digits.csv"),
+        Path("../../data/digits.csv"),
+        Path("../data/digits.csv"),
+        Path("../../../data/digits.csv"),
+    ):
+        if p.exists():
+            return p.resolve()
+    return DATA_URL
+
+
+DIGITS_PATH = find_digits_csv()
+df = pd.read_csv(DIGITS_PATH)
+'''
+
 
 SHOW_DIGIT = (
     "import matplotlib.pyplot as plt\n\n\n"

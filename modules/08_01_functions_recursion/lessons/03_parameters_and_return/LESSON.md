@@ -14,7 +14,7 @@
 | **Первая фраза** | «Предсказание мы уже умеем; сегодня — функции, которые **описывают** и **готовят** числа в списке, с ясным входом и выходом» |
 | **Минимум сдачи** | (1) зелёные assert у `describe_numbers`, `min_max_scale`, `grade_stats`; (2) исправлен `collect_outliers_ok` — два вызова независимы; (3) устно: зачем `return` кортежа, а не `print` |
 | **Домашнее задание** | [homework.ipynb](homework.ipynb) — сдать заполненный ноутбук (~1 ч) |
-| **Дальше** | серия transform — [пара 4](../04_practice_transform/LESSON.md) |
+| **Дальше** | [пара 4](../04_practice_transform/LESSON.md) |
 | **Canvas** | Модуль 54688: план [wiki](https://canvas.letovo.ru/courses/6465/pages/para-3-plan-uroka-dlia-priepodavatielia) (скрыт); [урок Colab](https://colab.research.google.com/gist/gurovic/005984c15b4303c3eeab4b593d58b32c/lesson.ipynb); ДЗ Assignment 198691 |
 
 ### A. Чего хотим от пары
