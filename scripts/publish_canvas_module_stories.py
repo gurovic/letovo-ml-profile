@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from canvas_api import canvas_config, canvas_get, canvas_post, canvas_put, require_canvas_auth  # noqa: E402
+from canvas_api import canvas_config, canvas_delete, canvas_get, canvas_post, canvas_put, require_canvas_auth  # noqa: E402
 from lesson_md_html import lesson_md_to_canvas_html  # noqa: E402
 from publish_canvas_lesson import add_module_item  # noqa: E402
 
@@ -88,13 +88,25 @@ def upsert_story_page(course_id: int, slug: str, markdown: str) -> dict:
     return page
 
 
+def find_story_items(items: list[dict]) -> list[dict]:
+    return [i for i in items if i.get("title") == STORY_ITEM_TITLE and i.get("type") == "Page"]
+
+
 def find_story_item(items: list[dict], page_url: str) -> dict | None:
-    for item in items:
-        if item.get("title") == STORY_ITEM_TITLE and item.get("type") == "Page":
-            return item
+    for item in find_story_items(items):
         if item.get("page_url") == page_url:
             return item
-    return None
+    story_items = find_story_items(items)
+    return story_items[0] if story_items else None
+
+
+def resolve_page_url(course_id: int, module_id: int, default_slug: str) -> str:
+    """Update the wiki page the module item actually links to (Canvas may use another slug)."""
+    items = canvas_get(f"courses/{course_id}/modules/{module_id}/items", paginate=True)
+    existing = find_story_item(items, default_slug)
+    if existing and existing.get("page_url"):
+        return str(existing["page_url"])
+    return default_slug
 
 
 def ensure_story_item(
@@ -105,10 +117,16 @@ def ensure_story_item(
     position: int = 1,
 ) -> dict:
     items = canvas_get(f"courses/{course_id}/modules/{module_id}/items", paginate=True)
-    existing = find_story_item(items, page_url)
-    if existing:
+    story_items = find_story_items(items)
+    primary = next((i for i in story_items if i.get("page_url") == page_url), None)
+    if primary is None and story_items:
+        primary = story_items[0]
+    for dup in story_items:
+        if primary and dup["id"] != primary["id"]:
+            canvas_delete(f"courses/{course_id}/modules/{module_id}/items/{dup['id']}")
+    if primary:
         canvas_put(
-            f"courses/{course_id}/modules/{module_id}/items/{existing['id']}",
+            f"courses/{course_id}/modules/{module_id}/items/{primary['id']}",
             {
                 "module_item[title]": STORY_ITEM_TITLE,
                 "module_item[page_url]": page_url,
@@ -116,7 +134,8 @@ def ensure_story_item(
                 "module_item[position]": str(position),
             },
         )
-        return existing
+        primary["page_url"] = page_url
+        return primary
     return add_module_item(
         course_id,
         module_id,
@@ -135,14 +154,16 @@ def publish_module(
     course_id: int,
     module_dir: str,
     module_id: int,
-    page_url: str,
+    default_page_url: str,
 ) -> dict:
     unit_path = ROOT / "modules" / module_dir / "UNIT.md"
     mod_title, story = extract_story(unit_path)
     markdown = f"## {mod_title}\n\n{story}\n"
+    page_url = resolve_page_url(course_id, module_id, default_page_url)
     page = upsert_story_page(course_id, page_url, markdown)
-    item = ensure_story_item(course_id, module_id, page.get("url", page_url))
-    return {"module": module_dir, "page": page.get("url", page_url), "item_id": item.get("id")}
+    actual_url = page.get("url", page_url) if isinstance(page, dict) else page_url
+    item = ensure_story_item(course_id, module_id, actual_url)
+    return {"module": module_dir, "page": actual_url, "item_id": item.get("id")}
 
 
 def main() -> None:
