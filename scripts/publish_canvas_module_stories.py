@@ -42,7 +42,7 @@ def load_module_ids(path: Path) -> dict[str, int]:
 
 
 def extract_story(unit_path: Path) -> tuple[str, str]:
-    text = unit_path.read_text(encoding="utf-8")
+    text = unit_path.read_text(encoding="utf-8-sig")
     title_m = re.search(r"^#\s+Unit Planner:\s*(.+)$", text, re.MULTILINE)
     title = title_m.group(1).strip() if title_m else unit_path.parent.name
     story_m = re.search(

@@ -1,0 +1,57 @@
+[
+  {
+    "module": "08_01_functions_recursion",
+    "page": "modul-1-sujet",
+    "item_id": 507213
+  },
+  {
+    "module": "08_02_carsharing_pandas_lr",
+    "page": "modul-2-sujet",
+    "item_id": 507214
+  },
+  {
+    "module": "08_03_titanic_eda",
+    "page": "modul-3-sujet",
+    "item_id": 507215
+  },
+  {
+    "module": "08_04_mnist_knn",
+    "page": "modul-4-sujet",
+    "item_id": 507216
+  },
+  {
+    "module": "08_05_shop_feature_engineering",
+    "page": "modul-5-sujet",
+    "item_id": 507217
+  },
+  {
+    "module": "08_06_ab_startup",
+    "page": "modul-6-sujet",
+    "item_id": 507218
+  },
+  {
+    "module": "08_07_bank_arrays_search",
+    "page": "modul-7-sujet",
+    "item_id": 507219
+  },
+  {
+    "module": "08_08_logistics_clustering",
+    "page": "modul-8-sujet",
+    "item_id": 507220
+  },
+  {
+    "module": "08_10_churn_logreg",
+    "page": "modul-9-sujet",
+    "item_id": 507221
+  },
+  {
+    "module": "08_11_virtual_polygon",
+    "page": "modul-10-sujet",
+    "item_id": 507222
+  },
+  {
+    "module": "08_09_courier_dp",
+    "page": "modul-11-sujet",
+    "item_id": 507223
+  }
+]
