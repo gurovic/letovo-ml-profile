@@ -343,15 +343,21 @@ python scripts/canvas_api.py raw courses --param enrollment_type=teacher --param
 
 ### 11.3.0. Сюжет модуля (wiki)
 
-В начале каждого Canvas-модуля — wiki **«Сюжет модуля»** (опубликован, виден ученикам). Источник — `UNIT.md` §1 «Описание сюжета»; краткая выжимка — в `README.md` модуля.
+В начале каждого Canvas-модуля — **один** пункт **«Сюжет модуля»** (Page, position 1). Источник — `UNIT.md` §1 «Описание сюжета»; краткая выжимка — в `README.md` модуля.
 
-Публикация / обновление:
+| Элемент | Значение |
+|---|---|
+| Пункт в модуле | «Сюжет модуля» |
+| Заголовок wiki | строка «Сюжет модуля» из таблицы §1 (русский tagline) |
+| Тело wiki | только текст «Описание сюжета» (без h2 и без латиницы) |
+
+Публикация / обновление (скрипт снимает дубликаты и legacy-страницы вроде `siuzhiet-modulia`):
 
 ```bash
 python scripts/publish_canvas_module_stories.py
 ```
 
-Slug страницы: `modul-1-sujet` … `modul-11-sujet`. Карта module_id — `modules/canvas_publish_draft4.json`.
+Первичный slug для PUT: `modul-1-sujet` … `modul-11-sujet` (Canvas может транслитерировать url после смены заголовка). Карта module_id — `modules/canvas_publish_draft4.json`; результат — `modules/canvas_module_stories.json`.
 
 | 3 | Для каждого `.ipynb` — **GitHub Gist** с содержимым из запушенной версии |
 | 4 | В Canvas — `lesson.ipynb` как **ExternalUrl** → Colab; `homework.ipynb` — **Assignment** (§11.3.2) |

@@ -20,6 +20,7 @@ from publish_canvas_lesson import add_module_item  # noqa: E402
 
 COURSE_ID = 6465
 STORY_ITEM_TITLE = "Сюжет модуля"
+DEFAULT_SLUG_RE = re.compile(r"^modul-\d+-sujet$")
 
 MODULES: list[tuple[str, int, str]] = [
     ("08_01_functions_recursion", 1, "modul-1-sujet"),
@@ -34,6 +35,9 @@ MODULES: list[tuple[str, int, str]] = [
     ("08_11_virtual_polygon", 10, "modul-10-sujet"),
     ("08_09_courier_dp", 11, "modul-11-sujet"),
 ]
+
+# Orphan slugs from earlier publishes (M1).
+LEGACY_PAGE_SLUGS = frozenset({"siuzhiet-modulia"})
 
 
 def load_module_ids(path: Path) -> dict[str, int]:
@@ -71,10 +75,26 @@ def wiki_page_exists(course_id: int, slug: str) -> bool:
         raise
 
 
-def upsert_story_page(course_id: int, slug: str, markdown: str) -> dict:
-    body = lesson_md_to_canvas_html(markdown, course_id=course_id)
+def delete_wiki_page(course_id: int, slug: str) -> None:
+    if not wiki_page_exists(course_id, slug):
+        return
+    try:
+        canvas_delete(f"courses/{course_id}/pages/{slug}")
+    except SystemExit:
+        pass
+
+
+def upsert_story_page(
+    course_id: int,
+    slug: str,
+    *,
+    page_title: str,
+    story_text: str,
+) -> dict:
+    """Wiki title = русский tagline; тело = только текст сюжета (без h2)."""
+    body = lesson_md_to_canvas_html(story_text, course_id=course_id)
     payload = {
-        "wiki_page[title]": slug,
+        "wiki_page[title]": page_title,
         "wiki_page[body]": body,
         "wiki_page[published]": "true",
         "wiki_page[editing_role]": "teachers",
@@ -83,87 +103,75 @@ def upsert_story_page(course_id: int, slug: str, markdown: str) -> dict:
         page = canvas_put(f"courses/{course_id}/pages/{slug}", payload)
     else:
         page = canvas_post(f"courses/{course_id}/pages", payload)
-    if isinstance(page, dict) and page.get("url") != slug:
-        raise SystemExit(f"Canvas changed page url to {page.get('url')!r} (wanted {slug!r})")
+    if not isinstance(page, dict):
+        raise SystemExit(f"Unexpected Canvas page response: {page!r}")
     return page
 
 
-def find_story_items(items: list[dict]) -> list[dict]:
-    return [i for i in items if i.get("title") == STORY_ITEM_TITLE and i.get("type") == "Page"]
+def is_story_module_item(item: dict, default_slug: str) -> bool:
+    if item.get("type") != "Page":
+        return False
+    title = str(item.get("title") or "")
+    page_url = str(item.get("page_url") or "")
+    if title == STORY_ITEM_TITLE:
+        return True
+    if page_url == default_slug or title == default_slug:
+        return True
+    if page_url in LEGACY_PAGE_SLUGS or title in LEGACY_PAGE_SLUGS:
+        return True
+    if DEFAULT_SLUG_RE.match(page_url) or DEFAULT_SLUG_RE.match(title):
+        return True
+    return False
 
 
-def find_story_item(items: list[dict], page_url: str) -> dict | None:
-    for item in find_story_items(items):
-        if item.get("page_url") == page_url:
-            return item
-    story_items = find_story_items(items)
-    return story_items[0] if story_items else None
-
-
-def resolve_page_url(course_id: int, module_id: int, default_slug: str) -> str:
-    """Update the wiki page the module item actually links to (Canvas may use another slug)."""
+def remove_story_module_items(course_id: int, module_id: int, default_slug: str) -> None:
     items = canvas_get(f"courses/{course_id}/modules/{module_id}/items", paginate=True)
-    existing = find_story_item(items, default_slug)
-    if existing and existing.get("page_url"):
-        return str(existing["page_url"])
-    return default_slug
+    for item in items:
+        if is_story_module_item(item, default_slug):
+            canvas_delete(f"courses/{course_id}/modules/{module_id}/items/{item['id']}")
 
 
-def ensure_story_item(
-    course_id: int,
-    module_id: int,
-    page_url: str,
-    *,
-    position: int = 1,
-) -> dict:
-    items = canvas_get(f"courses/{course_id}/modules/{module_id}/items", paginate=True)
-    story_items = find_story_items(items)
-    primary = next((i for i in story_items if i.get("page_url") == page_url), None)
-    if primary is None and story_items:
-        primary = story_items[0]
-    for dup in story_items:
-        if primary and dup["id"] != primary["id"]:
-            canvas_delete(f"courses/{course_id}/modules/{module_id}/items/{dup['id']}")
-    if primary:
-        canvas_put(
-            f"courses/{course_id}/modules/{module_id}/items/{primary['id']}",
-            {
-                "module_item[title]": STORY_ITEM_TITLE,
-                "module_item[page_url]": page_url,
-                "module_item[published]": "true",
-                "module_item[position]": str(position),
-            },
-        )
-        primary["page_url"] = page_url
-        return primary
-    return add_module_item(
-        course_id,
-        module_id,
-        {
-            "module_item[title]": STORY_ITEM_TITLE,
-            "module_item[type]": "Page",
-            "module_item[page_url]": page_url,
-            "module_item[indent]": "0",
-            "module_item[published]": "true",
-            "module_item[position]": str(position),
-        },
-    )
+def cleanup_legacy_pages(course_id: int, active_slug: str, default_slug: str) -> None:
+    for slug in LEGACY_PAGE_SLUGS | {default_slug}:
+        if slug != active_slug:
+            delete_wiki_page(course_id, slug)
 
 
 def publish_module(
     course_id: int,
     module_dir: str,
     module_id: int,
-    default_page_url: str,
+    default_slug: str,
 ) -> dict:
     unit_path = ROOT / "modules" / module_dir / "UNIT.md"
-    mod_title, story = extract_story(unit_path)
-    markdown = f"## {mod_title}\n\n{story}\n"
-    page_url = resolve_page_url(course_id, module_id, default_page_url)
-    page = upsert_story_page(course_id, page_url, markdown)
-    actual_url = page.get("url", page_url) if isinstance(page, dict) else page_url
-    item = ensure_story_item(course_id, module_id, actual_url)
-    return {"module": module_dir, "page": actual_url, "item_id": item.get("id")}
+    page_title, story = extract_story(unit_path)
+    page = upsert_story_page(
+        course_id,
+        default_slug,
+        page_title=page_title,
+        story_text=story,
+    )
+    active_slug = str(page.get("url") or default_slug)
+    remove_story_module_items(course_id, module_id, default_slug)
+    item = add_module_item(
+        course_id,
+        module_id,
+        {
+            "module_item[title]": STORY_ITEM_TITLE,
+            "module_item[type]": "Page",
+            "module_item[page_url]": active_slug,
+            "module_item[indent]": "0",
+            "module_item[published]": "true",
+            "module_item[position]": "1",
+        },
+    )
+    cleanup_legacy_pages(course_id, active_slug, default_slug)
+    return {
+        "module": module_dir,
+        "page": active_slug,
+        "page_title": page.get("title", page_title),
+        "item_id": item.get("id"),
+    }
 
 
 def main() -> None:
@@ -182,7 +190,7 @@ def main() -> None:
         mid = module_ids.get(module_dir)
         if not mid:
             raise SystemExit(f"No module_id for {module_dir}")
-        print(f"STORY {module_dir} → module {mid} page {page_url}")
+        print(f"STORY {module_dir} → module {mid} slug {page_url}")
         results.append(publish_module(args.course_id, module_dir, mid, page_url))
     out = args.map.parent / "canvas_module_stories.json"
     out.write_text(json.dumps(results, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
