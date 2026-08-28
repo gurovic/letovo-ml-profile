@@ -14,9 +14,3 @@ def reset_and_count(items):
     for x in items:
         total = total + x
     # ошибка 1: результат не возвращается
-
-
-def make_multiplier(factor=2):
-    def mul(x, f=factor):
-        return x * f
-    return mul
