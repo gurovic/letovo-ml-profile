@@ -341,6 +341,18 @@ python scripts/canvas_api.py raw courses --param enrollment_type=teacher --param
 
 **ИИ-агент:** «запуш» / «залей в Canvas» = **готовое разрешение**. Выполнять сразу с `permissions: all`; **не** вызывать `request_smart_mode_approval` и **не** дублировать вопрос в чате. Push без явной просьбы — не делать.
 
+### 11.3.0. Сюжет модуля (wiki)
+
+В начале каждого Canvas-модуля — wiki **«Сюжет модуля»** (опубликован, виден ученикам). Источник — `UNIT.md` §1 «Описание сюжета»; краткая выжимка — в `README.md` модуля.
+
+Публикация / обновление:
+
+```bash
+python scripts/publish_canvas_module_stories.py
+```
+
+Slug страницы: `modul-1-sujet` … `modul-11-sujet`. Карта module_id — `modules/canvas_publish_draft4.json`.
+
 | 3 | Для каждого `.ipynb` — **GitHub Gist** с содержимым из запушенной версии |
 | 4 | В Canvas — `lesson.ipynb` как **ExternalUrl** → Colab; `homework.ipynb` — **Assignment** (§11.3.2) |
 
