@@ -43,8 +43,8 @@ def load_module_ids(path: Path) -> dict[str, int]:
 
 def extract_story(unit_path: Path) -> tuple[str, str]:
     text = unit_path.read_text(encoding="utf-8-sig")
-    title_m = re.search(r"^#\s+Unit Planner:\s*(.+)$", text, re.MULTILINE)
-    title = title_m.group(1).strip() if title_m else unit_path.parent.name
+    tagline_m = re.search(r"\| Сюжет модуля \| (.+?) \|", text)
+    tagline = tagline_m.group(1).strip() if tagline_m else unit_path.parent.name
     story_m = re.search(
         r"### Описание сюжета\s*\n\n(.*?)(?=\n---|\n## )",
         text,
@@ -52,7 +52,7 @@ def extract_story(unit_path: Path) -> tuple[str, str]:
     )
     if not story_m:
         raise SystemExit(f"No «Описание сюжета» in {unit_path}")
-    return title, story_m.group(1).strip()
+    return tagline, story_m.group(1).strip()
 
 
 def wiki_page_exists(course_id: int, slug: str) -> bool:
@@ -139,7 +139,7 @@ def publish_module(
 ) -> dict:
     unit_path = ROOT / "modules" / module_dir / "UNIT.md"
     mod_title, story = extract_story(unit_path)
-    markdown = f"## Сюжет: {mod_title}\n\n{story}\n"
+    markdown = f"## {mod_title}\n\n{story}\n"
     page = upsert_story_page(course_id, page_url, markdown)
     item = ensure_story_item(course_id, module_id, page.get("url", page_url))
     return {"module": module_dir, "page": page.get("url", page_url), "item_id": item.get("id")}
