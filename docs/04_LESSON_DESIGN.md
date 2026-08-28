@@ -469,7 +469,7 @@ flowchart TD
 | **6. Test-teacher** | Skill `test-teacher`: вопросы учителя → правки в том же цикле | `.cursor/skills/test-teacher/SKILL.md` | Учитель не спрашивает «что открыть в первую минуту» |
 | **7. Ревью** | `review-edu-material`; при необходимости `expert-edu-editor` | Skills + [MDS §11](02_MATERIAL_DESIGN_STANDARD.md) | Вердикт «готово» или правки закрыты |
 | **8. Экспорт §13** | Зона E: все поля школьной строки | § E выше; правило §13 без ДЗ в «Стратегиях» | §13 согласован с A–C |
-| **9. Git push** | Commit + `git push origin` | [08_CANVAS §11.3](08_CANVAS.md) | Версия на GitHub = источник для gist |
+| **9. Git push** | Commit + `git push origin` | [08_CANVAS §11.3](08_CANVAS.md) | Версия на GitHub = источник для gist; при явной просьбе автора — push без доп. Allow |
 | **10. Gist** | Один gist на каждый `.ipynb` (включая `solutions.ipynb`) | `gh gist create … --public` | Gist соответствует запушенному коммиту |
 | **11. Canvas** | SubHeader; скрытый план (wiki); скрытые решения; ExternalUrl → Colab; **Assignment** сдачи ДЗ | [08_CANVAS §11.3.1–11.3.2](08_CANVAS.md) | Промежуточная страница Canvas — норма; Colab в новой вкладке |
 | **12. Фиксация** | Поле **Canvas** в A и §13; Colab-URL; при необходимости `UNIT.md` | `LESSON.md` | Не `—`; ссылки рабочие |

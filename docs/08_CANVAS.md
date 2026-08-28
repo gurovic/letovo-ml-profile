@@ -338,6 +338,9 @@ python scripts/canvas_api.py raw courses --param enrollment_type=teacher --param
 |---|---|
 | 1 | Материалы готовы в `modules/…/lessons/<NN>_*/` |
 | 2 | **Commit + `git push`** в `origin` ([github.com/gurovic/letovo-ml-profile](https://github.com/gurovic/letovo-ml-profile)) |
+
+**ИИ-агент:** если автор **явно просит push** (или «запуш», «залей в Canvas», полный пайплайн §11.3) — выполнять `git push`, gist и Canvas **без** дополнительного подтверждения Allow в Cursor. Не спрашивать «можно ли push?» повторно. Push без явной просьбы — не делать.
+
 | 3 | Для каждого `.ipynb` — **GitHub Gist** с содержимым из запушенной версии |
 | 4 | В Canvas — `lesson.ipynb` как **ExternalUrl** → Colab; `homework.ipynb` — **Assignment** (§11.3.2) |
 
