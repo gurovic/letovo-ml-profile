@@ -7,51 +7,51 @@
   {
     "module": "08_02_carsharing_pandas_lr",
     "page": "modul-2-sujet",
-    "item_id": 507214
+    "item_id": 507248
   },
   {
     "module": "08_03_titanic_eda",
     "page": "modul-3-sujet",
-    "item_id": 507215
+    "item_id": 507249
   },
   {
     "module": "08_04_mnist_knn",
     "page": "modul-4-sujet",
-    "item_id": 507216
+    "item_id": 507250
   },
   {
     "module": "08_05_shop_feature_engineering",
     "page": "modul-5-sujet",
-    "item_id": 507217
+    "item_id": 507251
   },
   {
     "module": "08_06_ab_startup",
     "page": "modul-6-sujet",
-    "item_id": 507218
+    "item_id": 507252
   },
   {
     "module": "08_07_bank_arrays_search",
     "page": "modul-7-sujet",
-    "item_id": 507219
+    "item_id": 507253
   },
   {
     "module": "08_08_logistics_clustering",
     "page": "modul-8-sujet",
-    "item_id": 507220
+    "item_id": 507254
   },
   {
     "module": "08_10_churn_logreg",
     "page": "modul-9-sujet",
-    "item_id": 507221
+    "item_id": 507255
   },
   {
     "module": "08_11_virtual_polygon",
     "page": "modul-10-sujet",
-    "item_id": 507222
+    "item_id": 507256
   },
   {
     "module": "08_09_courier_dp",
     "page": "modul-11-sujet",
-    "item_id": 507223
+    "item_id": 507257
   }
 ]
