@@ -348,16 +348,17 @@ python scripts/canvas_api.py raw courses --param enrollment_type=teacher --param
 | Элемент | Значение |
 |---|---|
 | Пункт в модуле | «Сюжет модуля» |
-| Заголовок wiki | строка «Сюжет модуля» из таблицы §1 (русский tagline) |
-| Тело wiki | только текст «Описание сюжета» (без h2 и без латиницы) |
+| Slug wiki | `modul-1-sujet` … `modul-11-sujet` (стабильный; `wiki_page[title]` = slug) |
+| Заголовок в теле | строка «Сюжет модуля» из таблицы §1 (русский tagline, `## …`) |
+| Тело wiki | текст «Описание сюжета» |
 
-Публикация / обновление (скрипт снимает дубликаты и legacy-страницы вроде `siuzhiet-modulia`):
+Canvas при совпадении русских `wiki_page[title]` добавляет суффикс `-2`, `-3` … — поэтому **не** используем tagline как title страницы. Перед публикацией скрипт удаляет дубликаты и старые translit-slug.
 
 ```bash
 python scripts/publish_canvas_module_stories.py
 ```
 
-Первичный slug для PUT: `modul-1-sujet` … `modul-11-sujet` (Canvas может транслитерировать url после смены заголовка). Карта module_id — `modules/canvas_publish_draft4.json`; результат — `modules/canvas_module_stories.json`.
+Карта module_id — `modules/canvas_publish_draft4.json`; результат — `modules/canvas_module_stories.json`.
 
 | 3 | Для каждого `.ipynb` — **GitHub Gist** с содержимым из запушенной версии |
 | 4 | В Canvas — `lesson.ipynb` как **ExternalUrl** → Colab; `homework.ipynb` — **Assignment** (§11.3.2) |
