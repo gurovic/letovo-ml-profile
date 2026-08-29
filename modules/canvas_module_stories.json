@@ -1,68 +1,68 @@
 [
   {
     "module": "08_01_functions_recursion",
-    "page": "stazhiory-aghientstva-niedvizhimosti-chiestnaia-otsienka-kvartir-i-razbor-otzyvov-kliientov-2",
-    "page_title": "Стажёры агентства недвижимости: честная оценка квартир и разбор отзывов клиентов-2",
-    "item_id": 507294
+    "page": "modul-1-sujet",
+    "page_title": "Стажёры агентства недвижимости: честная оценка квартир и разбор отзывов клиентов",
+    "item_id": 507522
   },
   {
     "module": "08_02_carsharing_pandas_lr",
-    "page": "analitiki-staylocal-pomoghaiut-vladieltsam-obiavlienii-vybrat-nochnuiu-tsienu-v-porto",
+    "page": "modul-2-sujet",
     "page_title": "Аналитики StayLocal помогают владельцам объявлений выбрать ночную цену в Porto",
-    "item_id": 507295
+    "item_id": 507523
   },
   {
     "module": "08_03_titanic_eda",
-    "page": "istorichieskoie-obshchiestvo-ghotovit-vystavku-o-passazhirakh-<<titanika>>",
+    "page": "modul-3-sujet",
     "page_title": "Историческое общество готовит выставку о пассажирах «Титаника»",
-    "item_id": 507296
+    "item_id": 507524
   },
   {
     "module": "08_04_mnist_knn",
-    "page": "pochtovyi-tsientr-uchit-sistiemu-chitat-rukopisnyie-indieksy-na-konviertakh",
+    "page": "modul-4-sujet",
     "page_title": "Почтовый центр учит систему читать рукописные индексы на конвертах",
-    "item_id": 507297
+    "item_id": 507525
   },
   {
     "module": "08_05_shop_feature_engineering",
-    "page": "crm-markietplieisa-sobiraiet-<<portriet-pokupatielia>>-dlia-slieduiushchiei-kampanii",
+    "page": "modul-5-sujet",
     "page_title": "CRM маркетплейса собирает «портрет покупателя» для следующей кампании",
-    "item_id": 507298
+    "item_id": 507526
   },
   {
     "module": "08_06_ab_startup",
-    "page": "startap-vybiraiet-kakoi-liendingh-ostavit-poslie-sravnieniia-dvukh-viersii",
+    "page": "modul-6-sujet",
     "page_title": "Стартап выбирает, какой лендинг оставить после сравнения двух версий",
-    "item_id": 507299
+    "item_id": 507527
   },
   {
     "module": "08_07_bank_arrays_search",
-    "page": "bank-<<nadiozhnyi>>-ishchiet-nuzhnyie-opieratsii-v-dlinnykh-zhurnalakh-tranzaktsii",
+    "page": "modul-7-sujet",
     "page_title": "Банк «Надёжный» ищет нужные операции в длинных журналах транзакций",
-    "item_id": 507300
+    "item_id": 507528
   },
   {
     "module": "08_08_logistics_clustering",
-    "page": "khab-dostavki-markietplieisa-ishchiet-probliemnyie-i-<<strannyie>>-zakazy",
+    "page": "modul-8-sujet",
     "page_title": "Хаб доставки маркетплейса ищет проблемные и «странные» заказы",
-    "item_id": 507301
+    "item_id": 507529
   },
   {
     "module": "08_10_churn_logreg",
-    "page": "markietingh-banka-rieshaiet-komu-zvonit-piervym-pri-oghranichiennom-biudzhietie-obzvona",
+    "page": "modul-9-sujet",
     "page_title": "Маркетинг банка решает, кому звонить первым при ограниченном бюджете обзвона",
-    "item_id": 507302
+    "item_id": 507530
   },
   {
     "module": "08_11_virtual_polygon",
-    "page": "ispytatieli-na-polighonie-ishchut-samuiu-nizkuiu-tochku-rieliefa",
+    "page": "modul-10-sujet",
     "page_title": "Испытатели на полигоне ищут самую низкую точку рельефа",
-    "item_id": 507303
+    "item_id": 507531
   },
   {
     "module": "08_09_courier_dp",
-    "page": "kurierskaia-<<mghnovieniie>>-razmien-marshruty-i-khody-dispietchiera-biez-pieriebora-<<v-lob>>",
+    "page": "modul-11-sujet",
     "page_title": "Курьерская «Мгновение»: размен, маршруты и ходы диспетчера без перебора «в лоб»",
-    "item_id": 507304
+    "item_id": 507532
   }
 ]

@@ -132,14 +132,11 @@ def build_story_url_set(
         for page in pages:
             url = str(page.get("url") or "")
             title = str(page.get("title") or "")
-            if not url:
+            if not url or url == slug:
                 continue
             if title_is_tagline_duplicate(title, tagline):
                 urls.add(url)
-            if url == slug or DEFAULT_SLUG_RE.match(url):
-                if url != slug:
-                    urls.add(url)
-            if url.endswith("-2") and url_is_tagline_variant(URL_NUM_SUFFIX_RE.sub("", url), urls):
+            if previous_url and url_is_tagline_variant(url, {previous_url}):
                 urls.add(url)
     return {u for u in urls if u}
 
