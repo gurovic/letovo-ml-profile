@@ -16,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from canvas_api import canvas_get, canvas_post, require_canvas_auth  # noqa: E402
 from publish_canvas_lesson import (  # noqa: E402
+    add_feedback_quiz_item,
     add_homework_assignment_item,
     add_module_item,
     add_solutions_item,
@@ -144,6 +145,7 @@ def publish_pair(
             course_id, module_id, homework_colab_url=homework_url
         )
         result["homework"] = hw
+    result["feedback"] = add_feedback_quiz_item(course_id, module_id)
     return result
 
 

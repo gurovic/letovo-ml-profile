@@ -21,6 +21,7 @@ from publish_canvas_lesson import (  # noqa: E402
     LESSON_ITEM_TITLE,
     PLAN_ITEM_TITLE,
     SOLUTIONS_ITEM_TITLE,
+    add_feedback_quiz_item,
     add_homework_assignment_item,
     add_module_item,
     add_solutions_item,
@@ -230,6 +231,7 @@ def publish_pair(
             course_id, module_id, homework_colab_url=homework_url
         )
         result["homework"] = hw
+    result["feedback"] = add_feedback_quiz_item(course_id, module_id)
     return result
 
 

@@ -16,7 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from canvas_api import canvas_config, canvas_delete, canvas_get, canvas_post, canvas_put, require_canvas_auth  # noqa: E402
 from lesson_md_html import lesson_md_to_canvas_html  # noqa: E402
-from publish_canvas_lesson import add_module_item  # noqa: E402
+from publish_canvas_lesson import add_module_item, clean_canvas_title  # noqa: E402
 
 COURSE_ID = 6465
 STORY_ITEM_TITLE = "Сюжет модуля"
@@ -57,7 +57,7 @@ def load_previous_story_map(path: Path) -> dict[str, dict]:
 def extract_story(unit_path: Path) -> tuple[str, str]:
     text = unit_path.read_text(encoding="utf-8-sig")
     tagline_m = re.search(r"\| Сюжет модуля \| (.+?) \|", text)
-    tagline = tagline_m.group(1).strip() if tagline_m else unit_path.parent.name
+    tagline = clean_canvas_title(tagline_m.group(1).strip()) if tagline_m else unit_path.parent.name
     story_m = re.search(
         r"### Описание сюжета\s*\n\n(.*?)(?=\n---|\n## )",
         text,
@@ -102,16 +102,17 @@ def title_is_tagline_duplicate(title: str, tagline: str) -> bool:
 
 
 def url_is_tagline_variant(url: str, known: set[str]) -> bool:
+    """Только точное совпадение url или дубликат Canvas с суффиксом -2, -3 …"""
     if url in known:
         return True
     base = URL_NUM_SUFFIX_RE.sub("", url)
-    if base in known:
-        return True
     for k in known:
-        if url.startswith(k) or k.startswith(url):
-            return True
+        if not k:
+            continue
         kb = URL_NUM_SUFFIX_RE.sub("", k)
         if base == kb:
+            return True
+        if url.startswith(k + "-") and TAGLINE_TITLE_DUP_RE.search(url[len(k) :]):
             return True
     return False
 
@@ -123,6 +124,7 @@ def build_story_url_set(
     tagline: str,
     previous_url: str | None,
 ) -> set[str]:
+    """URL кандидаты на удаление после успешного upsert (не para-* и не чужие модули)."""
     urls: set[str] = {slug, *LEGACY_PAGE_SLUGS}
     if previous_url:
         urls.add(previous_url)
@@ -132,7 +134,7 @@ def build_story_url_set(
         for page in pages:
             url = str(page.get("url") or "")
             title = str(page.get("title") or "")
-            if not url or url == slug:
+            if not url or LESSON_PAGE_RE.match(url):
                 continue
             if title_is_tagline_duplicate(title, tagline):
                 urls.add(url)
@@ -141,10 +143,44 @@ def build_story_url_set(
     return {u for u in urls if u}
 
 
+def purge_tagline_pages(course_id: int, tagline: str, *, keep_slug: str) -> None:
+    """Удалить дубликаты wiki с тем же tagline, кроме активной страницы."""
+    pages = canvas_get(f"courses/{course_id}/pages", paginate=True)
+    if not isinstance(pages, list):
+        return
+    for page in pages:
+        url = str(page.get("url") or "")
+        title = str(page.get("title") or "")
+        if not url or url == keep_slug:
+            continue
+        if title_is_tagline_duplicate(title, tagline):
+            delete_wiki_page(course_id, url)
+
+
 def delete_story_orphans(course_id: int, *, keep_slug: str, story_urls: set[str]) -> None:
     for url in story_urls:
         if url != keep_slug:
             delete_wiki_page(course_id, url)
+
+
+def resolve_story_page_url(
+    course_id: int,
+    module_id: int,
+    *,
+    slug: str,
+    previous_url: str | None,
+) -> str | None:
+    if previous_url and wiki_page_exists(course_id, previous_url):
+        return previous_url
+    if wiki_page_exists(course_id, slug):
+        return slug
+    items = canvas_get(f"courses/{course_id}/modules/{module_id}/items", paginate=True)
+    for item in items:
+        if item.get("title") == STORY_ITEM_TITLE and item.get("page_url"):
+            url = str(item["page_url"])
+            if wiki_page_exists(course_id, url):
+                return url
+    return None
 
 
 def upsert_story_page(
@@ -153,24 +189,39 @@ def upsert_story_page(
     *,
     tagline: str,
     story_text: str,
+    existing_url: str | None = None,
 ) -> dict:
-    markdown = f"## {tagline}\n\n{story_text}"
-    body = lesson_md_to_canvas_html(markdown, course_id=course_id)
+    """Русский tagline = заголовок wiki (виден при открытии страницы)."""
+    if not story_text.strip():
+        raise SystemExit("Story text is empty — refusing to publish blank wiki")
+    body = lesson_md_to_canvas_html(story_text, course_id=course_id)
+    if len(body) < 80:
+        raise SystemExit(f"Rendered story HTML too short ({len(body)} chars)")
     payload = {
-        "wiki_page[title]": slug,
+        "wiki_page[title]": clean_canvas_title(tagline),
         "wiki_page[body]": body,
         "wiki_page[published]": "true",
         "wiki_page[editing_role]": "teachers",
     }
-    if wiki_page_exists(course_id, slug):
-        page = canvas_put(f"courses/{course_id}/pages/{slug}", payload)
+    target = existing_url or (slug if wiki_page_exists(course_id, slug) else None)
+    if target:
+        page = canvas_put(f"courses/{course_id}/pages/{target}", payload)
     else:
         page = canvas_post(f"courses/{course_id}/pages", payload)
     if not isinstance(page, dict):
         raise SystemExit(f"Unexpected Canvas page response: {page!r}")
-    if page.get("url") != slug:
-        raise SystemExit(f"Canvas changed page url to {page.get('url')!r} (wanted {slug!r})")
     return page
+
+
+def verify_wiki_body(course_id: int, slug: str, *, min_len: int = 80) -> None:
+    page = canvas_get(f"courses/{course_id}/pages/{slug}")
+    body = str((page or {}).get("body") or "")
+    text = re.sub(r"<[^>]+>", "", body).strip()
+    if len(text) < min_len // 4:
+        raise SystemExit(
+            f"Wiki `{slug}` body empty or too short after publish "
+            f"(html={len(body)}, text≈{len(text)})"
+        )
 
 
 def is_story_module_item(
@@ -227,11 +278,14 @@ def publish_module(
     unit_path = ROOT / "modules" / module_dir / "UNIT.md"
     tagline, story = extract_story(unit_path)
     prev_url = str(previous.get("page")) if previous and previous.get("page") else None
+    existing_url = resolve_story_page_url(
+        course_id, module_id, slug=slug, previous_url=prev_url
+    )
     story_urls = build_story_url_set(
         course_id,
         slug=slug,
         tagline=tagline,
-        previous_url=prev_url,
+        previous_url=prev_url or existing_url,
     )
     remove_story_module_items(
         course_id,
@@ -240,23 +294,32 @@ def publish_module(
         tagline=tagline,
         story_urls=story_urls,
     )
-    delete_story_orphans(course_id, keep_slug=slug, story_urls=story_urls)
-    upsert_story_page(course_id, slug, tagline=tagline, story_text=story)
+    page = upsert_story_page(
+        course_id,
+        slug,
+        tagline=tagline,
+        story_text=story,
+        existing_url=existing_url,
+    )
+    active_slug = str(page.get("url") or existing_url or slug)
+    verify_wiki_body(course_id, active_slug)
     item = add_module_item(
         course_id,
         module_id,
         {
             "module_item[title]": STORY_ITEM_TITLE,
             "module_item[type]": "Page",
-            "module_item[page_url]": slug,
+            "module_item[page_url]": active_slug,
             "module_item[indent]": "0",
             "module_item[published]": "true",
             "module_item[position]": "1",
         },
     )
+    delete_story_orphans(course_id, keep_slug=active_slug, story_urls=story_urls)
+    purge_tagline_pages(course_id, tagline, keep_slug=active_slug)
     return {
         "module": module_dir,
-        "page": slug,
+        "page": active_slug,
         "page_title": tagline,
         "item_id": item.get("id"),
     }
@@ -273,6 +336,11 @@ def main() -> None:
     parser.add_argument(
         "--module",
         help="Only publish one module dir, e.g. 08_03_titanic_eda",
+    )
+    parser.add_argument(
+        "--skip-audit",
+        action="store_true",
+        help="Do not run canvas_controller after publish",
     )
     args = parser.parse_args()
     require_canvas_auth()
@@ -308,6 +376,12 @@ def main() -> None:
     else:
         story_map_path.write_text(json.dumps(results, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"Wrote {story_map_path}")
+    if not args.skip_audit:
+        from canvas_controller import run_post_publish_audit
+
+        module_dirs = [m[0] for m in modules]
+        if not run_post_publish_audit(args.course_id, module_dirs=module_dirs):
+            raise SystemExit("Canvas controller: errors after publish (see above)")
 
 
 if __name__ == "__main__":

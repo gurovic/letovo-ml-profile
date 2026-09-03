@@ -38,6 +38,7 @@ from publish_canvas_lesson import (  # noqa: E402
     PairPreset,
     add_artifact_extras,
     add_artifact_submit_item,
+    add_feedback_quiz_item,
     add_homework_assignment_item,
     add_module_item,
     publish_orientation_pair,
@@ -98,7 +99,7 @@ def parse_lesson_meta(lesson_md: Path) -> tuple[int | None, str]:
     if m:
         pair = int(m.group(1))
     title = lesson_md.parent.name
-    m = re.search(r"Название урока\s*\|\s*(.+)", text)
+    m = re.search(r"Название урока\s*\|\s*(.+?)\s*\|", text)
     if m:
         title = m.group(1).strip()
     return pair, title
@@ -342,12 +343,14 @@ def publish_standard_pair(
             module_id,
             homework_colab_url=homework_url,
         )
+    feedback = add_feedback_quiz_item(course_id, module_id)
 
     return {
         "pair": slot.pair,
         "page": resolved_page_url,
         "items": [i.get("id") for i in items],
         "homework": (hw or {}).get("assignment_id"),
+        "feedback": (feedback or {}).get("quiz_id"),
         "gist_id": gist_id,
     }
 
@@ -395,7 +398,15 @@ def publish_artifact_pair8(course_id: int, module_id: int, slot: LessonSlot) -> 
     # Reuse artifact extras: docs as for former pair 9 + submit as former pair 10
     extras = add_artifact_extras(course_id, module_id, 9, preset)
     submit = add_artifact_submit_item(course_id, module_id)
-    return {"pair": 8, "page": resolved, "artifact": True, "extras": extras, "submit": submit}
+    feedback = add_feedback_quiz_item(course_id, module_id)
+    return {
+        "pair": 8,
+        "page": resolved,
+        "artifact": True,
+        "extras": extras,
+        "submit": submit,
+        "feedback": feedback,
+    }
 
 
 def publish_all(course_id: int, slots: list[LessonSlot], gist_map: dict[int, str]) -> dict:
@@ -448,7 +459,11 @@ def publish_all(course_id: int, slots: list[LessonSlot], gist_map: dict[int, str
                     "module_item[published]": "false",
                 },
             )
-            results["pairs"][slot.pair] = {"orientation": True, "page": resolved}
+            results["pairs"][slot.pair] = {
+                "orientation": True,
+                "page": resolved,
+                "feedback": add_feedback_quiz_item(course_id, mid),
+            }
         elif slot.artifact:
             results["pairs"][slot.pair] = publish_artifact_pair8(course_id, mid, slot)
         else:

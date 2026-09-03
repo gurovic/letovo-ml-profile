@@ -31,6 +31,37 @@ PLAN_ITEM_TITLE = "План урока (для преподавателя)"
 SOLUTIONS_ITEM_TITLE = "Решения (для преподавателя)"
 LESSON_ITEM_TITLE = "Ноутбук урока"
 HOMEWORK_ITEM_TITLE = "Домашнее задание"
+FEEDBACK_ITEM_TITLE = "Опрос перед следующей парой"
+FEEDBACK_ITEM_TITLE_LEGACY = "Опрос после пары"
+FEEDBACK_ITEM_TITLES = frozenset({FEEDBACK_ITEM_TITLE, FEEDBACK_ITEM_TITLE_LEGACY})
+FEEDBACK_INSTRUCTIONS = (
+    "Заполните опрос после выполнения домашнего задания, "
+    "но до начала следующего урока."
+)
+FEEDBACK_QUESTIONS: tuple[tuple[str, str, str], ...] = (
+    (
+        "novelty",
+        "multiple_choice",
+        "Насколько материал был новым и сложным?",
+    ),
+    (
+        "clarity",
+        "multiple_choice",
+        "Насколько понятно было на уроке / получилось выполнить ДЗ?",
+    ),
+    (
+        "comment",
+        "essay",
+        "Что ещё вы бы хотели сказать?",
+    ),
+)
+FEEDBACK_SCALE = (
+    "1 — совсем нет",
+    "2",
+    "3 — средне",
+    "4",
+    "5 — очень",
+)
 ARTIFACT_MATERIALS_TITLE = "Материалы артефакта"
 ARTIFACT_PROJECT_ITEM_TITLE = "Задание: text_stats"
 ARTIFACT_STARTER_README_ITEM_TITLE = "Как делать (шаги)"
@@ -42,6 +73,11 @@ ARTIFACT_PROJECT_SLUG = "artifact-project"
 ARTIFACT_STARTER_README_SLUG = "artifact-starter-readme"
 ARTIFACT_STARTER_CODE_SLUG = "artifact-starter-code"
 ARTIFACT_ZIP_NAME = "text_stats_starter.zip"
+
+
+def clean_canvas_title(title: str) -> str:
+    """Убрать края ячейки markdown-таблицы (| … |), случайно попавшие в title."""
+    return title.strip().strip("|").strip()
 
 
 @dataclass(frozen=True)
@@ -80,9 +116,9 @@ PAIR_PRESETS: dict[int, PairPreset] = {
         page_title="Пара 2 — план урока (для преподавателя)",
         page_url="para-2-plan-uroka-dlia-priepodavatielia",
         lesson_dir="02_function_as_mapping",
-        lesson_gist="cfc377717ba193c512a9e88593405ab8",
-        homework_gist="15255de29367ddc86fb8d141f63b5cfd",
-        solutions_gist="d6626c4ad9ebc6f8c1366f31d4ab39a1",
+        lesson_gist="0ea316100e0e8b082099240605e8d981",
+        homework_gist="0ea316100e0e8b082099240605e8d981",
+        solutions_gist="0ea316100e0e8b082099240605e8d981",
     ),
     3: PairPreset(
         subheader="Пара 3. Параметры и return — describe, scale, контракт transform",
@@ -183,7 +219,7 @@ def upsert_lesson_page(
     # Wiki published so teachers can open the plan; module item stays unpublished
     # (students do not see «План урока» in the module list — see 08_CANVAS §11.4).
     payload = {
-        "wiki_page[title]": title,
+        "wiki_page[title]": clean_canvas_title(title),
         "wiki_page[body]": body,
         "wiki_page[published]": "true",
         "wiki_page[editing_role]": "teachers",
@@ -276,6 +312,9 @@ def update_homework_assignment(course_id: int, assignment_id: int, *, homework_c
 
 
 def add_module_item(course_id: int, module_id: int, payload: dict) -> dict:
+    title_key = "module_item[title]"
+    if title_key in payload and payload[title_key]:
+        payload = {**payload, title_key: clean_canvas_title(str(payload[title_key]))}
     return canvas_post(f"courses/{course_id}/modules/{module_id}/items", payload)
 
 
@@ -334,6 +373,255 @@ def add_homework_assignment_item(
         "type": item.get("type"),
         "title": item.get("title"),
         "published": item.get("published"),
+    }
+
+
+def is_feedback_item(item: dict) -> bool:
+    title = str(item.get("title") or "")
+    if title in FEEDBACK_ITEM_TITLES:
+        return True
+    return item.get("type") == "Quiz" and title.startswith("Опрос")
+
+
+def split_module_into_pair_blocks(
+    items: list[dict],
+) -> list[tuple[dict, list[dict]]]:
+    """Блоки «Пара …»: (SubHeader, пункты блока включая SubHeader)."""
+    sorted_items = sorted(items, key=lambda x: int(x.get("position") or 0))
+    headers = [
+        it
+        for it in sorted_items
+        if it.get("type") == "SubHeader"
+        and str(it.get("title") or "").startswith("Пара ")
+    ]
+    blocks: list[tuple[dict, list[dict]]] = []
+    for i, header in enumerate(headers):
+        h_pos = int(header.get("position") or 0)
+        next_pos = (
+            int(headers[i + 1].get("position") or 0) if i + 1 < len(headers) else None
+        )
+        if next_pos is not None:
+            block = [
+                it
+                for it in sorted_items
+                if h_pos <= int(it.get("position") or 0) < next_pos
+            ]
+        else:
+            block = [
+                it for it in sorted_items if h_pos <= int(it.get("position") or 0)
+            ]
+        blocks.append((header, block))
+    return blocks
+
+
+def feedback_target_position(block_items: list[dict]) -> int:
+    """Позиция опроса: сразу после ДЗ или после последнего материала блока."""
+    content = [
+        it
+        for it in block_items
+        if it.get("type") != "SubHeader" and not is_feedback_item(it)
+    ]
+    if not content:
+        header = next(it for it in block_items if it.get("type") == "SubHeader")
+        return int(header.get("position") or 0) + 1
+    homework = [
+        it for it in content if str(it.get("title") or "") == HOMEWORK_ITEM_TITLE
+    ]
+    if homework:
+        return max(int(it.get("position") or 0) for it in homework) + 1
+    return max(int(it.get("position") or 0) for it in content) + 1
+
+
+def is_pair_subheader(item: dict) -> bool:
+    return (
+        item.get("type") == "SubHeader"
+        and str(item.get("title") or "").startswith("Пара ")
+    )
+
+
+def plan_module_feedback_layout(
+    items: list[dict],
+) -> tuple[list[dict], list[dict], list[str]]:
+    """Желаемый порядок: в каждом блоке пары опрос последним. Возвращает (desired, delete, missing_headers)."""
+    sorted_items = sorted(items, key=lambda x: int(x.get("position") or 0))
+    first_pair = next(
+        (i for i, it in enumerate(sorted_items) if is_pair_subheader(it)),
+        None,
+    )
+    if first_pair is None:
+        return sorted_items, [], []
+
+    prefix = sorted_items[:first_pair]
+    pair_items = sorted_items[first_pair:]
+    desired: list[dict] = list(prefix)
+    to_delete: list[dict] = []
+    missing_headers: list[str] = []
+
+    i = 0
+    while i < len(pair_items):
+        it = pair_items[i]
+        if not is_pair_subheader(it):
+            desired.append(it)
+            i += 1
+            continue
+
+        header_title = str(it.get("title") or "")
+        block_content = [it]
+        i += 1
+        feedback_items: list[dict] = []
+        while i < len(pair_items) and not is_pair_subheader(pair_items[i]):
+            cur = pair_items[i]
+            if is_feedback_item(cur):
+                feedback_items.append(cur)
+            else:
+                block_content.append(cur)
+            i += 1
+
+        if len(feedback_items) > 1:
+            feedback_items.sort(key=lambda x: int(x.get("position") or 0))
+            to_delete.extend(feedback_items[:-1])
+            feedback_items = [feedback_items[-1]]
+
+        desired.extend(block_content)
+        if feedback_items:
+            desired.append(feedback_items[0])
+        else:
+            missing_headers.append(header_title)
+
+    return desired, to_delete, missing_headers
+
+
+def _simulate_module_move(
+    positions: dict[int, int],
+    item_id: int,
+    new_pos: int,
+) -> dict[int, int]:
+    old_pos = positions[item_id]
+    if old_pos == new_pos:
+        return positions
+    out = dict(positions)
+    if new_pos > old_pos:
+        for iid, pos in list(out.items()):
+            if old_pos < pos <= new_pos:
+                out[iid] = pos - 1
+    else:
+        for iid, pos in list(out.items()):
+            if new_pos <= pos < old_pos:
+                out[iid] = pos + 1
+    out[item_id] = new_pos
+    return out
+
+
+def apply_module_item_order(
+    course_id: int,
+    module_id: int,
+    desired: list[dict],
+) -> int:
+    """Переставить пункты модуля в заданном порядке (с конца, без refetch)."""
+    desired_ids = [int(it["id"]) for it in desired if it.get("id")]
+    if not desired_ids:
+        return 0
+
+    items = canvas_get(f"courses/{course_id}/modules/{module_id}/items", paginate=True)
+    if not isinstance(items, list):
+        return 0
+
+    positions = {int(it["id"]): int(it.get("position") or 0) for it in items if it.get("id")}
+    moves = 0
+
+    for target_pos in range(len(desired_ids), 0, -1):
+        item_id = desired_ids[target_pos - 1]
+        if item_id not in positions:
+            continue
+        current_pos = positions[item_id]
+        if current_pos == target_pos:
+            continue
+        canvas_put(
+            f"courses/{course_id}/modules/{module_id}/items/{item_id}",
+            {"module_item[position]": str(target_pos)},
+        )
+        positions = _simulate_module_move(positions, item_id, target_pos)
+        moves += 1
+
+    return moves
+
+
+def feedback_quiz_description() -> str:
+    return f"<p>{FEEDBACK_INSTRUCTIONS}</p>"
+
+
+def create_feedback_quiz(course_id: int) -> dict:
+    quiz = canvas_post(
+        f"courses/{course_id}/quizzes",
+        {
+            "quiz[title]": FEEDBACK_ITEM_TITLE,
+            "quiz[description]": feedback_quiz_description(),
+            "quiz[quiz_type]": "survey",
+            "quiz[published]": "false",
+            "quiz[points_possible]": "0",
+            "quiz[scoring_policy]": "keep_highest",
+            "quiz[hide_results]": "always",
+            "quiz[allowed_attempts]": "1",
+            "quiz[shuffle_answers]": "false",
+        },
+    )
+    quiz_id = quiz["id"]
+    for position, (_key, qtype, text) in enumerate(FEEDBACK_QUESTIONS, start=1):
+        payload: dict[str, str] = {
+            "question[question_name]": text,
+            "question[question_text]": f"<p>{text}</p>",
+            "question[points_possible]": "0",
+            "question[position]": str(position),
+        }
+        if qtype == "essay":
+            payload["question[question_type]"] = "essay_question"
+        else:
+            payload["question[question_type]"] = "multiple_choice_question"
+            for i, label in enumerate(FEEDBACK_SCALE):
+                payload[f"question[answers][{i}][answer_text]"] = label
+                payload[f"question[answers][{i}][answer_weight]"] = "0"
+        canvas_post(f"courses/{course_id}/quizzes/{quiz_id}/questions", payload)
+    return quiz
+
+
+def add_feedback_quiz_item(
+    course_id: int,
+    module_id: int,
+    *,
+    position: int | None = None,
+    quiz_id: int | None = None,
+) -> dict:
+    if quiz_id:
+        canvas_put(
+            f"courses/{course_id}/quizzes/{quiz_id}",
+            {
+                "quiz[title]": FEEDBACK_ITEM_TITLE,
+                "quiz[published]": "false",
+            },
+        )
+        quiz = {"id": quiz_id}
+    else:
+        quiz = create_feedback_quiz(course_id)
+    payload = {
+        "module_item[title]": FEEDBACK_ITEM_TITLE,
+        "module_item[type]": "Quiz",
+        "module_item[content_id]": str(quiz["id"]),
+        "module_item[indent]": "1",
+        "module_item[published]": "false",
+    }
+    if position is not None:
+        payload["module_item[position]"] = str(position)
+    item = add_module_item(course_id, module_id, payload)
+    canvas_put(
+        f"courses/{course_id}/modules/{module_id}/items/{item['id']}",
+        {"module_item[published]": "false"},
+    )
+    return {
+        "quiz_id": quiz["id"],
+        "id": item.get("id"),
+        "type": item.get("type"),
+        "title": item.get("title"),
+        "published": False,
     }
 
 
@@ -425,6 +713,7 @@ def publish_pair(
             module_id,
             homework_colab_url=homework_nb_url,
         )
+    feedback_item = add_feedback_quiz_item(course_id, module_id)
 
     return {
         "course_id": course_id,
@@ -436,6 +725,7 @@ def publish_pair(
             for item in items
         ],
         "homework_item": homework_item,
+        "feedback_item": feedback_item,
     }
 
 
@@ -1271,6 +1561,7 @@ def publish_orientation_pair(
         if base_pos is not None:
             payload = {**payload, "module_item[position]": str(base_pos + offset)}
         items.append(add_module_item(course_id, module_id, payload))
+    feedback_item = add_feedback_quiz_item(course_id, module_id)
 
     return {
         "course_id": course_id,
@@ -1282,6 +1573,7 @@ def publish_orientation_pair(
             {"id": item.get("id"), "type": item.get("type"), "title": item.get("title")}
             for item in items
         ],
+        "feedback_item": feedback_item,
     }
 
 
@@ -1379,6 +1671,15 @@ def resolve_urls(
     return lesson, homework or "", solutions
 
 
+def run_canvas_controller_after_publish(args: argparse.Namespace) -> None:
+    if args.skip_audit:
+        return
+    from canvas_controller import run_post_publish_audit
+
+    if not run_post_publish_audit(args.course_id):
+        raise SystemExit("Canvas controller: errors after publish (see above)")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Publish a lesson pair to Canvas")
     parser.add_argument("--pair", type=int, default=2, help="KTP pair number (1–10)")
@@ -1402,9 +1703,20 @@ def main() -> None:
     )
     parser.add_argument("--solutions-position", type=int, default=3)
     parser.add_argument("--submit-position", type=int, default=None)
+    parser.add_argument(
+        "--skip-audit",
+        action="store_true",
+        help="Do not run canvas_controller after publish",
+    )
     args = parser.parse_args()
     require_canvas_auth()
+    try:
+        _main_publish(args)
+    finally:
+        run_canvas_controller_after_publish(args)
 
+
+def _main_publish(args: argparse.Namespace) -> None:
     if args.migrate_homework_layout:
         homework = args.homework_nb_url or PAIR_PRESETS[2].colab(
             PAIR_PRESETS[2].homework_gist, "homework.ipynb"
