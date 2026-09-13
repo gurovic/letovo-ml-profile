@@ -1,6 +1,6 @@
 # 8 класс (4ч в неделю) — тематическое планирование
 
-> Канон профиля letovo-ml-profile: 4 ч/нед × 34 нед = 68 пар (1 пара = 2 акад. ч). Среда: весь год — ноутбуки (Jupyter/Colab); терминал, скрипты и venv — в 9 классе. Источник тем: `docs/ktp/08.md` (Draft 3). Доп. у нас: модуль DP в конце года (M11), не обязателен.
+> Канон профиля letovo-ml-profile: 4 ч/нед × 34 нед = 68 пар (1 пара = 2 акад. ч). Среда: весь год — ноутбуки (Jupyter/Colab); модули .py и запуск python file.py — с пары 6 (M1); venv, pip и bash — в 9 классе. Источник тем: `docs/ktp/08.md` (Draft 3). Доп. у нас: модуль DP в конце года (M11), не обязателен.
 
 ## Модуль 1. Оценка недвижимости: функции и inference pipeline
 Сюжет: Стажёры агентства недвижимости создают прототип оценщика квартир и модуля text_stats.
@@ -8,8 +8,8 @@
 Функция как отображение — predict_price, batch_predict, MAE, выбор коэффициента {L06 L07 M09 P11}
 Параметры и return — describe_numbers, min_max_scale, grade_stats {L03 P11}
 Практика: proto-EDA и transform-функции {L03 L06 P10}
-Scope и отладка — accuracy, баги return/scope {L07 P11 P20}
-Практика: confusion_counts, журнал багов {L07 P10}
+Scope и отладка — accuracy, confusion_counts (tp/fp/fn/tn), баги return/scope {L07 P11 P20}
+Модули и импорт — код в .py, import, запуск из командной строки, .py vs .ipynb {L07 P10}
 Рекурсия на данных; lambda / HOF / apply_pipeline {L06 M20 P02 P19 P21}
 Артефакт text_stats — сборка, сдача, рефлексия модуля {L06 L07 P10 P11}
 

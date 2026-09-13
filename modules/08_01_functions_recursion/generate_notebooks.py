@@ -54,23 +54,23 @@ DATA_IMPORT = (
     "from pathlib import Path\n"
     "\n"
     "_RAW = (\n"
-    "    "https://raw.githubusercontent.com/gurovic/letovo-ml-profile/main/"\n"
-    "    "modules/08_01_functions_recursion/data/module_datasets.py"\n"
+    '    "https://raw.githubusercontent.com/gurovic/letovo-ml-profile/main/"\n'
+    '    "modules/08_01_functions_recursion/data/module_datasets.py"\n'
     ")\n"
     "\n"
     "\n"
     "def _import_module_datasets():\n"
-    "    for root in (Path("../..").resolve(), Path(".").resolve()):\n"
-    "        path = root / "data" / "module_datasets.py"\n"
+    '    for root in (Path("../..").resolve(), Path(".").resolve()):\n'
+    '        path = root / "data" / "module_datasets.py"\n'
     "        if path.is_file():\n"
     "            root_s = str(root)\n"
     "            if root_s not in sys.path:\n"
     "                sys.path.insert(0, root_s)\n"
     "            import data.module_datasets as md\n"
     "            return md\n"
-    "    dest = Path("module_datasets.py")\n"
+    '    dest = Path("module_datasets.py")\n'
     "    urllib.request.urlretrieve(_RAW, dest)\n"
-    "    spec = importlib.util.spec_from_file_location("module_datasets", dest)\n"
+    '    spec = importlib.util.spec_from_file_location("module_datasets", dest)\n'
     "    md = importlib.util.module_from_spec(spec)\n"
     "    spec.loader.exec_module(md)\n"
     "    return md\n"
@@ -344,7 +344,12 @@ NOTEBOOKS = {
         ),
     ),
     "lessons/05_scope_and_debugging/lesson.ipynb": nb(
-        md("# Scope и отладка — метрика как функция"),
+        md(
+            "# Scope и отладка — accuracy и типы ошибок\n\n"
+            "**Пара КТП 5** (2 ч). Метрика — такая же функция, как `predict`: "
+            "без `return` и с путаницей в переменных она молча врёт.\n\n"
+            "Минимум сдачи: `my_accuracy`, `count_correct`, `predict_pass`, `confusion_counts`."
+        ),
         code(LESSON_05_DATA),
         md(
             "## 1. Эталон accuracy\n\n"
@@ -415,42 +420,37 @@ NOTEBOOKS = {
             "assert predict_pass(55) == 0\n"
             "assert predict_pass_buggy(72) is None"
         ),
-    ),
-    "lessons/06_practice_metrics/lesson.ipynb": nb(
-        md("# Практика: confusion_counts и журнал отладки"),
-        code(LESSON_05_DATA),
         md(
-            "## 1. Опора\n\n"
-            "Вставьте с [пары 5](../05_scope_and_debugging/lesson.ipynb): `count_correct` и `my_accuracy`."
-        ),
-        code("# count_correct, my_accuracy\n"),
-        md(
-            "## 2. confusion_counts\n\n"
-            "Один проход по `zip(preds, labels)`. Верните `(tp, fp, fn, tn)` для меток 0/1."
+            "## 6. Типы ошибок: confusion_counts\n\n"
+            "Accuracy — одно число: оно не говорит, **как именно** модель ошибается. "
+            "Для меток 0/1 есть четыре случая:\n\n"
+            "| Код | pred | label | Смысл |\n"
+            "|---|---|---|---|\n"
+            "| **tp** | 1 | 1 | верно нашли «1» |\n"
+            "| **fp** | 1 | 0 | ложная тревога |\n"
+            "| **fn** | 0 | 1 | пропустили «1» |\n"
+            "| **tn** | 0 | 0 | верно отвергли |\n\n"
+            "Напишите `confusion_counts(preds, labels)` — один проход по индексам, "
+            "четыре счётчика, `return` кортежа `(tp, fp, fn, tn)`. **Без** `global`."
         ),
         code(
             "def confusion_counts(preds, labels):\n"
-            '    """(tp, fp, fn, tn)."""\n'
+            '    """Вернуть (tp, fp, fn, tn) для меток 0/1."""\n'
             "    pass\n\n\n"
             "tp, fp, fn, tn = confusion_counts(PREDICTIONS, LABELS)\n"
             "assert tp + fp + fn + tn == len(PREDICTIONS)\n"
-            "print(tp, fp, fn, tn)"
+            "assert tp + tn == count_correct(PREDICTIONS, LABELS)\n"
+            "print('tp fp fn tn =', tp, fp, fn, tn)"
         ),
         md(
-            "## 3. Сверка вручную\n\n"
-            "На **первых 4** парах `PREDICTIONS`/`LABELS` посчитайте tp, fp, fn, tn вручную "
-            "и сравните с `confusion_counts(PREDICTIONS[:4], LABELS[:4])`."
+            "## 7. Сверка вручную\n\n"
+            "На **первых 4** объектах (`PREDICTIONS[:4]`, `LABELS[:4]`) посчитайте tp, fp, fn, tn "
+            "**на бумаге**, впишите в `assert` и только потом запустите ячейку."
         ),
         code(
-            "# ручной подсчёт\n"
             "manual = confusion_counts(PREDICTIONS[:4], LABELS[:4])\n"
-            "print('функция на 4:', manual)\n"
+            "print('функция на первых 4:', manual)\n"
             "# assert manual == (..., ..., ..., ...)"
-        ),
-        md(
-            "## 4. Журнал отладки\n\n"
-            "Добавьте **markdown-ячейку**: таблица **3** багов с пары 5 "
-            "(функция | симптом | причина | исправление)."
         ),
     ),
 
@@ -693,13 +693,39 @@ SOLUTIONS = {
             "        if p == y:\n"
             "            total += 1\n"
             "    return total\n\n\n"
-            "assert count_correct(PREDICTIONS, LABELS) == 7"
+            "assert count_correct(PREDICTIONS, LABELS) == 8"
         ),
         md("## Урок. 5. predict_pass"),
         code(
             "def predict_pass(score, threshold=60):\n"
             "    return 1 if score >= threshold else 0\n\n\n"
             "assert predict_pass(72) == 1"
+        ),
+        md(
+            "## Урок. 6–7. confusion_counts\n\n"
+            "На всех 10 объектах: `(5, 1, 1, 3)`; на первых 4: `(2, 1, 0, 1)`. "
+            "Проверка: `tp + tn == count_correct == 8`."
+        ),
+        code(
+            "def confusion_counts(preds, labels):\n"
+            "    tp = 0\n"
+            "    fp = 0\n"
+            "    fn = 0\n"
+            "    tn = 0\n"
+            "    for i in range(len(preds)):\n"
+            "        p = preds[i]\n"
+            "        y = labels[i]\n"
+            "        if p == 1 and y == 1:\n"
+            "            tp += 1\n"
+            "        elif p == 1 and y == 0:\n"
+            "            fp += 1\n"
+            "        elif p == 0 and y == 1:\n"
+            "            fn += 1\n"
+            "        else:\n"
+            "            tn += 1\n"
+            "    return tp, fp, fn, tn\n\n\n"
+            "assert confusion_counts(PREDICTIONS, LABELS) == (5, 1, 1, 3)\n"
+            "assert confusion_counts(PREDICTIONS[:4], LABELS[:4]) == (2, 1, 0, 1)"
         ),
         md("## ДЗ. 2. batch_predict_pass"),
         code(
@@ -719,42 +745,23 @@ SOLUTIONS = {
             "    return correct / len(preds)\n\n\n"
             "assert abs(accuracy_shadow_ok(PREDICTIONS, LABELS) - REF_ACCURACY) < 1e-9"
         ),
-    ),
-    "lessons/06_practice_metrics/solutions.ipynb": nb(
-        md("# Решения: практика метрик\n\n**Для преподавателя.**"),
-        code(
-            "PREDICTIONS = [1, 0, 1, 1, 0, 1, 1, 0, 1, 0]\n"
-            "LABELS =      [1, 0, 1, 0, 0, 1, 1, 0, 1, 1]\n"
+        md(
+            "## ДЗ. 5. precision и recall (по желанию)\n\n"
+            "precision = 5 / (5 + 1) ≈ 0.833; recall = 5 / (5 + 1) ≈ 0.833. "
+            "При нулевом знаменателе договариваемся возвращать `None`."
         ),
-        md("## Урок. confusion_counts"),
         code(
-            "def confusion_counts(preds, labels):\n"
-            "    tp = fp = fn = tn = 0\n"
-            "    for p, y in zip(preds, labels):\n"
-            "        if p == 1 and y == 1:\n"
-            "            tp += 1\n"
-            "        elif p == 1 and y == 0:\n"
-            "            fp += 1\n"
-            "        elif p == 0 and y == 1:\n"
-            "            fn += 1\n"
-            "        elif p == 0 and y == 0:\n"
-            "            tn += 1\n"
-            "    return tp, fp, fn, tn\n\n\n"
-            "assert confusion_counts(PREDICTIONS[:4], LABELS[:4]) == (2, 1, 0, 1)"
-        ),
-        md("## ДЗ. counter"),
-        code(
-            "def increment(counter):\n"
-            "    return counter + 1\n\n\n"
-            "def reset_and_count(items):\n"
-            "    total = 0\n"
-            "    for x in items:\n"
-            "        total += x\n"
-            "    return total\n\n\n"
-            "c = 0\n"
-            "c = increment(c)\n"
-            "assert c == 1\n"
-            "assert reset_and_count([1, 2, 3]) == 6"
+            "def precision(tp, fp):\n"
+            "    if tp + fp == 0:\n"
+            "        return None\n"
+            "    return tp / (tp + fp)\n\n\n"
+            "def recall(tp, fn):\n"
+            "    if tp + fn == 0:\n"
+            "        return None\n"
+            "    return tp / (tp + fn)\n\n\n"
+            "tp, fp, fn, tn = confusion_counts(PREDICTIONS, LABELS)\n"
+            "assert abs(precision(tp, fp) - 5 / 6) < 1e-9\n"
+            "assert abs(recall(tp, fn) - 5 / 6) < 1e-9"
         ),
     ),
     "lessons/02_function_as_mapping/solutions.ipynb": nb(
@@ -1024,48 +1031,21 @@ HOMEWORKS = {
             "    return correct / len(preds)\n\n\n"
             "def accuracy_shadow_ok(preds, labels):\n"
             "    pass\n\n\n"
-            "# assert abs(accuracy_shadow_ok(PREDICTIONS, LABELS) - 0.7) < 1e-9\n"
+            "# assert abs(accuracy_shadow_ok(PREDICTIONS, LABELS) - 0.8) < 1e-9\n"
         ),
-    ),
-    "lessons/06_practice_metrics/homework.ipynb": nb(
-        md("# Домашнее задание: отладка счётчика"),
         md(
-            "## 1. `increment` без global\n\n"
-            "Перепишите так, чтобы счётчик передавался аргументом и возвращался новое значение "
-            "(как в `homework_counter.py`, но **без** `global`)."
+            "## 5. precision и recall (по желанию)\n\n"
+            "Из `confusion_counts` с пары: `precision = tp / (tp + fp)` — какая доля наших «1» "
+            "оказалась верной; `recall = tp / (tp + fn)` — какую долю настоящих «1» мы нашли. "
+            "Напишите две функции; если знаменатель 0 — верните `None`."
         ),
         code(
-            "def increment(counter):\n"
+            "def precision(tp, fp):\n"
             "    pass\n\n\n"
-            "c = 0\n"
-            "c = increment(c)\n"
-            "c = increment(c)\n"
-            "# assert c == 2\n"
-        ),
-        md("## 2. `reset_and_count`\n\nСумма списка — не забудьте `return`."),
-        code(
-            "def reset_and_count(items):\n"
-            "    total = 0\n"
-            "    for x in items:\n"
-            "        total += x\n"
+            "def recall(tp, fn):\n"
             "    pass\n\n\n"
-            "# assert reset_and_count([1, 2, 3]) == 6\n"
-        ),
-        md(
-            "## 3. Журнал\n\n"
-            "Markdown-ячейка: для **каждой** из двух функций выше — "
-            "симптом → причина → исправление (как на паре)."
-        ),
-        md(
-            "## 4. precision и recall (по желанию)\n\n"
-            "Из `confusion_counts` с пары: `precision = tp / (tp + fp)`, "
-            "`recall = tp / (tp + fn)`. Посчитайте на `PREDICTIONS`/`LABELS`."
-        ),
-        code(
-            "PREDICTIONS = [1, 0, 1, 1, 0, 1, 1, 0, 1, 0]\n"
-            "LABELS =      [1, 0, 1, 0, 0, 1, 1, 0, 1, 1]\n"
-            "# tp, fp, fn, tn = ...\n"
-            "# precision, recall\n"
+            "# tp, fp, fn, tn = confusion_counts(PREDICTIONS, LABELS)\n"
+            "# print(precision(tp, fp), recall(tp, fn))\n"
         ),
     ),
     "lessons/02_function_as_mapping/homework.ipynb": nb(
@@ -1125,15 +1105,539 @@ HOMEWORKS = {
 }
 
 
-# Pair 7 (merged recursion+pipeline): source of truth = ipynb on disk (edit files, then regenerate).
-NOTEBOOKS['lessons/07_recursion_pipeline/lesson.ipynb'] = json.loads((ROOT / 'lessons/07_recursion_pipeline/lesson.ipynb').read_text(encoding='utf-8'))
-HOMEWORKS['lessons/07_recursion_pipeline/homework.ipynb'] = json.loads((ROOT / 'lessons/07_recursion_pipeline/homework.ipynb').read_text(encoding='utf-8'))
-SOLUTIONS['lessons/07_recursion_pipeline/solutions.ipynb'] = json.loads((ROOT / 'lessons/07_recursion_pipeline/solutions.ipynb').read_text(encoding='utf-8'))
+# ---------------------------------------------------------------------------
+# Pair 7: modules, import, command line, .py vs .ipynb
+# Files are created from Colab cells via %%writefile and run via !python.
+# ---------------------------------------------------------------------------
+
+L06_DATA = (
+    "# Те же данные, что на паре 5\n"
+    "PREDICTIONS = [1, 0, 1, 1, 0, 1, 1, 0, 1, 0]\n"
+    "LABELS =      [1, 0, 1, 0, 0, 1, 1, 0, 1, 1]\n"
+)
+
+L06_HOWTO = (
+    "**Как работать в этом ноутбуке**\n\n"
+    "| Ячейка начинается с | Что это |\n"
+    "|---|---|\n"
+    "| `%%writefile имя.py` | сохранить текст ячейки в файл `имя.py` (сама ячейка не выполняется как код) |\n"
+    "| `!python имя.py` | команда **терминала**: запустить файл заново, в отдельном процессе |\n"
+    "| `!ls` | команда терминала: показать файлы в папке |\n\n"
+    "Если у вас Python и терминал на компьютере — делайте то же в одной папке: "
+    "файл в редакторе, команды в терминале **без** `!` (в Windows иногда `py` вместо `python`)."
+)
+
+L06_METRICS_STUB = (
+    '"""metrics — метрики классификации на списках 0/1 (пара 5)."""\n\n\n'
+    "def my_accuracy(preds, labels):\n"
+    '    """Доля верных предсказаний или None при разной длине."""\n'
+    "    pass\n\n\n"
+    "def confusion_counts(preds, labels):\n"
+    '    """(tp, fp, fn, tn) для меток 0/1."""\n'
+    "    pass\n"
+)
+
+L06_METRICS_FULL = (
+    '"""metrics — метрики классификации на списках 0/1 (пара 5)."""\n\n\n'
+    "def my_accuracy(preds, labels):\n"
+    '    """Доля верных предсказаний или None при разной длине."""\n'
+    "    if len(preds) != len(labels):\n"
+    "        return None\n"
+    "    if not preds:\n"
+    "        return 0.0\n"
+    "    correct = 0\n"
+    "    for i in range(len(preds)):\n"
+    "        if preds[i] == labels[i]:\n"
+    "            correct += 1\n"
+    "    return correct / len(preds)\n\n\n"
+    "def confusion_counts(preds, labels):\n"
+    '    """(tp, fp, fn, tn) для меток 0/1."""\n'
+    "    tp = 0\n"
+    "    fp = 0\n"
+    "    fn = 0\n"
+    "    tn = 0\n"
+    "    for i in range(len(preds)):\n"
+    "        p = preds[i]\n"
+    "        y = labels[i]\n"
+    "        if p == 1 and y == 1:\n"
+    "            tp += 1\n"
+    "        elif p == 1 and y == 0:\n"
+    "            fp += 1\n"
+    "        elif p == 0 and y == 1:\n"
+    "            fn += 1\n"
+    "        else:\n"
+    "            tn += 1\n"
+    "    return (tp, fp, fn, tn)\n"
+)
+
+L06_SELFCHECK = (
+    "\n\nif __name__ == \"__main__\":\n"
+    "    # выполняется только при запуске: python metrics.py\n"
+    "    print(\"self-check:\", my_accuracy([1, 0], [1, 1]))\n"
+)
+
+L06_MAIN = (
+    '"""Отчёт по метрикам. Запуск: python main.py"""\n\n'
+    "from metrics import my_accuracy, confusion_counts\n\n"
+    "PREDICTIONS = [1, 0, 1, 1, 0, 1, 1, 0, 1, 0]\n"
+    "LABELS = [1, 0, 1, 0, 0, 1, 1, 0, 1, 1]\n\n"
+    "acc = my_accuracy(PREDICTIONS, LABELS)\n"
+    "tp, fp, fn, tn = confusion_counts(PREDICTIONS, LABELS)\n"
+    'print("accuracy:", acc)\n'
+    'print("tp fp fn tn:", tp, fp, fn, tn)\n'
+)
+
+L06_TESTS = (
+    '"""Тесты модуля metrics. Запуск: python manual_tests.py"""\n\n'
+    "from metrics import my_accuracy, confusion_counts\n\n"
+    "PREDICTIONS = [1, 0, 1, 1, 0, 1, 1, 0, 1, 0]\n"
+    "LABELS = [1, 0, 1, 0, 0, 1, 1, 0, 1, 1]\n\n"
+    'assert abs(my_accuracy(PREDICTIONS, LABELS) - 0.8) < 1e-9, "accuracy на 10 объектах"\n'
+    'assert my_accuracy([1], [1, 0]) is None, "разная длина → None"\n'
+    'assert confusion_counts(PREDICTIONS, LABELS) == (5, 1, 1, 3), "tp fp fn tn"\n'
+    'assert sum(confusion_counts(PREDICTIONS, LABELS)) == len(PREDICTIONS), "сумма = число объектов"\n'
+    'print("All tests passed")\n'
+)
+
+L06_PREDICT_STUB = (
+    '"""Запуск: python predict.py БАЛЛ ПОРОГ  → печатает 1 (сдал) или 0"""\n\n'
+    "import sys\n\n"
+    'print("argv:", sys.argv)  # посмотрите, что здесь, и удалите строку\n\n\n'
+    "def predict_pass(score, threshold):\n"
+    "    pass\n\n\n"
+    "score = None      # int(sys.argv[1])\n"
+    "threshold = None  # int(sys.argv[2])\n"
+    "print(predict_pass(score, threshold))\n"
+)
+
+L06_PREDICT_FULL = (
+    '"""Запуск: python predict.py БАЛЛ [ПОРОГ]  → печатает 1 (сдал) или 0"""\n\n'
+    "import sys\n\n\n"
+    "def predict_pass(score, threshold):\n"
+    "    if score >= threshold:\n"
+    "        return 1\n"
+    "    return 0\n\n\n"
+    "if len(sys.argv) < 2:\n"
+    '    print("использование: python predict.py БАЛЛ [ПОРОГ]")\n'
+    "    sys.exit(1)\n\n"
+    "score = int(sys.argv[1])\n"
+    "threshold = 60\n"
+    "if len(sys.argv) >= 3:\n"
+    "    threshold = int(sys.argv[2])\n"
+    "print(predict_pass(score, threshold))\n"
+)
+
+L06_DATASETS_IMPORT = (
+    "import urllib.request\n\n"
+    "urllib.request.urlretrieve(\n"
+    '    "https://raw.githubusercontent.com/gurovic/letovo-ml-profile/main/"\n'
+    '    "modules/08_01_functions_recursion/data/module_datasets.py",\n'
+    '    "module_datasets.py",\n'
+    ")\n\n"
+    "from module_datasets import PREDICTIONS as P_DATA, LABELS as L_DATA\n\n"
+    'print("объектов в датасете модуля:", len(P_DATA), len(L_DATA))\n'
+)
+
+# ---- homework files ----
+
+HW06_STATS_STUB = (
+    '"""stats_tools — описание и масштабирование списка чисел (пара 3)."""\n\n\n'
+    "def describe_numbers(values):\n"
+    '    """Вернуть (mean, min, max, count)."""\n'
+    "    pass\n\n\n"
+    "def min_max_scale(values):\n"
+    '    """Min-max scaling списка чисел → список от 0 до 1."""\n'
+    "    pass\n"
+)
+
+HW06_STATS_FULL = (
+    '"""stats_tools — описание и масштабирование списка чисел (пара 3)."""\n\n\n'
+    "def describe_numbers(values):\n"
+    '    """Вернуть (mean, min, max, count)."""\n'
+    "    if not values:\n"
+    "        return (0.0, 0.0, 0.0, 0)\n"
+    "    return (sum(values) / len(values), min(values), max(values), len(values))\n\n\n"
+    "def min_max_scale(values):\n"
+    '    """Min-max scaling списка чисел → список от 0 до 1."""\n'
+    "    if not values:\n"
+    "        return []\n"
+    "    lo = min(values)\n"
+    "    hi = max(values)\n"
+    "    if lo == hi:\n"
+    "        return [0.0] * len(values)\n"
+    "    result = []\n"
+    "    for x in values:\n"
+    "        result.append((x - lo) / (hi - lo))\n"
+    "    return result\n"
+)
+
+HW06_STATS_TESTS = (
+    '"""Запуск: python manual_tests.py"""\n\n'
+    "from stats_tools import describe_numbers, min_max_scale\n\n"
+    "EXAM_SCORES = [40, 55, 62, 75, 88, 91, 48, 100, 33, 67]\n\n"
+    'assert describe_numbers([10, 20, 30]) == (20, 10, 30, 3), "describe на трёх числах"\n'
+    'assert describe_numbers(EXAM_SCORES)[3] == 10, "count = 10"\n'
+    "scaled = min_max_scale(EXAM_SCORES)\n"
+    'assert abs(min(scaled) - 0) < 1e-9 and abs(max(scaled) - 1) < 1e-9, "границы 0 и 1"\n'
+    'print("All tests passed")\n'
+)
+
+HW06_DESCRIBE_CLI = (
+    '"""Запуск: python describe.py 40 55 62 75"""\n\n'
+    "import sys\n\n"
+    "from stats_tools import describe_numbers\n\n"
+    "values = []\n"
+    "for text in sys.argv[1:]:\n"
+    "    values.append(float(text))\n\n"
+    "if not values:\n"
+    '    print("использование: python describe.py ЧИСЛО ЧИСЛО ...")\n'
+    "    sys.exit(1)\n\n"
+    "mean, lo, hi, count = describe_numbers(values)\n"
+    'print("count", count)\n'
+    'print("min", lo)\n'
+    'print("max", hi)\n'
+    'print("mean", mean)\n'
+)
+
+HW06_NOISY = (
+    '"""noisy — модуль, который шумит при импорте (исправить)."""\n\n\n'
+    "def clip(x, low, high):\n"
+    "    return max(low, min(high, x))\n\n\n"
+    'print("проверка clip:", clip(150, 0, 100))\n'
+    'print("проверка clip:", clip(-5, 0, 100))\n'
+)
+
+HW06_NOISY_FIXED = (
+    '"""noisy — модуль с демонстрацией только при прямом запуске."""\n\n\n'
+    "def clip(x, low, high):\n"
+    "    return max(low, min(high, x))\n\n\n"
+    'if __name__ == "__main__":\n'
+    '    print("проверка clip:", clip(150, 0, 100))\n'
+    '    print("проверка clip:", clip(-5, 0, 100))\n'
+)
+
+HW06_REPORT = (
+    '"""Отчёт из двух своих модулей. Запуск: python report.py"""\n\n'
+    "from stats_tools import describe_numbers\n"
+    "from metrics import my_accuracy\n\n"
+    "SCORES = [72, 55, 88, 44, 61, 90, 77, 48, 83, 58]\n"
+    "PREDICTIONS = [1, 0, 1, 1, 0, 1, 1, 0, 1, 0]\n"
+    "LABELS = [1, 0, 1, 0, 0, 1, 1, 0, 1, 1]\n\n"
+    "mean, lo, hi, count = describe_numbers(SCORES)\n"
+    'print("баллы: count", count, "min", lo, "max", hi, "mean", mean)\n'
+    'print("accuracy:", my_accuracy(PREDICTIONS, LABELS))\n'
+)
+
+
+def wf(name: str, body: str):
+    """Code cell that writes `body` into file `name` (Colab %%writefile)."""
+    return code(f"%%writefile {name}\n{body}")
+
+
+NOTEBOOKS["lessons/06_modules_cli/lesson.ipynb"] = nb(
+    md(
+        "# Модули и импорт: код в `.py`, запуск из командной строки\n\n"
+        "**Пара КТП 6** (2 ч). До сих пор функции жили в ячейках ноутбука. "
+        "Сегодня они переезжают в **файл-модуль**, который можно импортировать, "
+        "запускать из командной строки и проверять отдельным файлом тестов.\n\n"
+        "Минимум сдачи: `hello.py`, `metrics.py`, `main.py`, `predict.py`, `manual_tests.py` — "
+        "все запускаются командой `python имя.py`."
+    ),
+    md(L06_HOWTO),
+    code(L06_DATA),
+    md(
+        "## 1. Файл .py и ноутбук .ipynb\n\n"
+        "Ноутбук `.ipynb` — это **JSON**: список ячеек с кодом, текстом и сохранёнными выводами. "
+        "Примерно так выглядит одна ячейка внутри файла:\n\n"
+        "```json\n"
+        '{"cell_type": "code", "source": ["print(1 + 1)"], "outputs": [{"text": ["2\\n"]}]}\n'
+        "```\n\n"
+        "Файл `.py` — **только код**, обычный текст. Python читает его сверху вниз и выполняет. "
+        "Такой файл называют **программой** (если его запускают) или **модулем** (если его импортируют).\n\n"
+        "Создайте файл и запустите его."
+    ),
+    wf("hello.py", 'print("hello from file")\n'),
+    code("!python hello.py"),
+    code("# какие файлы появились в папке?\n!ls"),
+    md(
+        "**Задание.** Поменяйте текст в `hello.py`, запустите ячейку с `%%writefile` ещё раз, потом — `!python hello.py`. "
+        "Что будет, если запустить только `!python hello.py`, не пересохранив файл?"
+    ),
+    md(
+        "## 2. Модуль metrics.py\n\n"
+        "**Модуль** — файл с функциями. Имя модуля = имя файла без `.py`.\n\n"
+        "Перенесите в файл ниже **свои** `my_accuracy` и `confusion_counts` с пары 5 (вместо `pass`)."
+    ),
+    wf("metrics.py", L06_METRICS_STUB),
+    code(
+        "import metrics\n\n"
+        "acc = metrics.my_accuracy(PREDICTIONS, LABELS)\n"
+        "print(acc)\n"
+        "assert abs(acc - 0.8) < 1e-9\n"
+    ),
+    code(
+        "from metrics import confusion_counts\n\n"
+        "tp, fp, fn, tn = confusion_counts(PREDICTIONS, LABELS)\n"
+        "print(tp, fp, fn, tn)\n"
+        "assert (tp, fp, fn, tn) == (5, 1, 1, 3)\n"
+    ),
+    md(
+        "**Ловушка.** Модуль загружается в память **один раз** на процесс. "
+        "Если вы исправили `metrics.py`, а `import metrics` в ноутбуке по-прежнему возвращает старое — "
+        "перезагрузите модуль ячейкой ниже. Команда `!python main.py` этой проблемы не имеет: "
+        "каждый запуск — новый процесс, файл читается заново."
+    ),
+    code("import importlib\n\nimportlib.reload(metrics)\nprint(metrics.my_accuracy(PREDICTIONS, LABELS))"),
+    md(
+        "## 3. Программа main.py\n\n"
+        "Программа импортирует модуль и печатает отчёт. Данные пока внутри программы."
+    ),
+    wf("main.py", L06_MAIN),
+    code("!python main.py"),
+    md(
+        "### Эксперимент: код верхнего уровня\n\n"
+        "Допишите в **конец** `metrics.py` строку\n\n"
+        "```python\n"
+        'print("self-check:", my_accuracy([1, 0], [1, 1]))\n'
+        "```\n\n"
+        "и снова выполните `!python main.py`. Откуда взялась лишняя строка?\n\n"
+        "Всё, что в файле **не внутри функций**, выполняется при импорте. "
+        "Чтобы проверка работала только при прямом запуске `python metrics.py`, "
+        "её прячут под условие `if __name__ == \"__main__\":`. Переменная `__name__` равна "
+        "`\"__main__\"`, когда файл запустили как программу, и равна имени модуля (`\"metrics\"`), когда его импортировали.\n\n"
+        "Перепишите `metrics.py`: ваши функции + self-check под условием."
+    ),
+    wf("metrics.py", L06_METRICS_STUB + L06_SELFCHECK),
+    code("# прямой запуск: self-check печатается\n!python metrics.py"),
+    code("# импорт из программы: self-check молчит\n!python main.py"),
+    md(
+        "## 4. Аргументы командной строки\n\n"
+        "`sys.argv` — список **строк** из командной строки. `sys.argv[0]` — имя файла, дальше — аргументы.\n\n"
+        "Напишите `predict.py`: `python predict.py 72 60` печатает `1` (72 ≥ 60), `python predict.py 44 60` — `0`."
+    ),
+    wf("predict.py", L06_PREDICT_STUB),
+    code("!python predict.py 72 60"),
+    code("!python predict.py 44 60"),
+    md(
+        "**Задание.** Запустите `!python predict.py` без аргументов. Какая ошибка? "
+        "Сделайте порог необязательным: если его нет — использовать `60`; если нет и балла — напечатать подсказку «использование: …»."
+    ),
+    code("!python predict.py\n!python predict.py 72"),
+    md(
+        "## 5. Файл тестов\n\n"
+        "Тесты — отдельный файл, который **импортирует** модуль и проверяет его через `assert`. "
+        "Последняя строка печатается, только если все проверки прошли."
+    ),
+    wf("manual_tests.py", L06_TESTS),
+    code("!python manual_tests.py"),
+    md(
+        "### Сломайте и прочитайте traceback\n\n"
+        "В `metrics.py` поменяйте местами `fp` и `fn` в `return` (пересохраните файл) и запустите тесты ещё раз.\n\n"
+        "Traceback читают **снизу вверх**: последняя строка — тип ошибки и сообщение; выше — `File \"...\", line N` — "
+        "файл и строка, где упала проверка.\n\n"
+        "Запишите в ячейку ниже: какой файл, какая строка, какое сообщение. Потом верните `metrics.py` в порядок."
+    ),
+    md("**Ответ:** файл … , строка … , сообщение … "),
+    code("# после исправления снова должно быть All tests passed\n!python manual_tests.py"),
+    md(
+        "## 6. Данные — тоже модуль\n\n"
+        "`data/module_datasets.py` из репозитория курса — обычный модуль с константами. "
+        "Скачаем файл рядом и импортируем из него данные."
+    ),
+    code(L06_DATASETS_IMPORT),
+    code("!ls"),
+    md(
+        "### Мост к паре 8\n\n"
+        "Стартовый код артефакта устроен точно так же, как ваша папка сейчас:\n\n"
+        "```text\n"
+        "text_stats_starter/\n"
+        "  text_stats.py        ← модуль с функциями (как metrics.py)\n"
+        "  manual_tests.py      ← тесты, запуск: python manual_tests.py\n"
+        "  data/\n"
+        "    module_datasets.py ← данные-модуль\n"
+        "```\n\n"
+        "Домашнее задание — [homework.ipynb](homework.ipynb): та же структура на функциях пары 3."
+    ),
+    md(
+        "## Итог\n\n"
+        "| Понятие | Что запомнить |\n"
+        "|---|---|\n"
+        "| `.py` vs `.ipynb` | код-текст vs JSON с ячейками и выводами |\n"
+        "| модуль | файл с функциями; `import metrics`, `from metrics import f` |\n"
+        "| `python file.py` | новый процесс, файл читается заново |\n"
+        "| `if __name__ == \"__main__\":` | код только при прямом запуске |\n"
+        "| `sys.argv` | аргументы — список строк |\n"
+        "| `manual_tests.py` | отдельный файл с `assert` |"
+    ),
+)
+
+HOMEWORKS["lessons/06_modules_cli/homework.ipynb"] = nb(
+    md(
+        "# Домашнее задание: свой модуль, тесты и программа с аргументами\n\n"
+        "~1 час. Та же структура, что на паре: модуль → тесты → программа. "
+        "Уровни A–B обязательны, C–D — по силам.\n\n"
+        "Сдаётся этот ноутбук с выполненными ячейками `!python …` "
+        "(или папка с файлами, если работали локально)."
+    ),
+    md(L06_HOWTO),
+    md(
+        "## 1. Модуль `stats_tools.py` (A)\n\n"
+        "Перенесите **свои** `describe_numbers` и `min_max_scale` с пары 3 в файл."
+    ),
+    wf("stats_tools.py", HW06_STATS_STUB),
+    code(
+        "from stats_tools import describe_numbers, min_max_scale\n\n"
+        "print(describe_numbers([10, 20, 30]))\n"
+        "print(min_max_scale([10, 20, 30]))\n"
+    ),
+    md(
+        "## 2. Тесты `manual_tests.py` (A)\n\n"
+        "Файл тестов импортирует модуль. Допишите **ещё один** `assert` на `min_max_scale` "
+        "(например, для списка из одинаковых чисел)."
+    ),
+    wf("manual_tests.py", HW06_STATS_TESTS),
+    code("!python manual_tests.py"),
+    md(
+        "## 3. Программа `describe.py` с аргументами (B)\n\n"
+        "`python describe.py 40 55 62 75` печатает count, min, max, mean. "
+        "Все аргументы `sys.argv[1:]` — строки: превратите их в числа. "
+        "Без аргументов — подсказка «использование: …»."
+    ),
+    wf(
+        "describe.py",
+        '"""Запуск: python describe.py 40 55 62 75"""\n\n'
+        "import sys\n\n"
+        "from stats_tools import describe_numbers\n\n"
+        "values = []\n"
+        "# for text in sys.argv[1:]: ...\n\n"
+        "# mean, lo, hi, count = describe_numbers(values)\n"
+        "# print(...)\n",
+    ),
+    code("!python describe.py 40 55 62 75"),
+    code("!python describe.py"),
+    md(
+        "## 4. Модуль, который шумит при импорте (C)\n\n"
+        "Файл `noisy.py` печатает две строки при каждом `import noisy`. "
+        "Исправьте так, чтобы `import noisy` молчал, а `python noisy.py` по-прежнему показывал проверку. "
+        "Объясните в одном предложении, почему печать срабатывала."
+    ),
+    wf("noisy.py", HW06_NOISY),
+    code("import noisy\n\nprint(noisy.clip(150, 0, 100))"),
+    code("!python noisy.py"),
+    md("**Почему печатало при импорте:** …"),
+    md(
+        "## 5. Отчёт из двух модулей (D)\n\n"
+        "Скопируйте свой `metrics.py` с пары (ячейка ниже) и напишите `report.py`, "
+        "который импортирует **оба** модуля — `stats_tools` и `metrics` — и печатает: "
+        "описание списка баллов и accuracy предсказаний.\n\n"
+        "Затем выполните `!ls __pycache__` и напишите 1–2 предложения: что это за папка и можно ли её удалить."
+    ),
+    wf("metrics.py", L06_METRICS_STUB),
+    wf(
+        "report.py",
+        '"""Отчёт из двух своих модулей. Запуск: python report.py"""\n\n'
+        "# from stats_tools import describe_numbers\n"
+        "# from metrics import my_accuracy\n\n"
+        "SCORES = [72, 55, 88, 44, 61, 90, 77, 48, 83, 58]\n"
+        "PREDICTIONS = [1, 0, 1, 1, 0, 1, 1, 0, 1, 0]\n"
+        "LABELS = [1, 0, 1, 0, 0, 1, 1, 0, 1, 1]\n",
+    ),
+    code("!python report.py"),
+    code("!ls __pycache__"),
+    md("**`__pycache__` — это:** …"),
+)
+
+SOLUTIONS["lessons/06_modules_cli/solutions.ipynb"] = nb(
+    md(
+        "# Решения: модули и импорт (пара 6)\n\n"
+        "Только для преподавателя. Урок и ДЗ. Файлы создаются через `%%writefile`, запуск — `!python`."
+    ),
+    code(L06_DATA),
+    md("## Урок. 1. hello.py"),
+    wf("hello.py", 'print("hello from file")\n'),
+    code("!python hello.py"),
+    md(
+        "Без повторного `%%writefile` запуск `!python hello.py` печатает **старый** текст: "
+        "файл на диске не изменился."
+    ),
+    md("## Урок. 2–3. metrics.py (с self-check под `__main__`)"),
+    wf("metrics.py", L06_METRICS_FULL + L06_SELFCHECK),
+    code(
+        "import metrics\n\n"
+        "assert abs(metrics.my_accuracy(PREDICTIONS, LABELS) - 0.8) < 1e-9\n"
+        "assert metrics.confusion_counts(PREDICTIONS, LABELS) == (5, 1, 1, 3)\n"
+        "print(metrics.my_accuracy(PREDICTIONS, LABELS), metrics.confusion_counts(PREDICTIONS, LABELS))\n"
+    ),
+    wf("main.py", L06_MAIN),
+    code("!python metrics.py\n!python main.py"),
+    md(
+        "Ожидаемо: `python metrics.py` печатает `self-check: 0.5`; `python main.py` — только accuracy и счётчики."
+    ),
+    md("## Урок. 4. predict.py (с необязательным порогом и подсказкой)"),
+    wf("predict.py", L06_PREDICT_FULL),
+    code("!python predict.py 72 60\n!python predict.py 44 60\n!python predict.py 72\n!python predict.py"),
+    md(
+        "Без проверки `len(sys.argv)` запуск без аргументов даёт `IndexError: list index out of range` "
+        "на `sys.argv[1]`. Сравнение строки с числом (`\"72\" >= 60`) — `TypeError`."
+    ),
+    md("## Урок. 5. manual_tests.py и traceback"),
+    wf("manual_tests.py", L06_TESTS),
+    code("!python manual_tests.py"),
+    md(
+        "Если поменять `fp` и `fn` местами, падает третья проверка:\n\n"
+        "```text\n"
+        'Traceback (most recent call last):\n'
+        '  File "manual_tests.py", line 10, in <module>\n'
+        '    assert confusion_counts(PREDICTIONS, LABELS) == (5, 1, 1, 3), "tp fp fn tn"\n'
+        "AssertionError: tp fp fn tn\n"
+        "```\n\n"
+        "Здесь fp = fn = 1, поэтому подмена **не** ломает тест на этих данных — хороший повод обсудить, "
+        "почему тестовые данные должны различать случаи. Сильным: поменять `LABELS` так, чтобы fp ≠ fn, "
+        "или сломать `tn`."
+    ),
+    md("## Урок. 6. Данные как модуль"),
+    code(L06_DATASETS_IMPORT),
+    md("---\n\n# Домашнее задание"),
+    md("## ДЗ 1–2. stats_tools.py и тесты"),
+    wf("stats_tools.py", HW06_STATS_FULL),
+    wf(
+        "manual_tests.py",
+        HW06_STATS_TESTS.replace(
+            'print("All tests passed")\n',
+            'assert min_max_scale([5, 5, 5]) == [0.0, 0.0, 0.0], "одинаковые числа → нули"\n'
+            'print("All tests passed")\n',
+        ),
+    ),
+    code("!python manual_tests.py"),
+    md("## ДЗ 3. describe.py"),
+    wf("describe.py", HW06_DESCRIBE_CLI),
+    code("!python describe.py 40 55 62 75\n!python describe.py"),
+    md("## ДЗ 4. noisy.py"),
+    wf("noisy.py", HW06_NOISY_FIXED),
+    code("import importlib\nimport noisy\n\nimportlib.reload(noisy)\nprint(noisy.clip(150, 0, 100))"),
+    code("!python noisy.py"),
+    md(
+        "Печатало при импорте, потому что `print(...)` стоял на верхнем уровне файла: "
+        "при `import` выполняется весь файл, не только `def`."
+    ),
+    md("## ДЗ 5. report.py и `__pycache__`"),
+    wf("metrics.py", L06_METRICS_FULL),
+    wf("report.py", HW06_REPORT),
+    code("!python report.py\n!ls __pycache__"),
+    md(
+        "`__pycache__` — папка с байткодом (`*.pyc`), который Python сохраняет после импорта модуля, "
+        "чтобы в следующий раз загружать быстрее. Её можно удалить: при следующем импорте она создастся заново. "
+        "В git её не коммитят."
+    ),
+)
 
 if __name__ == "__main__":
-    for rel, notebook in NOTEBOOKS.items():
-        write(rel, notebook)
-    for rel, notebook in HOMEWORKS.items():
-        write(rel, notebook)
-    for rel, notebook in SOLUTIONS.items():
-        write(rel, notebook)
+    import sys
+
+    # Optional filters: substrings of the lesson path (e.g. `05_scope 06_modules`).
+    only = sys.argv[1:]
+    for table in (NOTEBOOKS, HOMEWORKS, SOLUTIONS):
+        for rel, notebook in table.items():
+            if only and not any(part in rel for part in only):
+                continue
+            write(rel, notebook)

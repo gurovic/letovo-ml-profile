@@ -42,6 +42,7 @@ from publish_canvas_lesson import (  # noqa: E402
     add_homework_assignment_item,
     add_module_item,
     publish_orientation_pair,
+    update_homework_assignment,
     upsert_lesson_page,
 )
 
@@ -341,6 +342,7 @@ def publish_standard_pair(
         hw = add_homework_assignment_item(
             course_id,
             module_id,
+            pair=slot.pair,
             homework_colab_url=homework_url,
         )
     feedback = add_feedback_quiz_item(course_id, module_id)
@@ -406,6 +408,123 @@ def publish_artifact_pair8(course_id: int, module_id: int, slot: LessonSlot) -> 
         "extras": extras,
         "submit": submit,
         "feedback": feedback,
+    }
+
+
+def update_gist_files(gist_id: str, lesson_dir: Path) -> list[str]:
+    """Overwrite lesson/homework/solutions in an existing gist (Colab links stay the same)."""
+    updated: list[str] = []
+    for name in ("lesson.ipynb", "homework.ipynb", "solutions.ipynb"):
+        path = lesson_dir / name
+        if not path.exists():
+            continue
+        result = subprocess.run(
+            ["gh", "gist", "edit", gist_id, "-f", name, str(path)],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            # file missing in gist → add it
+            result = subprocess.run(
+                ["gh", "gist", "edit", gist_id, "-a", str(path)],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        if result.returncode != 0:
+            raise SystemExit(f"gist edit failed for {gist_id}/{name}: {result.stderr or result.stdout}")
+        updated.append(name)
+        time.sleep(0.3)
+    return updated
+
+
+def find_module_id(course_id: int, name: str) -> int:
+    for mod in canvas_get(f"courses/{course_id}/modules", paginate=True):
+        if mod.get("name") == name:
+            return int(mod["id"])
+    raise SystemExit(f"Module not found: {name}")
+
+
+def pair_block_items(course_id: int, module_id: int, pair: int) -> list[dict]:
+    """Items of the «Пара N.» block: its SubHeader and everything up to the next SubHeader."""
+    items = canvas_get(f"courses/{course_id}/modules/{module_id}/items", paginate=True)
+    items.sort(key=lambda i: i.get("position", 0))
+    block: list[dict] = []
+    inside = False
+    for item in items:
+        if item.get("type") == "SubHeader":
+            if inside:
+                break
+            inside = str(item.get("title", "")).startswith(f"Пара {pair}.")
+        if inside:
+            block.append(item)
+    return block
+
+
+def update_standard_pair(course_id: int, slot: LessonSlot, gist_id: str) -> dict:
+    """Refresh an already published pair in place: gist files, plan page, block title,
+    homework description. Publication flags are not touched."""
+    module_name = next(name for d, name, _s, _e in MODULES if d == slot.module_dir)
+    module_id = find_module_id(course_id, module_name)
+
+    gist_files = update_gist_files(gist_id, slot.path)
+    lesson_url = colab(gist_id, "lesson.ipynb")
+    homework_url = (
+        colab(gist_id, "homework.ipynb") if (slot.path / "homework.ipynb").exists() else lesson_url
+    )
+    solutions_url = (
+        colab(gist_id, "solutions.ipynb") if (slot.path / "solutions.ipynb").exists() else None
+    )
+
+    # upsert_lesson_page publishes the wiki; keep whatever state the page had before
+    was_published = bool(
+        canvas_get(f"courses/{course_id}/pages/{slot.page_url}").get("published")
+    )
+    page = upsert_lesson_page(
+        course_id,
+        title=slot.page_title,
+        markdown_path=slot.path / "LESSON.md",
+        page_url=slot.page_url,
+        lesson_colab_url=lesson_url,
+        homework_colab_url=homework_url,
+    )
+    if not was_published:
+        canvas_put(
+            f"courses/{course_id}/pages/{page.get('url', slot.page_url)}",
+            {"wiki_page[published]": "false"},
+        )
+
+    touched: list[str] = []
+    homework_id = None
+    for item in pair_block_items(course_id, module_id, slot.pair):
+        item_url = f"courses/{course_id}/modules/{module_id}/items/{item['id']}"
+        kind = item.get("type")
+        title = item.get("title", "")
+        if kind == "SubHeader":
+            canvas_put(item_url, {"module_item[title]": slot.subheader})
+            touched.append("subheader")
+        elif kind == "ExternalUrl" and title == LESSON_ITEM_TITLE:
+            canvas_put(item_url, {"module_item[external_url]": lesson_url})
+            touched.append("lesson")
+        elif kind == "ExternalUrl" and title == SOLUTIONS_ITEM_TITLE and solutions_url:
+            canvas_put(item_url, {"module_item[external_url]": solutions_url})
+            touched.append("solutions")
+        elif kind == "Assignment" and str(title).startswith(HOMEWORK_ITEM_TITLE):
+            homework_id = int(item["content_id"])
+            update_homework_assignment(
+                course_id, homework_id, pair=slot.pair, homework_colab_url=homework_url
+            )
+            touched.append("homework")
+        time.sleep(0.15)
+
+    return {
+        "pair": slot.pair,
+        "gist_id": gist_id,
+        "gist_files": gist_files,
+        "page": page.get("url", slot.page_url),
+        "homework": homework_id,
+        "touched": touched,
     }
 
 
@@ -484,18 +603,39 @@ def main() -> None:
     parser.add_argument("--force-new-gists", action="store_true")
     parser.add_argument("--publish", action="store_true")
     parser.add_argument("--all", action="store_true", help="wipe + gists + publish")
+    parser.add_argument(
+        "--update-pairs",
+        type=int,
+        nargs="+",
+        metavar="PAIR",
+        help="Refresh published pairs in place (gist files, plan page, block title, HW text); "
+        "publication flags untouched",
+    )
     parser.add_argument("--course-id", type=int, default=COURSE_ID)
     args = parser.parse_args()
 
     if args.all:
         args.wipe = args.gists = args.publish = True
 
-    if not (args.wipe or args.gists or args.publish):
-        parser.error("Pass --wipe / --gists / --publish or --all")
+    if not (args.wipe or args.gists or args.publish or args.update_pairs):
+        parser.error("Pass --wipe / --gists / --publish / --update-pairs or --all")
 
     require_canvas_auth()
     slots = build_slots()
     print(f"Slots: {len(slots)} (expect 63)")
+
+    if args.update_pairs:
+        by_pair = {s.pair: s for s in slots}
+        for pair in args.update_pairs:
+            slot = by_pair.get(pair)
+            if slot is None or slot.orientation or slot.artifact:
+                raise SystemExit(f"--update-pairs: pair {pair} is not a standard pair")
+            gist_id = load_gist_map(slot.module_dir).get(pair)
+            if not gist_id:
+                raise SystemExit(f"--update-pairs: no gist for pair {pair}; run --gists first")
+            print(f"UPDATE pair {pair}: {slot.folder}")
+            print(json.dumps(update_standard_pair(args.course_id, slot, gist_id), ensure_ascii=False))
+        return
 
     if args.wipe:
         wipe_course(args.course_id)

@@ -1,6 +1,6 @@
 {
   "source": "aguschin/ai-school-program program.html grade_modules_unified_variants grade=8",
-  "preamble": "Канон профиля letovo-ml-profile: 4 ч/нед × 34 нед = 68 пар (1 пара = 2 акад. ч). Среда: весь год — ноутбуки (Jupyter/Colab); терминал, скрипты и venv — в 9 классе. Источник тем: `docs/ktp/08.md` (Draft 3).",
+  "preamble": "Канон профиля letovo-ml-profile: 4 ч/нед × 34 нед = 68 пар (1 пара = 2 акад. ч). Среда: весь год — ноутбуки (Jupyter/Colab); модули .py и запуск python file.py — с пары 6 (M1); venv, pip и bash — в 9 классе. Источник тем: `docs/ktp/08.md` (Draft 3).",
   "modules": [
     {
       "num": 1,
@@ -12,8 +12,8 @@
         "Функция как отображение — predict_price, batch_predict, MAE, выбор коэффициента",
         "Параметры и return — describe_numbers, min_max_scale, grade_stats",
         "Практика: proto-EDA и transform-функции",
-        "Scope и отладка — accuracy, баги return/scope",
-        "Практика: confusion_counts, журнал багов",
+        "Scope и отладка — accuracy, confusion_counts (tp/fp/fn/tn), баги return/scope",
+        "Модули и импорт — код в .py, import, запуск из командной строки, .py vs .ipynb",
         "Рекурсия на данных; lambda / HOF / apply_pipeline",
         "Артефакт text_stats — сборка, сдача, рефлексия модуля"
       ],

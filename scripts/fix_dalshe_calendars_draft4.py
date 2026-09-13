@@ -17,7 +17,7 @@ GRIDS = {
         (3, "03_parameters_and_return", "введение"),
         (4, "04_practice_transform", "отработка"),
         (5, "05_scope_and_debugging", "введение"),
-        (6, "06_practice_metrics", "отработка"),
+        (6, "06_modules_cli", "введение + отработка"),
         (7, "07_recursion_pipeline", "введение"),
         (8, "08_artifact", "интеграция"),
     ],

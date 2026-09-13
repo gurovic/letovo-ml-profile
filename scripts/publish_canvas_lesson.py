@@ -31,6 +31,23 @@ PLAN_ITEM_TITLE = "План урока (для преподавателя)"
 SOLUTIONS_ITEM_TITLE = "Решения (для преподавателя)"
 LESSON_ITEM_TITLE = "Ноутбук урока"
 HOMEWORK_ITEM_TITLE = "Домашнее задание"
+HOMEWORK_POINTS = 8.0
+HOMEWORK_TITLE_RE = re.compile(r"^Домашнее задание(?:,\s*урок\s+(\d+))?$")
+PAIR_NUM_RE = re.compile(r"^Пара\s+(\d+)")
+
+
+def homework_title(pair: int) -> str:
+    """Название Assignment и пункта модуля: «Домашнее задание, урок N»."""
+    return f"{HOMEWORK_ITEM_TITLE}, урок {pair}"
+
+
+def is_homework_title(title: str) -> bool:
+    return bool(HOMEWORK_TITLE_RE.match(str(title or "").strip()))
+
+
+def pair_number_from_subheader(title: str) -> int | None:
+    m = PAIR_NUM_RE.match(str(title or "").strip())
+    return int(m.group(1)) if m else None
 FEEDBACK_ITEM_TITLE = "Опрос перед следующей парой"
 FEEDBACK_ITEM_TITLE_LEGACY = "Опрос после пары"
 FEEDBACK_ITEM_TITLES = frozenset({FEEDBACK_ITEM_TITLE, FEEDBACK_ITEM_TITLE_LEGACY})
@@ -66,13 +83,17 @@ ARTIFACT_MATERIALS_TITLE = "Материалы артефакта"
 ARTIFACT_PROJECT_ITEM_TITLE = "Задание: text_stats"
 ARTIFACT_STARTER_README_ITEM_TITLE = "Как делать (шаги)"
 ARTIFACT_STARTER_CODE_ITEM_TITLE = "Стартовый код (zip)"
+ARTIFACT_TEACHER_ITEM_TITLE = "Решения (для преподавателя): text_stats"
 ARTIFACT_SUBMIT_TITLE = "Сдача артефакта text_stats"
 GIST_USER = "gurovic"
 ARTIFACT_ROOT = ROOT / "modules/08_01_functions_recursion/artifact"
 ARTIFACT_PROJECT_SLUG = "artifact-project"
 ARTIFACT_STARTER_README_SLUG = "artifact-starter-readme"
 ARTIFACT_STARTER_CODE_SLUG = "artifact-starter-code"
+ARTIFACT_TEACHER_SLUG = "artifact-teacher-solutions"
+ARTIFACT_TEACHER_CODE_SLUG = "artifact-teacher-code"
 ARTIFACT_ZIP_NAME = "text_stats_starter.zip"
+ARTIFACT_TEACHER_ZIP_NAME = "text_stats_teacher_solutions.zip"
 
 
 def clean_canvas_title(title: str) -> str:
@@ -139,22 +160,22 @@ PAIR_PRESETS: dict[int, PairPreset] = {
         solutions_gist="b2932e06a264060214da958de1b26ddb",
     ),
     5: PairPreset(
-        subheader="Пара 5. Scope и отладка — метрика как функция",
+        subheader="Пара 5. Scope и отладка — accuracy и типы ошибок",
         page_title="Пара 5 — план урока (для преподавателя)",
         page_url="para-5-plan-uroka-dlia-priepodavatielia",
         lesson_dir="05_scope_and_debugging",
-        lesson_gist="02894e0df1c20220b44e6b451ba96f2d",
-        homework_gist="02894e0df1c20220b44e6b451ba96f2d",
-        solutions_gist="02894e0df1c20220b44e6b451ba96f2d",
+        lesson_gist="b5ba1ff726ad2a5b867d31d90aa0b1aa",
+        homework_gist="b5ba1ff726ad2a5b867d31d90aa0b1aa",
+        solutions_gist="b5ba1ff726ad2a5b867d31d90aa0b1aa",
     ),
     6: PairPreset(
-        subheader="Пара 6. Практика: confusion_counts и журнал отладки",
+        subheader="Пара 6. Модули и импорт: код в .py, запуск из командной строки",
         page_title="Пара 6 — план урока (для преподавателя)",
         page_url="para-6-plan-uroka-dlia-priepodavatielia",
-        lesson_dir="06_practice_metrics",
-        lesson_gist="223bec34de44132ae35d97bffc5f612d",
-        homework_gist="223bec34de44132ae35d97bffc5f612d",
-        solutions_gist="223bec34de44132ae35d97bffc5f612d",
+        lesson_dir="06_modules_cli",
+        lesson_gist="bd748e58cb16d953e7ca8e28ba1c1394",
+        homework_gist="bd748e58cb16d953e7ca8e28ba1c1394",
+        solutions_gist="bd748e58cb16d953e7ca8e28ba1c1394",
     ),
     7: PairPreset(
         subheader="Пара 7. Рекурсия на данных — flatten и дерево категорий",
@@ -166,26 +187,24 @@ PAIR_PRESETS: dict[int, PairPreset] = {
         solutions_gist="a68c1a099865029657e58a81d56b91bc",
     ),
     8: PairPreset(
-        subheader="Пара 8. Практика: рекурсия, lambda, apply_pipeline",
+        subheader="Пара 8. Итоговая работа text_stats — реализация, README, сдача",
         page_title="Пара 8 — план урока (для преподавателя)",
         page_url="para-8-plan-uroka-dlia-priepodavatielia",
-        lesson_dir="08_practice_pipeline",
-        lesson_gist="83ac6b1d22b4385e6ee4a424a243f7dd",
-        homework_gist="83ac6b1d22b4385e6ee4a424a243f7dd",
-        solutions_gist="83ac6b1d22b4385e6ee4a424a243f7dd",
+        lesson_dir="08_artifact",
+        artifact=True,
     ),
     9: PairPreset(
         subheader="Пара 9. Артефакт text_stats — проектирование и реализация",
         page_title="Пара 9 — план урока (для преподавателя)",
         page_url="para-9-plan-uroka-dlia-priepodavatielia",
-        lesson_dir="09_artifact_build",
+        lesson_dir="08_artifact",
         artifact=True,
     ),
     10: PairPreset(
         subheader="Пара 10. Сдача артефакта text_stats",
         page_title="Пара 10 — план урока (для преподавателя)",
         page_url="para-10-plan-uroka-dlia-priepodavatielia",
-        lesson_dir="10_artifact_submit",
+        lesson_dir="08_artifact",
         artifact=True,
     ),
 }
@@ -247,9 +266,12 @@ def homework_text_assignment_description() -> str:
     )
 
 
-def create_text_homework_assignment(course_id: int, *, points: float = 1.0) -> dict:
+def create_text_homework_assignment(
+    course_id: int, *, pair: int, points: float = HOMEWORK_POINTS
+) -> dict:
+    title = homework_title(pair)
     payload = {
-        "assignment[name]": HOMEWORK_ITEM_TITLE,
+        "assignment[name]": title,
         "assignment[description]": homework_text_assignment_description(),
         "assignment[submission_types][]": "online_text_entry",
         "assignment[published]": "true",
@@ -263,16 +285,23 @@ def add_homework_text_assignment_item(
     course_id: int,
     module_id: int,
     *,
+    pair: int,
     position: int | None = None,
     assignment_id: int | None = None,
 ) -> dict:
+    title = homework_title(pair)
     assignment = (
         {"id": assignment_id}
         if assignment_id
-        else create_text_homework_assignment(course_id)
+        else create_text_homework_assignment(course_id, pair=pair)
     )
+    if assignment_id:
+        canvas_put(
+            f"courses/{course_id}/assignments/{assignment_id}",
+            {"assignment[name]": title},
+        )
     payload = {
-        "module_item[title]": HOMEWORK_ITEM_TITLE,
+        "module_item[title]": title,
         "module_item[type]": "Assignment",
         "module_item[content_id]": str(assignment["id"]),
         "module_item[indent]": "1",
@@ -290,9 +319,11 @@ def add_homework_text_assignment_item(
     }
 
 
-def create_homework_assignment(course_id: int, *, homework_colab_url: str, points: float = 1.0) -> dict:
+def create_homework_assignment(
+    course_id: int, *, pair: int, homework_colab_url: str, points: float = HOMEWORK_POINTS
+) -> dict:
     payload = {
-        "assignment[name]": HOMEWORK_ITEM_TITLE,
+        "assignment[name]": homework_title(pair),
         "assignment[description]": homework_assignment_description(homework_colab_url),
         "assignment[submission_types][]": "online_upload",
         "assignment[allowed_extensions][]": "ipynb",
@@ -303,9 +334,15 @@ def create_homework_assignment(course_id: int, *, homework_colab_url: str, point
     return canvas_post(f"courses/{course_id}/assignments", payload)
 
 
-def update_homework_assignment(course_id: int, assignment_id: int, *, homework_colab_url: str) -> dict:
+def update_homework_assignment(
+    course_id: int,
+    assignment_id: int,
+    *,
+    pair: int,
+    homework_colab_url: str,
+) -> dict:
     payload = {
-        "assignment[name]": HOMEWORK_ITEM_TITLE,
+        "assignment[name]": homework_title(pair),
         "assignment[description]": homework_assignment_description(homework_colab_url),
     }
     return canvas_put(f"courses/{course_id}/assignments/{assignment_id}", payload)
@@ -348,17 +385,26 @@ def add_homework_assignment_item(
     course_id: int,
     module_id: int,
     *,
+    pair: int,
     homework_colab_url: str,
     position: int | None = None,
     assignment_id: int | None = None,
 ) -> dict:
+    title = homework_title(pair)
     assignment = (
         {"id": assignment_id}
         if assignment_id
-        else create_homework_assignment(course_id, homework_colab_url=homework_colab_url)
+        else create_homework_assignment(
+            course_id, pair=pair, homework_colab_url=homework_colab_url
+        )
     )
+    if assignment_id:
+        canvas_put(
+            f"courses/{course_id}/assignments/{assignment_id}",
+            {"assignment[name]": title},
+        )
     payload = {
-        "module_item[title]": HOMEWORK_ITEM_TITLE,
+        "module_item[title]": title,
         "module_item[type]": "Assignment",
         "module_item[content_id]": str(assignment["id"]),
         "module_item[indent]": "1",
@@ -425,7 +471,7 @@ def feedback_target_position(block_items: list[dict]) -> int:
         header = next(it for it in block_items if it.get("type") == "SubHeader")
         return int(header.get("position") or 0) + 1
     homework = [
-        it for it in content if str(it.get("title") or "") == HOMEWORK_ITEM_TITLE
+        it for it in content if is_homework_title(str(it.get("title") or ""))
     ]
     if homework:
         return max(int(it.get("position") or 0) for it in homework) + 1
@@ -708,9 +754,13 @@ def publish_pair(
 
     homework_item = None
     if not preset.skip_homework:
+        pair_num = pair_number_from_subheader(preset.subheader)
+        if pair_num is None:
+            raise SystemExit(f"Cannot parse pair number from subheader: {preset.subheader!r}")
         homework_item = add_homework_assignment_item(
             course_id,
             module_id,
+            pair=pair_num,
             homework_colab_url=homework_nb_url,
         )
     feedback_item = add_feedback_quiz_item(course_id, module_id)
@@ -757,242 +807,20 @@ def upsert_wiki_md_page(
 
 
 def prepare_artifact_project_md() -> str:
-    """Student-facing assignment brief for Canvas (not the teacher PROJECT.md)."""
-    return r"""# Задание: библиотека `text_stats`
-
-Соберите небольшой модуль на Python: частоты слов в коротких отзывах и простой классификатор «позитив / негатив». **Без** `pandas` и `sklearn`.
-
-Данные отзывов (`TEXTS_POSITIVE`, `TEXTS_NEGATIVE`) лежат в архиве [Стартовый код (zip)](canvas:artifact-starter-code).  
-Порядок работы на парах — в [Как делать (шаги)](canvas:artifact-starter-readme).
-
----
-
-## Что должно получиться
-
-1. Разбить текст на слова и посчитать, как часто каждое встречается.
-2. Сравнить два набора отзывов и найти «маркерные» слова класса.
-3. По маркерам угадать класс нового текста.
-
-Сдать: `text_stats.py`, свой `README.md`, строка `All 10 manual tests passed.`
-
----
-
-## Обозначения
-
-- **список** — `list`, например `["hello", "world"]`
-- **словарь** — `dict`, пары «ключ → значение», например `{"a": 2, "b": 1}`
-- **кортеж** — `tuple`, например `("two", 2)` (слово и его частота)
-- стрелка **→** значит «функция возвращает»
-
-Фигурные скобки `{…}` в примерах ниже — всегда **словарь**, не множество.
-
----
-
-## Функции
-
-| Функция | Вход | Выход | Смысл |
-|---|---|---|---|
-| `tokenize(text)` | строка | **список** строк (слова в нижнем регистре) | разрезать текст на слова |
-| `word_frequencies(tokens)` | **список** слов | **словарь** «слово → сколько раз» | частоты |
-| `filter_tokens(tokens, min_len=3)` | **список** слов; `min_len` — мин. длина (по умолчанию 3) | **список** слов длины ≥ `min_len` | отбросить короткие |
-| `top_n(freq, n=5)` | **словарь** частот; `n` — сколько взять (по умолчанию 5) | **список кортежей** `(слово, частота)` по убыванию частоты | самые частые |
-| `count_char_recursive(s, ch)` | две строки: текст `s` и один символ `ch` | целое число | сколько раз символ `ch` встречается в `s`; считать **рекурсией** (без цикла по символам) |
-| `analyze_text(text)` | строка | **словарь** с тремя ключами (см. ниже) | краткая сводка по тексту |
-| `apply_pipeline(data, steps)` | стартовое значение `data` и **список функций** `steps` | результат последней функции | см. раздел про pipeline |
-| `aggregate_frequencies(texts)` | **список** строк | **словарь** «слово → суммарная частота» | частоты по классу отзывов |
-| `compare_class_frequencies(texts_a, texts_b, ratio=2.0)` | два **списка** строк + порог `ratio` (по умолчанию 2.0) | **словарь** «слово → метка» | маркеры классов |
-| `naive_classify(text, texts_a, texts_b)` | строка + два **списка** отзывов | одна строка: `"positive"`, `"negative"` или `"unknown"` | угадать класс |
-
-`count_words(tokens)` — по желанию: на вход **список**, на выход целое. Удобно вызывать из `analyze_text`.
-
-### `analyze_text` — какой словарь вернуть
-
-| Ключ | Тип значения | Что положить |
-|---|---|---|
-| `"word_count"` | целое | сколько слов после `tokenize` |
-| `"unique_words"` | целое | сколько **разных** слов |
-| `"top3"` | **список** из до трёх **кортежей** `(слово, частота)` | как `top_n(..., 3)` |
-
-Пример для `"one two two three"`:
-
-```python
-{
-    "word_count": 4,
-    "unique_words": 3,
-    "top3": [("two", 2), ("one", 1), ("three", 1)],
-}
-```
-
-В тесте обязательно: `top3[0] == ("two", 2)` (слово `two` самое частое).
-
-### `apply_pipeline` — что с параметрами
-
-`steps` — список **готовых функций**. Каждая вызывается **с одним аргументом**: текущим значением.
-
-1. `result = data`
-2. для каждой функции `f` из `steps`: `result = f(result)`
-3. вернуть `result`
-
-Первая функция получает исходные `data`, каждая следующая — то, что вернула предыдущая.  
-Отдельные «лишние» параметры в `apply_pipeline` не передаются.
-
-Если нужен второй параметр (как `min_len` у `filter_tokens`), зафиксируйте его в `lambda`:
-
-```python
-pipeline = [
-    tokenize,
-    lambda tokens: filter_tokens(tokens, 3),
-    word_frequencies,
-]
-apply_pipeline("отличный фильм", pipeline)
-```
-
-### `compare_class_frequencies` — какой словарь вернуть
-
-Это **словарь** (не множество): ключ — слово, значение — строка `"positive"` или `"negative"`.
-
-Слово попадает в словарь, если его частота в одном классе **не меньше** чем в `ratio` раз больше, чем в другом (по умолчанию `ratio = 2.0`).
-
-Пример фрагмента: `{"отличный": "positive", "скучный": "negative"}`.
-
-### `count_char_recursive`
-
-Пример: `count_char_recursive("banana", "a")` → `3` (три буквы «a»).  
-Считать рекурсией по строке: пустая строка → `0`; иначе проверить первый символ и вызвать себя для хвоста.
-
----
-
-## Пример целиком
-
-Из папки со стартовыми файлами:
-
-```python
-from text_stats import apply_pipeline, tokenize, filter_tokens, word_frequencies, naive_classify
-from data.module_datasets import TEXTS_POSITIVE, TEXTS_NEGATIVE
-
-pipeline = [tokenize, lambda t: filter_tokens(t, 3), word_frequencies]
-freq_one = apply_pipeline("отличный фильм", pipeline)
-
-naive_classify("отличный фильм рекомендую", TEXTS_POSITIVE, TEXTS_NEGATIVE)
-# ожидается: "positive"
-```
-
----
-
-## Критерии готовности
-
-| # | Критерий |
-|---|---|
-| 1 | `python manual_tests.py` → все 10 тестов без ошибок |
-| 2 | `compare_class_frequencies` на примерах из задания даёт **словарь** с ≥2 маркерами (`отличный` → `"positive"`, `скучный` → `"negative"`) |
-| 3 | `naive_classify` — ≥4 из 5 верных на **ваших** фразах (таблица в README) |
-| 4 | у `analyze_text("one two two three")`: `word_count == 4`, `unique_words == 3`, `top3[0] == ("two", 2)` |
-| 5 | `count_char_recursive("banana", "a") == 3` |
-| 6 | README: ваш pipeline, правило при ничьей в `naive_classify`, короткий абзац про анализ текстов |
-
----
-
-## Что зафиксировать в README
-
-1. Как считаете суммарные частоты по списку текстов (`aggregate_frequencies`).
-2. Какой `ratio` для маркеров (по умолчанию 2.0).
-3. Что возвращаете при равном счёте в `naive_classify` (ожидается `"unknown"`).
-4. Как `tokenize` обрабатывает пунктуацию (слова через `\w+`, Unicode).
-
-Шаблон — в [Как делать (шаги)](canvas:artifact-starter-readme).
-
----
-
-## Если тест упал
-
-| Симптом | Что проверить |
-|---|---|
-| `ModuleNotFoundError: data` | запускать из папки `starter/`, где есть каталог `data/` |
-| `NotImplementedError` | функция ещё не написана — нормально в начале |
-| падает `compare_class_frequencies` | сначала `tokenize`, `word_frequencies`, `aggregate_frequencies` |
-| `naive_classify` всегда `"unknown"` | сначала маркеры; при равном счёте — `"unknown"` |
-| не сходится `analyze_text` | для `"one two two three"`: 4 слова, 3 уникальных, чаще всех `two` |
-"""
+    """Student-facing assignment: one coherent brief from artifact/ASSIGNMENT.md."""
+    assignment = (ARTIFACT_ROOT / "ASSIGNMENT.md").read_text(encoding="utf-8")
+    return assignment.strip() + "\n"
 
 
 def prepare_artifact_starter_readme_md() -> str:
-    """Student-facing steps + README template for Canvas."""
-    return r"""# Как делать: `text_stats`
+    """Thin pointer page — full brief is in Задание."""
+    return """# Как делать: `text_stats`
 
-Скачайте [архив стартового кода](canvas:artifact-starter-code), распакуйте папку `text_stats_starter/` и работайте в ней.
+Весь текст задания, шаги, критерии и шаблон README — в одном документе:
 
-Полное задание (входы/выходы простым языком): [Задание: text_stats](canvas:artifact-project).
+**[Задание: text_stats](canvas:artifact-project)**
 
----
-
-## Порядок шагов
-
-| Шаг | Что сделать | Проверка |
-|---|---|---|
-| 1 | `tokenize` — строка → **список** слов | `python manual_tests.py` → OK: `test_tokenize` |
-| 2 | `count_char_recursive` — сколько раз символ встречается в строке (рекурсия) | → OK: `test_count_char_recursive` |
-| 3 | `word_frequencies` (**словарь**), `filter_tokens`, `top_n` (**список кортежей**) | → OK: три теста |
-| 4 | `apply_pipeline` — список функций, каждая с **одним** аргументом | → OK: `test_apply_pipeline` |
-| 5 | `analyze_text` — **словарь** с ключами `word_count`, `unique_words`, `top3` | → OK: `test_analyze_text` |
-| 6 | `aggregate_frequencies`, `compare_class_frequencies` (**словарь** «слово → positive/negative») | → OK: `test_compare_class_frequencies` |
-| 7 | `naive_classify` — одна строка-метка | → OK: оба `test_naive_classify_*` |
-| 8 | ваш `README.md` | сдача |
-
-**Пара 9:** шаги 1–5. **Пара 10:** шаги 6–8.
-
-Подсказка для `tokenize`: в файле уже есть `import re`;  
-`re.findall(r"\w+", text.lower(), flags=re.UNICODE)` (кириллица — тоже слово).
-
-Если тест упал — таблица в [Задании](canvas:artifact-project).
-
----
-
-## Запуск тестов
-
-```bash
-python manual_tests.py
-```
-
-Пока функция не готова — `NotImplementedError` на её тесте (это нормально).
-
-Успех: `All 10 manual tests passed.`
-
----
-
-## Что сдать
-
-1. `text_stats.py`
-2. `README.md` по шаблону
-3. Зелёные 10 тестов
-
----
-
-## Шаблон README
-
-```markdown
-# text_stats — [ФИО]
-
-## Цепочка шагов (pipeline)
-
-1. tokenize → …
-2. …
-
-## Решения
-
-- Порог маркера (ratio): …
-- При равном счёте маркеров в naive_classify: …
-
-## 5 моих фраз для naive_classify
-
-| Фраза | Ожидаю | Получилось |
-|---|---|---|
-| … | positive/negative | … |
-(всего 5 строк; нужно ≥4 верных)
-
-## Связь с курсом (1 абзац)
-
-Как частоты слов связаны с анализом текстов / будущим NLP.
-```
+Стартовые файлы: [Стартовый код (zip)](canvas:artifact-starter-code).
 """
 
 
@@ -1012,10 +840,10 @@ text_stats_starter/
   manual_tests.py        ← проверка
   data/
     __init__.py
-    module_datasets.py   ← отзывы TEXTS_POSITIVE / TEXTS_NEGATIVE
+    module_datasets.py   ← отзывы TEXTS_POSITIVE / TEXTS_NEGATIVE (+ датасеты модуля)
 ```
 
-Дальше: [Задание](canvas:artifact-project) и [Как делать (шаги)](canvas:artifact-starter-readme).
+Дальше откройте **[Задание: text_stats](canvas:artifact-project)** — там полный связный текст: зачем задание, шаги 1–8, контракты функций, критерии и шаблон README.
 
 Запуск тестов из папки `text_stats_starter/`:
 
@@ -1027,8 +855,28 @@ python manual_tests.py
 """
 
 
+def prepare_artifact_teacher_solutions_md(*, teacher_zip_href: str) -> str:
+    """Hidden teacher page: solutions brief + download link."""
+    body = (ARTIFACT_ROOT / "TEACHER_SOLUTIONS.md").read_text(encoding="utf-8")
+    # Ensure zip link points to uploaded file page / direct download
+    body = body.replace(
+        "[text_stats_teacher_solutions.zip](canvas:artifact-teacher-code)",
+        f"[{ARTIFACT_TEACHER_ZIP_NAME}]({teacher_zip_href})",
+    )
+    return body.strip() + "\n"
+
+
+def prepare_artifact_teacher_code_md(*, download_href: str) -> str:
+    return f"""# Эталон и данные (для преподавателя)
+
+**[{ARTIFACT_TEACHER_ZIP_NAME}]({download_href})**
+
+Скрыто от учеников. Разбор — [Решения для учителя](canvas:artifact-teacher-solutions).
+"""
+
+
 def build_artifact_starter_zip() -> Path:
-    """Build a standalone student zip (data/ next to tests; no repo paths)."""
+    """Build a standalone student zip (full module data/ next to tests)."""
     import io
     import zipfile
 
@@ -1038,30 +886,68 @@ def build_artifact_starter_zip() -> Path:
         "Реализовать функции по заданию в Canvas. Тесты: manual_tests.py",
     )
     tests = (ARTIFACT_ROOT / "starter" / "manual_tests.py").read_text(encoding="utf-8")
+    # Standalone zip: only local data/, no repo parents on sys.path.
     tests = tests.replace(
-        "sys.path.insert(0, str(Path(__file__).resolve().parent))\n"
-        "sys.path.insert(0, str(Path(__file__).resolve().parents[2]))\n",
-        "sys.path.insert(0, str(Path(__file__).resolve().parent))\n",
+        "_MODULE_ROOT = Path(__file__).resolve().parents[2]\n"
+        "sys.path.insert(0, str(_MODULE_ROOT))\n\n",
+        "",
     )
     datasets = (
-        '"""Мини-датасет для text_stats (без pandas)."""\n\n'
-        "TEXTS_POSITIVE = [\n"
-        '    "отличный фильм рекомендую",\n'
-        '    "очень понравилось смотреть",\n'
-        '    "лучший фильм года",\n'
-        "]\n\n"
-        "TEXTS_NEGATIVE = [\n"
-        '    "скучный фильм не рекомендую",\n'
-        '    "потерял время зря",\n'
-        '    "очень слабый сценарий",\n'
-        "]\n"
-    )
+        ROOT / "modules/08_01_functions_recursion/data/module_datasets.py"
+    ).read_text(encoding="utf-8")
     out = ARTIFACT_ROOT / ARTIFACT_ZIP_NAME
     root_name = "text_stats_starter"
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", compression=zipfile.ZIP_DEFLATED) as zf:
         zf.writestr(f"{root_name}/text_stats.py", text_stats)
         zf.writestr(f"{root_name}/manual_tests.py", tests)
+        zf.writestr(f"{root_name}/data/__init__.py", "")
+        zf.writestr(f"{root_name}/data/module_datasets.py", datasets)
+        assignment = (ARTIFACT_ROOT / "ASSIGNMENT.md").read_text(encoding="utf-8")
+        # In zip, canvas: links are useless — point to filenames.
+        assignment = assignment.replace(
+            "[Стартовый код (zip)](canvas:artifact-starter-code)",
+            "архив стартового кода (эта же папка)",
+        )
+        zf.writestr(f"{root_name}/ASSIGNMENT.md", assignment)
+    out.write_bytes(buf.getvalue())
+    return out
+
+
+def build_artifact_teacher_zip() -> Path:
+    """Teacher zip: solution code + tests + full module datasets + briefs."""
+    import io
+    import zipfile
+
+    datasets = (
+        ROOT / "modules/08_01_functions_recursion/data/module_datasets.py"
+    ).read_text(encoding="utf-8")
+    solution_py = (ARTIFACT_ROOT / "solution" / "text_stats.py").read_text(encoding="utf-8")
+    tests = (ARTIFACT_ROOT / "solution" / "manual_tests.py").read_text(encoding="utf-8")
+    tests = tests.replace(
+        "_MODULE_ROOT = Path(__file__).resolve().parents[2]\n"
+        "sys.path.insert(0, str(_MODULE_ROOT))\n\n",
+        "",
+    )
+    teacher_readme = (ARTIFACT_ROOT / "TEACHER_SOLUTIONS.md").read_text(encoding="utf-8")
+    teacher_readme = teacher_readme.replace(
+        "[text_stats_teacher_solutions.zip](canvas:artifact-teacher-code)",
+        "этот архив",
+    ).replace(
+        "[Задание: text_stats](canvas:artifact-project)",
+        "ASSIGNMENT.md в ученическом архиве / wiki «Задание: text_stats»",
+    )
+    out = ARTIFACT_ROOT / ARTIFACT_TEACHER_ZIP_NAME
+    root_name = "text_stats_teacher"
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr(f"{root_name}/text_stats.py", solution_py)
+        zf.writestr(f"{root_name}/manual_tests.py", tests)
+        zf.writestr(f"{root_name}/README.md", teacher_readme)
+        zf.writestr(
+            f"{root_name}/ASSIGNMENT.md",
+            (ARTIFACT_ROOT / "ASSIGNMENT.md").read_text(encoding="utf-8"),
+        )
         zf.writestr(f"{root_name}/data/__init__.py", "")
         zf.writestr(f"{root_name}/data/module_datasets.py", datasets)
     out.write_bytes(buf.getvalue())
@@ -1072,22 +958,25 @@ def canvas_file_download_href(course_id: int, file_id: int) -> str:
     return f"/courses/{course_id}/files/{file_id}/download?download_frd=1"
 
 
-def upload_artifact_starter_zip(course_id: int) -> dict:
-    zip_path = build_artifact_starter_zip()
-    # Prefer overwriting one course file (avoid duplicates on pair 9 then 10).
+def _upload_named_course_zip(
+    course_id: int,
+    zip_path: Path,
+    display_name: str,
+    *,
+    hidden: bool = False,
+) -> dict:
     existing = canvas_get(
         f"courses/{course_id}/files",
-        {"search_term": ARTIFACT_ZIP_NAME},
+        {"search_term": display_name},
         paginate=True,
     )
+    matches = []
     if isinstance(existing, list):
         matches = [
             f
             for f in existing
-            if (f.get("display_name") or f.get("filename")) == ARTIFACT_ZIP_NAME
+            if (f.get("display_name") or f.get("filename")) == display_name
         ]
-    else:
-        matches = []
     uploaded = canvas_upload_course_file(
         course_id,
         zip_path,
@@ -1097,9 +986,12 @@ def upload_artifact_starter_zip(course_id: int) -> dict:
     file_id = int(uploaded["id"])
     canvas_put(
         f"files/{file_id}",
-        {"published": "true", "hidden": "false", "locked": "false"},
+        {
+            "published": "true",
+            "hidden": "true" if hidden else "false",
+            "locked": "false",
+        },
     )
-    # Remove older same-name copies left from previous publishes.
     for old in matches:
         oid = int(old["id"])
         if oid != file_id:
@@ -1109,42 +1001,51 @@ def upload_artifact_starter_zip(course_id: int) -> dict:
                 pass
     return {
         "id": file_id,
-        "display_name": uploaded.get("display_name") or ARTIFACT_ZIP_NAME,
+        "display_name": uploaded.get("display_name") or display_name,
         "url": uploaded.get("url"),
         "download_href": canvas_file_download_href(course_id, file_id),
         "local_path": str(zip_path),
+        "hidden": hidden,
     }
 
 
+def upload_artifact_starter_zip(course_id: int) -> dict:
+    return _upload_named_course_zip(
+        course_id, build_artifact_starter_zip(), ARTIFACT_ZIP_NAME
+    )
+
+
+def upload_artifact_teacher_zip(course_id: int) -> dict:
+    # Hidden in Files browser; module item stays unpublished for students.
+    return _upload_named_course_zip(
+        course_id,
+        build_artifact_teacher_zip(),
+        ARTIFACT_TEACHER_ZIP_NAME,
+        hidden=True,
+    )
+
+
 def artifact_hub_md(pair: int, *, download_href: str) -> str:
-    if pair == 9:
-        focus = (
-            "**Сейчас (пара 9):** шаги **1–5** "
-            "(`tokenize` … `analyze_text`). После каждого шага — `python manual_tests.py`."
-        )
-    else:
-        focus = (
-            "**Сейчас (пара 10):** шаги **6–8** (маркеры, классификация, README). "
-            "К сдаче: `All 10 manual tests passed.`"
-        )
+    del pair  # one brief for the whole artifact block
     return f"""# Материалы артефакта: `text_stats`
 
-{focus}
+Итоговая работа модуля 1. Откройте **один** документ задания и скачайте стартовый код.
 
 | Что открыть | Зачем |
 |---|---|
-| [{ARTIFACT_ZIP_NAME}]({download_href}) | скачать стартовые файлы одним архивом |
-| [Задание: text_stats](canvas:artifact-project) | что написать (входы/выходы функций) |
-| [Как делать (шаги)](canvas:artifact-starter-readme) | порядок шагов и шаблон README |
+| [Задание: text_stats](canvas:artifact-project) | полный текст: смысл, шаги, функции, критерии, README |
+| [{ARTIFACT_ZIP_NAME}]({download_href}) | стартовые файлы и данные одним архивом |
 
-На паре 10 сдайте через Assignment **«Сдача артефакта text_stats»**.
+Сдача — через Assignment **«Сдача артефакта text_stats»**.
 """
 
 
 def upsert_artifact_docs(course_id: int) -> dict:
-    """Publish student artifact docs + starter zip to Canvas."""
+    """Publish student + teacher artifact docs and both zips to Canvas."""
     zip_info = upload_artifact_starter_zip(course_id)
+    teacher_zip = upload_artifact_teacher_zip(course_id)
     download_href = zip_info["download_href"]
+    teacher_href = teacher_zip["download_href"]
     pages = {
         ARTIFACT_PROJECT_SLUG: upsert_wiki_md_page(
             course_id, slug=ARTIFACT_PROJECT_SLUG, markdown_text=prepare_artifact_project_md()
@@ -1159,14 +1060,28 @@ def upsert_artifact_docs(course_id: int) -> dict:
             slug=ARTIFACT_STARTER_CODE_SLUG,
             markdown_text=prepare_artifact_starter_code_md(download_href=download_href),
         ),
+        ARTIFACT_TEACHER_SLUG: upsert_wiki_md_page(
+            course_id,
+            slug=ARTIFACT_TEACHER_SLUG,
+            markdown_text=prepare_artifact_teacher_solutions_md(
+                teacher_zip_href=teacher_href
+            ),
+        ),
+        ARTIFACT_TEACHER_CODE_SLUG: upsert_wiki_md_page(
+            course_id,
+            slug=ARTIFACT_TEACHER_CODE_SLUG,
+            markdown_text=prepare_artifact_teacher_code_md(download_href=teacher_href),
+        ),
     }
     return {
         "zip": zip_info,
+        "teacher_zip": teacher_zip,
         "pages": {
             slug: {"page_id": p.get("page_id"), "url": p.get("url")}
             for slug, p in pages.items()
         },
         "download_href": download_href,
+        "teacher_download_href": teacher_href,
     }
 
 
@@ -1320,8 +1235,11 @@ def add_artifact_extras(
         item
         for item in items
         if start <= int(item["position"]) < end
-        and item.get("title") == ARTIFACT_MATERIALS_TITLE
         and item.get("type") == "Page"
+        and (
+            item.get("title") == ARTIFACT_MATERIALS_TITLE
+            or str(item.get("page_url") or "").endswith("artifact-materialy")
+        )
     ]
     keep = next(
         (item for item in materials_in_block if item.get("page_url") == page_url),
@@ -1360,9 +1278,9 @@ def add_artifact_extras(
             "removed_duplicates": removed,
         }
 
-    # Under pair 9 also surface the three shared docs as module items (once).
+    # Under the main artifact pair surface shared docs as module items (once).
     doc_items: list[dict] = []
-    if pair == 9:
+    if pair in (8, 9):
         doc_specs = [
             (ARTIFACT_PROJECT_ITEM_TITLE, ARTIFACT_PROJECT_SLUG, position + 1),
             (ARTIFACT_STARTER_README_ITEM_TITLE, ARTIFACT_STARTER_README_SLUG, position + 2),
@@ -1459,8 +1377,94 @@ def add_artifact_extras(
                 }
             )
 
+        # Teacher solutions: unpublished wiki (File module items cannot be unpublished on this Canvas).
+        # Zip stays hidden under Files; download link is inside the teacher wiki page.
+        teacher_specs = [
+            (ARTIFACT_TEACHER_ITEM_TITLE, ARTIFACT_TEACHER_SLUG, "Page", None),
+        ]
+        # Drop any leftover teacher File module item from earlier publishes.
+        items = canvas_get(f"courses/{course_id}/modules/{module_id}/items", paginate=True)
+        for it in items:
+            title = it.get("title") or ""
+            if (
+                it.get("type") == "File"
+                and ARTIFACT_TEACHER_ITEM_TITLE in title
+                and "(zip)" in title
+            ):
+                canvas_delete(
+                    f"courses/{course_id}/modules/{module_id}/items/{it['id']}"
+                )
+        items = canvas_get(f"courses/{course_id}/modules/{module_id}/items", paginate=True)
+        teacher_pos = position + 4
+        for title, slug, itype, content_id in teacher_specs:
+            existing = next(
+                (
+                    it
+                    for it in items
+                    if it.get("title") == title
+                    or (slug and it.get("page_url") == slug)
+                    or (
+                        itype == "File"
+                        and it.get("type") == "File"
+                        and it.get("content_id") == content_id
+                    )
+                ),
+                None,
+            )
+            if existing and itype == "File" and existing.get("type") == "Page":
+                canvas_delete(
+                    f"courses/{course_id}/modules/{module_id}/items/{existing['id']}"
+                )
+                existing = None
+            if existing:
+                payload = {
+                    "module_item[title]": title,
+                    "module_item[published]": "false",
+                    "module_item[position]": str(teacher_pos),
+                    "module_item[indent]": "1",
+                }
+                if itype == "Page" and slug:
+                    payload["module_item[page_url]"] = slug
+                if itype == "File" and content_id is not None:
+                    payload["module_item[content_id]"] = str(content_id)
+                canvas_put(
+                    f"courses/{course_id}/modules/{module_id}/items/{existing['id']}",
+                    payload,
+                )
+                doc_items.append(
+                    {
+                        "id": existing["id"],
+                        "title": title,
+                        "type": itype,
+                        "published": False,
+                        "skipped": True,
+                    }
+                )
+            else:
+                payload = {
+                    "module_item[title]": title,
+                    "module_item[type]": itype,
+                    "module_item[indent]": "1",
+                    "module_item[published]": "false",
+                    "module_item[position]": str(teacher_pos),
+                }
+                if itype == "Page" and slug:
+                    payload["module_item[page_url]"] = slug
+                if itype == "File" and content_id is not None:
+                    payload["module_item[content_id]"] = str(content_id)
+                item = add_module_item(course_id, module_id, payload)
+                doc_items.append(
+                    {
+                        "id": item.get("id"),
+                        "title": title,
+                        "type": itype,
+                        "published": False,
+                    }
+                )
+            teacher_pos += 1
+
     submit_item = None
-    if pair == 10:
+    if pair in (8, 10):
         items = canvas_get(
             f"courses/{course_id}/modules/{module_id}/items", paginate=True
         )
@@ -1607,15 +1611,18 @@ def migrate_homework_to_assignment(
     course_id: int,
     module_id: int,
     *,
+    pair: int,
     homework_colab_url: str,
     remove_external_url_item_id: int,
     assignment_id: int,
     assignment_module_item_id: int,
     lesson_module_item_id: int,
 ) -> dict:
+    title = homework_title(pair)
     assignment = update_homework_assignment(
         course_id,
         assignment_id,
+        pair=pair,
         homework_colab_url=homework_colab_url,
     )
     canvas_delete(
@@ -1628,7 +1635,7 @@ def migrate_homework_to_assignment(
     module_item = canvas_put(
         f"courses/{course_id}/modules/{module_id}/items/{assignment_module_item_id}",
         {
-            "module_item[title]": HOMEWORK_ITEM_TITLE,
+            "module_item[title]": title,
             "module_item[position]": "5",
         },
     )
@@ -1724,6 +1731,7 @@ def _main_publish(args: argparse.Namespace) -> None:
         result = migrate_homework_to_assignment(
             args.course_id,
             args.module_id,
+            pair=2,
             homework_colab_url=homework,
             remove_external_url_item_id=486002,
             assignment_id=198690,
@@ -1764,7 +1772,7 @@ def _main_publish(args: argparse.Namespace) -> None:
 
     if args.add_artifact_extras:
         if not base or not preset.artifact:
-            raise SystemExit("--add-artifact-extras requires artifact pair preset (9 or 10)")
+            raise SystemExit("--add-artifact-extras requires artifact pair preset (8, 9 or 10)")
         result = add_artifact_extras(args.course_id, args.module_id, args.pair, preset)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return
@@ -1829,6 +1837,7 @@ def _main_publish(args: argparse.Namespace) -> None:
         item = add_homework_assignment_item(
             args.course_id,
             args.module_id,
+            pair=args.pair,
             homework_colab_url=homework_url,
             position=args.submit_position,
         )

@@ -228,7 +228,7 @@ def publish_pair(
         add_solutions_item(course_id, module_id, solutions_url)
     if homework_url and not pair.skip_homework:
         hw = add_homework_assignment_item(
-            course_id, module_id, homework_colab_url=homework_url
+            course_id, module_id, pair=pair.ktp, homework_colab_url=homework_url
         )
         result["homework"] = hw
     result["feedback"] = add_feedback_quiz_item(course_id, module_id)

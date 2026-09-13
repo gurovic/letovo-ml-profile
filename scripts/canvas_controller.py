@@ -17,11 +17,16 @@ from canvas_api import canvas_delete, canvas_get, canvas_put, require_canvas_aut
 from publish_canvas_lesson import (  # noqa: E402
     FEEDBACK_ITEM_TITLE,
     FEEDBACK_ITEM_TITLE_LEGACY,
+    HOMEWORK_ITEM_TITLE,
+    HOMEWORK_POINTS,
     add_feedback_quiz_item,
     apply_module_item_order,
     clean_canvas_title,
     feedback_target_position,
+    homework_title,
     is_feedback_item,
+    is_homework_title,
+    pair_number_from_subheader,
     plan_module_feedback_layout,
     split_module_into_pair_blocks,
 )
@@ -47,7 +52,7 @@ KNOWN_ITEM_TITLES = frozenset(
         "План урока (для преподавателя)",
         "Решения (для преподавателя)",
         "Ноутбук урока",
-        "Домашнее задание",
+        HOMEWORK_ITEM_TITLE,
         FEEDBACK_ITEM_TITLE,
         FEEDBACK_ITEM_TITLE_LEGACY,
         "Материалы артефакта",
@@ -647,6 +652,86 @@ def ensure_hidden_feedback_quizzes(
     return stats
 
 
+def rename_homework_with_lesson_numbers(
+    course_id: int,
+    *,
+    map_path: Path,
+) -> dict[str, int]:
+    """Переименовать ДЗ в модулях: «Домашнее задание, урок N» (N из SubHeader «Пара N»)."""
+    from publish_canvas_module_stories import load_module_ids
+
+    module_ids = load_module_ids(map_path)
+    stats = {"modules": 0, "renamed": 0, "already": 0, "skipped": 0}
+    for mid in module_ids.values():
+        stats["modules"] += 1
+        items = canvas_get(f"courses/{course_id}/modules/{mid}/items", paginate=True)
+        if not isinstance(items, list):
+            continue
+        for header, block in split_module_into_pair_blocks(items):
+            pair = pair_number_from_subheader(str(header.get("title") or ""))
+            if pair is None:
+                stats["skipped"] += 1
+                continue
+            target = homework_title(pair)
+            for it in block:
+                title = str(it.get("title") or "")
+                if not is_homework_title(title):
+                    continue
+                if title == target and True:
+                    # still sync assignment name if content_id present
+                    pass
+                content_id = it.get("content_id")
+                need_item = title != target
+                if need_item:
+                    canvas_put(
+                        f"courses/{course_id}/modules/{mid}/items/{it['id']}",
+                        {"module_item[title]": target},
+                    )
+                if content_id:
+                    canvas_put(
+                        f"courses/{course_id}/assignments/{content_id}",
+                        {"assignment[name]": target},
+                    )
+                if need_item:
+                    stats["renamed"] += 1
+                    print(f"  module {mid}: {title!r} → {target!r}")
+                else:
+                    stats["already"] += 1
+    return stats
+
+
+def set_homework_points(
+    course_id: int,
+    *,
+    map_path: Path,
+    points: float = HOMEWORK_POINTS,
+) -> dict[str, int]:
+    """Выставить points_possible для всех Assignment «Домашнее задание…»."""
+    del map_path  # course-wide by assignment name; map kept for CLI parity
+    stats = {"modules": 0, "updated": 0, "already": 0}
+    assignments = canvas_get(f"courses/{course_id}/assignments", paginate=True)
+    if not isinstance(assignments, list):
+        return stats
+    for assignment in assignments:
+        name = str(assignment.get("name") or "")
+        if not is_homework_title(name):
+            continue
+        aid = assignment.get("id")
+        if not aid:
+            continue
+        current = float(assignment.get("points_possible") or 0)
+        if abs(current - points) < 1e-9:
+            stats["already"] += 1
+            continue
+        canvas_put(
+            f"courses/{course_id}/assignments/{aid}",
+            {"assignment[points_possible]": str(points)},
+        )
+        stats["updated"] += 1
+        print(f"  assignment {aid}: {current} → {points} ({name})")
+    return stats
+
+
 def print_report(report: AuditReport) -> None:
     data = report.to_dict()
     if report.ok and not data["warnings"]:
@@ -691,6 +776,16 @@ def main() -> None:
         action="store_true",
         help="Один скрытый опрос «Опрос перед следующей парой» в конце каждой пары",
     )
+    parser.add_argument(
+        "--rename-homework",
+        action="store_true",
+        help="Переименовать ДЗ в «Домашнее задание, урок N» по номеру пары",
+    )
+    parser.add_argument(
+        "--set-homework-points",
+        action="store_true",
+        help=f"Выставить всем ДЗ максимум {HOMEWORK_POINTS:g} баллов",
+    )
     args = parser.parse_args()
     require_canvas_auth()
     if args.fix_titles:
@@ -719,7 +814,25 @@ def main() -> None:
             f"renamed={stats['renamed']} hidden={stats['hidden']} "
             f"modules={stats['modules']}"
         )
-    if args.stories_only or args.fix_titles or args.add_feedback:
+    if args.rename_homework:
+        stats = rename_homework_with_lesson_numbers(args.course_id, map_path=args.map)
+        print(
+            f"Homework titles: renamed={stats['renamed']} already={stats['already']} "
+            f"skipped={stats['skipped']} modules={stats['modules']}"
+        )
+    if args.set_homework_points:
+        stats = set_homework_points(args.course_id, map_path=args.map)
+        print(
+            f"Homework points: updated={stats['updated']} already={stats['already']} "
+            f"modules={stats['modules']} points={HOMEWORK_POINTS:g}"
+        )
+    if (
+        args.stories_only
+        or args.fix_titles
+        or args.add_feedback
+        or args.rename_homework
+        or args.set_homework_points
+    ):
         sys.exit(0)
     report = audit_course(
         args.course_id,

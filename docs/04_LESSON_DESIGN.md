@@ -412,7 +412,7 @@ Lesson Design отвечает на один вопрос:
 | 3 | `03_parameters_and_return` | пилот transform введение (Draft 5) |
 | 4 | `04_practice_transform` | пилот transform отработка (Draft 5) |
 | 5 | `05_scope_and_debugging` | пилот метрики введение (Draft 5) |
-| 6 | `06_practice_metrics` | пилот метрики отработка (Draft 5) |
+| 6 | `06_modules_cli` | модули и импорт, запуск из командной строки (Draft 5) |
 | 1 | `01_intro_profile` | мигрировать |
 | 7 | `07_recursion` | мигрировать |
 | 8 | `08_practice_pipeline` | мигрировать |

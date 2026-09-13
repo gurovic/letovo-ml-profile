@@ -10,8 +10,8 @@
 | 2 | M1. Оценка недвижимости: функции и inference pipeline | Функция как отображение — predict_price, batch_predict, MAE, выбор коэффициента | | | | | | | | |
 | 3 | M1. Оценка недвижимости: функции и inference pipeline | Параметры и return — describe_numbers, min_max_scale, grade_stats | | | | | | | | |
 | 4 | M1. Оценка недвижимости: функции и inference pipeline | Практика: proto-EDA и transform-функции | | | | | | | | |
-| 5 | M1. Оценка недвижимости: функции и inference pipeline | Scope и отладка — accuracy, баги return/scope | | | | | | | | |
-| 6 | M1. Оценка недвижимости: функции и inference pipeline | Практика: confusion_counts, журнал багов | | | | | | | | |
+| 5 | M1. Оценка недвижимости: функции и inference pipeline | Scope и отладка — accuracy, confusion_counts (tp/fp/fn/tn), баги return/scope | | | | | | | | |
+| 6 | M1. Оценка недвижимости: функции и inference pipeline | Модули и импорт — код в .py, import, запуск из командной строки, .py vs .ipynb | | | | | | | | |
 | 7 | M1. Оценка недвижимости: функции и inference pipeline | Рекурсия на данных; lambda / HOF / apply_pipeline | | | | | | | | |
 | 8 | M1. Оценка недвижимости: функции и inference pipeline | Артефакт text_stats — сборка, сдача, рефлексия модуля | | | | | | | | |
 | 9 | M2. Краткосрочная аренда: pandas и линейная регрессия | pandas: read_csv, DataFrame, object / feature / target; выборка строк/столбцо… | | | | | | | | |

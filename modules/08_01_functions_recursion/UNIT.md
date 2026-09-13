@@ -17,11 +17,11 @@
 | 3 | введение | [03_parameters_and_return](lessons/03_parameters_and_return/LESSON.md) |
 | 4 | отработка | [04_practice_transform](lessons/04_practice_transform/LESSON.md) |
 | 5 | введение | [05_scope_and_debugging](lessons/05_scope_and_debugging/LESSON.md) |
-| 6 | отработка | [06_practice_metrics](lessons/06_practice_metrics/LESSON.md) |
+| 6 | введение + отработка | [06_modules_cli](lessons/06_modules_cli/LESSON.md) |
 | 7 | введение + отработка | [07_recursion_pipeline](lessons/07_recursion_pipeline/LESSON.md) |
 | 8 | интеграция | [08_artifact](lessons/08_artifact/LESSON.md) |
 
-**Отработка** — обычно отдельная пара (≥3 задач на навык предыдущей; Pedagogy §2). Исключение сетки 8 пар: пара 7 = введение рекурсии + отработка lambda/pipeline на одной паре. Один `LESSON.md` = одна пара КТП (2 ч).
+**Отработка** — обычно отдельная пара (≥3 задач на навык предыдущей; Pedagogy §2). Исключения сетки 8 пар: пара 6 = модули и импорт + отработка метрик пары 5 в файле `metrics.py`; пара 7 = введение рекурсии + отработка lambda/pipeline. Один `LESSON.md` = одна пара КТП (2 ч).
 
 ---
 
@@ -163,8 +163,8 @@
 | 2 | Функция как отображение | введение | 2 | 2 | [02](lessons/02_function_as_mapping/LESSON.md) | `predict_price`, return, MAE, batch |
 | 3 | Параметры и return | введение | 2 | 3 | [03](lessons/03_parameters_and_return/LESSON.md) | describe, scale, grade_stats |
 | 4 | Практика: transform | отработка | 2 | 4 | [04](lessons/04_practice_transform/LESSON.md) | серия transform, порог |
-| 5 | Scope и отладка | введение | 2 | 5 | [05](lessons/05_scope_and_debugging/LESSON.md) | accuracy, баги |
-| 6 | Практика: метрики | отработка | 2 | 6 | [06](lessons/06_practice_metrics/LESSON.md) | confusion_counts, журнал |
+| 5 | Scope и отладка | введение | 2 | 5 | [05](lessons/05_scope_and_debugging/LESSON.md) | accuracy, confusion_counts, баги |
+| 6 | Модули и импорт: `.py`, командная строка | введение + отработка | 2 | 6 | [06](lessons/06_modules_cli/LESSON.md) | `metrics.py`, `main.py`, `sys.argv`, файл тестов |
 | 7 | Рекурсия; lambda / HOF / pipeline | введение + отработка | 2 | 7 | [07](lessons/07_recursion_pipeline/LESSON.md) | flatten, walk; серия + apply_pipeline |
 | 8 | Артефакт text_stats — сборка и сдача | интеграция | 2 | 8 | [08](lessons/08_artifact/LESSON.md) | starter шаги 1–8, README, 10 тестов |
 
@@ -193,6 +193,7 @@
 |---|---|---|
 | ML | «fit и predict — не функции» | пара 2: predict вручную |
 | ML | Путают metric и predict | пара 5: accuracy отдельной функцией |
+| Инженерия | «Работает в ноутбуке, не работает файлом» (порядок ячеек, кэш `import`) | пара 6: `python file.py` заново каждый раз; `if __name__ == "__main__"` |
 | Data | Scaling до/после extract | пара 7: порядок шагов в `apply_pipeline` |
 
 ---
@@ -259,7 +260,9 @@
 | Preprocessing | Цепочка transform-шагов до предсказания |
 | MAE | Средняя абсолютная ошибка предсказания: среднее \|y − ŷ\| |
 | Accuracy | Доля верных предсказаний среди всех объектов |
-| confusion_counts | Четыре числа: tp, fp, fn, tn — сколько угадали/ошиблись по типам (см. пару 6) |
+| confusion_counts | Четыре числа: tp, fp, fn, tn — сколько угадали/ошиблись по типам (см. пару 5) |
+| Модуль (Python) | Файл `.py` с функциями; `import metrics` выполняет файл один раз и даёт доступ к его именам (пара 6) |
+| `if __name__ == "__main__":` | Код, который выполняется только при запуске `python file.py`, но не при `import` (пара 6) |
 | Min-max scaling | Линейное приведение признака к диапазону [0, 1] |
 | Scope | Область видимости имён; влияет на отладку метрик |
 | Рекурсия | Вызов функцией самой себя; базовый случай обязателен |
