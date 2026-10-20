@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Generate lesson notebooks for module 08_02 (KTP pairs 9–16).
 
 Source of truth for .ipynb: edit this file, then run it.
@@ -90,6 +90,8 @@ NOTEBOOKS: dict[str, dict] = {}
 
 
 def add_lesson01() -> None:
+    # Ноутбуки пары собраны вручную; этот генератор их не перезаписывает.
+    return
     base = "lessons/01_pandas_dataframe"
     lesson = nb(
         md(
@@ -370,7 +372,7 @@ def add_lesson01() -> None:
 
 
 def add_lesson02() -> None:
-    base = "lessons/01_pandas_dataframe/filters"
+    base = "lessons/02_filters"
     lesson = nb(
         md(
             "# Практика: фильтры и типы\n\n"
@@ -609,7 +611,7 @@ def add_lesson02() -> None:
 
 
 def add_lesson03() -> None:
-    base = "lessons/02_eda_scatter"
+    base = "lessons/03_eda_scatter"
     lesson = nb(
         md(
             "# EDA: describe и scatter\n\n"
@@ -897,7 +899,7 @@ def add_lesson03() -> None:
 
 
 def add_lesson04() -> None:
-    base = "lessons/03_train_test_lr"
+    base = "lessons/04_train_test_lr"
     lesson = nb(
         md(
             "# train/test и LinearRegression\n\n"
@@ -1139,7 +1141,7 @@ def add_lesson04() -> None:
 
 
 def add_lesson05() -> None:
-    base = "lessons/04_practice_metrics"
+    base = "lessons/05_practice_metrics"
     starter = LOAD_DATA + IMPORTS_SKLEARN
     lesson = nb(
         md(
@@ -1399,7 +1401,7 @@ def add_lesson05() -> None:
 
 
 def add_lesson06() -> None:
-    base = "lessons/05_try_except_csv"
+    base = "lessons/06_try_except_csv"
     stubs = (
         "from pathlib import Path\n"
         "import pandas as pd\n\n\n"
@@ -1687,7 +1689,7 @@ assert LISTINGS_PATH is not None
 
 def add_lesson07() -> None:
     """Pair 15: compare features + brief multi-feature overview."""
-    base = "lessons/06_practice_features"
+    base = "lessons/07_practice_features"
     fit_stub = (
         "def eval_feature(feature_name: str, random_state: int = 42):\n"
         "    \"\"\"Вернуть (mse, r2) LinearRegression на одном признаке, test 20%, seed.\"\"\"\n"
@@ -1920,8 +1922,9 @@ def add_lesson07() -> None:
 
 
 def add_lesson08() -> None:
-    """Pair 15: report build (pair 16 submit reuses the same notebooks via copy)."""
-    base = "lessons/07_report_build"
+    """Итоговый отчёт собран вручную в lessons/08_report_build. Генератор его не перезаписывает."""
+    return
+    base = "lessons/08_report_build"
     lesson = nb(
         md(
             "# Мини-отчёт: сборка\n\n"
@@ -2197,15 +2200,6 @@ def main() -> None:
     add_report_starter()
     for rel, notebook in NOTEBOOKS.items():
         write(rel, notebook)
-    # Pair 16 = same report notebooks (topic moved, not rewritten)
-    build = ROOT / "lessons" / "07_report_build"
-    submit = ROOT / "lessons" / "08_report_submit"
-    if build.is_dir() and submit.is_dir():
-        for name in ("lesson.ipynb", "homework.ipynb", "solutions.ipynb"):
-            src = build / name
-            if src.exists():
-                shutil.copy2(src, submit / name)
-                print("synced", submit / name)
     src_csv = ROOT / "data" / "listings.csv"
     if src_csv.exists():
         targets = [ROOT / "artifact" / "starter" / "listings.csv"]
